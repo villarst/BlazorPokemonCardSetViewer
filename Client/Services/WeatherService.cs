@@ -14,7 +14,7 @@ public class WeatherService : ReactiveObject, IWeatherService
         _httpClient = httpClient;
     }
 
-    public async Task<WeatherForecast[]> GetForecastAsync()
+    public async Task<WeatherForecast[]?> GetForecastAsync()
     {
         return await _httpClient.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
     }
