@@ -1,17 +1,20 @@
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace BlazorPokemonCardSetViewer.Pages.ViewModels;
 
 public class CounterViewModel : ReactiveObject, IDisposable
 {
-    public int CurrentCount { get; set; }
+    private readonly ILogger<CounterViewModel> _logger;
+    [Reactive] public int CurrentCount { get; set; }
 
-    public CounterViewModel()
+    public CounterViewModel(ILogger<CounterViewModel> logger)
     {
         CurrentCount = 0;
+        _logger = logger;
     }
     
-    private void IncrementCount()
+    public void IncrementCount()
     {
         CurrentCount++;
     }
@@ -19,5 +22,6 @@ public class CounterViewModel : ReactiveObject, IDisposable
     public void Dispose()
     {
         CurrentCount = 0;
+        _logger.LogInformation("Counter disposed");
     }
 }

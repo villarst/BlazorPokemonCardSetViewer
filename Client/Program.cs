@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Serilog;
 using BlazorPokemonCardSetViewer;
+using BlazorPokemonCardSetViewer.Contracts;
 using BlazorPokemonCardSetViewer.Pages.ViewModels;
+using BlazorPokemonCardSetViewer.Services;
 
 try
 {
@@ -20,6 +22,7 @@ try
     builder.RootComponents.Add<HeadOutlet>("head::after");
 
     builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+    builder.Services.AddScoped<IWeatherService, WeatherService>();
     builder.Services.AddScoped<WeatherViewModel>();
     builder.Services.AddScoped<CounterViewModel>();
 
