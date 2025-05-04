@@ -1,6 +1,9 @@
-﻿@using BlazorPokemonCardSetViewer.Pages.ViewModels
-@inherits ReactiveUI.Blazor.ReactiveComponentBase<CounterViewModel>
+﻿@using ReactiveUI
+@using ReactiveUI.Blazor
+@using BlazorPokemonCardSetViewer.Pages.ViewModels
+@inherits ReactiveComponentBase<CounterViewModel>
 @page "/counter"
+@inject CounterViewModel ViewModel
 
 @if (ViewModel is null)
 {
@@ -17,3 +20,20 @@
 
     <button class="btn btn-primary" @onclick="@ViewModel.IncrementCount">Click me</button>
 </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        
+        // For debugging
+        if (ViewModel == null)
+        {
+            Console.WriteLine("ViewModel is null in OnInitialized");
+        }
+        else
+        {
+            Console.WriteLine("ViewModel is initialized successfully");
+        }
+    }
+}
