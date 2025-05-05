@@ -1,5 +1,5 @@
 using BlazorPokemonCardSetViewer.Contracts;
-using BlazorPokemonCardSetViewer.Models;
+using Shared;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

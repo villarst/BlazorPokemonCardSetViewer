@@ -1,4 +1,4 @@
-using BlazorPokemonCardSetViewer.Models;
+using Shared;
 
 namespace BlazorPokemonCardSetViewer.Contracts;
 

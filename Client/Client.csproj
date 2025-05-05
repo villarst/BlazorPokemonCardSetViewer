@@ -23,7 +23,6 @@
 
     <ItemGroup>
       <Folder Include="Components\" />
-      <Folder Include="Controllers\" />
       <Folder Include="Shared\" />
     </ItemGroup>
 
@@ -33,6 +32,10 @@
       <AdditionalFiles Include="Pages\Views\Weather.razor" />
       <AdditionalFiles Include="Shared\Layout\MainLayout.razor" />
       <AdditionalFiles Include="Shared\Layout\NavMenu.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 
 </Project>

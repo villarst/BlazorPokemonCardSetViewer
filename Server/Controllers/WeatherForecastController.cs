@@ -1,7 +1,7 @@
-using BlazorPokemonCardSetViewer.Server.Models;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 
-namespace BlazorPokemonCardSetViewer.Server.Controllers;
+namespace Server.Controllers;
 
 [ApiController]
 [Route("[controller]")]
