@@ -1,7 +1,7 @@
-using BlazorPokemonCardSetViewer.Models;
+using BlazorPokemonCardSetViewer.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BlazorPokemonCardSetViewer.Controllers;
+namespace BlazorPokemonCardSetViewer.Server.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -22,6 +22,7 @@ public class WeatherForecastController : ControllerBase
     [HttpGet]
     public IEnumerable<WeatherForecast> Get()
     {
+        _logger.LogInformation("Weather forecast requested");
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),

@@ -1,4 +1,4 @@
-namespace BlazorPokemonCardSetViewer.Models;
+namespace Server.Models;
 
 public class WeatherForecast
 {

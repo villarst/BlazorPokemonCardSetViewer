@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <Folder Include="Components\" />
+      <Folder Include="Controllers\" />
       <Folder Include="Shared\" />
     </ItemGroup>
 
