@@ -23,6 +23,7 @@ try
         BaseAddress = new Uri("http://localhost:5205/") 
     });
     builder.Services.AddScoped<IWeatherService, WeatherService>();
+    // builder.Services.AddScoped<
     builder.Services.AddScoped<WeatherViewModel>();
     builder.Services.AddScoped<CounterViewModel>();
     await builder.Build().RunAsync();
