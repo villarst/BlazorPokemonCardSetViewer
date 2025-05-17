@@ -37,7 +37,7 @@ public class PokemonCardController : ControllerBase
             var content = await response.Content.ReadAsStringAsync();
             _logger.LogDebug("Response content: {Content}", content);
                 
-            var cardResponse = JsonSerializer.Deserialize<PokemonCardResponse>(content, 
+            var cardResponse = JsonSerializer.Deserialize<GetPokemonCardResponse>(content, 
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 
             if (cardResponse?.Data == null)

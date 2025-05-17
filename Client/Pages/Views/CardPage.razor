@@ -51,6 +51,7 @@
     private async Task LoadCard()
     {
         Logger.LogInformation("Load button clicked for card: {CardId}", ViewModel.CardId);
-        await ViewModel.LoadCardCommand.Execute(ViewModel.CardId).FirstOrDefaultAsync();
+        await ViewModel.GetPokemonCard(ViewModel.CardId);
+        // await ViewModel.LoadCardCommand.Execute(ViewModel.CardId).FirstOrDefaultAsync();
     }
 }
