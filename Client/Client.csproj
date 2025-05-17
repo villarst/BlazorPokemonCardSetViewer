@@ -27,9 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Pages\Views\Counter.razor" />
       <AdditionalFiles Include="Pages\Views\Home.razor" />
-      <AdditionalFiles Include="Pages\Views\Weather.razor" />
       <AdditionalFiles Include="Shared\Layout\MainLayout.razor" />
       <AdditionalFiles Include="Shared\Layout\NavMenu.razor" />
     </ItemGroup>

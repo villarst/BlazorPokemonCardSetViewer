@@ -12,10 +12,10 @@ public class CardPageViewModel : ReactiveObject, IDisposable
     private readonly ICardService _cardService;
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
     
-    [Reactive] public PokemonCard? Card { get; private set; } = null;
-    [Reactive] public string CardId { get; set; } = "xy1-1"; // Default card ID
+    [Reactive] public PokemonCard? Card { get; private set; }
+    [Reactive] public string CardId { get; set; } = "xy1-1"; // Default card ID used
     [Reactive] public bool IsLoading { get; private set; }
-    [Reactive] public string? ErrorMessage { get; private set; } = null;
+    [Reactive] public string? ErrorMessage { get; private set; }
     
     public ReactiveCommand<string, PokemonCard?> LoadCardCommand { get; }
     

@@ -17,12 +17,12 @@ public class CardService : ReactiveObject, ICardService
         _logger.LogInformation("CardService created with base address: {BaseAddress}", _httpClient.BaseAddress);
     }
     
-    public async Task<PokemonCard> GetCardAsync(string cardId)
+    public async Task<PokemonCard?> GetCardAsync(string cardId)
     {
         try
         {
             _logger.LogInformation("Calling API for card: {CardId}", cardId);
-            // THIS IS IMPORTANT - call YOUR server API, not the Pokemon API directly
+            // THIS IS IMPORTANT - call the server API.
             var response = await _httpClient.GetAsync($"api/PokemonCard/{cardId}");
             
             _logger.LogInformation("API response status: {StatusCode}", response.StatusCode);

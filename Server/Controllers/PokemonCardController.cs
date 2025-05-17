@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Server.Features;
 using Shared.Models;
 
@@ -32,33 +30,29 @@ public class PokemonCardController : ControllerBase
             var response = await _httpClient.GetAsync($"cards/{cardId}");
             
             _logger.LogInformation("API Response: {StatusCode}", response.StatusCode);
-            
-            if (response.IsSuccessStatusCode)
+
+            if (!response.IsSuccessStatusCode)
+                return StatusCode((int)response.StatusCode,
+                    $"Error fetching card: {response.StatusCode}");
+            var content = await response.Content.ReadAsStringAsync();
+            _logger.LogDebug("Response content: {Content}", content);
+                
+            var cardResponse = JsonSerializer.Deserialize<PokemonCardResponse>(content, 
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+            if (cardResponse?.Data == null)
             {
-                var content = await response.Content.ReadAsStringAsync();
-                _logger.LogDebug("Response content: {Content}", content);
-                
-                var cardResponse = JsonSerializer.Deserialize<PokemonCardResponse>(content, 
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                
-                if (cardResponse?.Data == null)
-                {
-                    _logger.LogWarning("Card data is null");
-                    return NotFound("Card data not found");
-                }
-                
-                // Map only the properties we need
-                var card = new PokemonCard
-                {
-                    Id = cardResponse.Data.Id ?? string.Empty,
-                    Name = cardResponse.Data.Name ?? string.Empty
-                };
-                
-                return Ok(card);
+                _logger.LogWarning("Card data is null");
+                return NotFound("Card data not found");
             }
-            
-            return StatusCode((int)response.StatusCode, 
-                $"Error fetching card: {response.StatusCode}");
+                
+            // Map only the properties we need - (We will add more to this)
+            var card = new PokemonCard
+            {
+                Id = cardResponse.Data.Id,
+                Name = cardResponse.Data.Name
+            };
+            return Ok(card);
         }
         catch (Exception ex)
         {

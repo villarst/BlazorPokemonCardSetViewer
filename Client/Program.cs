@@ -10,7 +10,7 @@ try
 {
     Log.Logger = new LoggerConfiguration()
         .MinimumLevel.Debug()
-        .WriteTo.File("logs\\log-.txt", rollingInterval: RollingInterval.Day)
+        .WriteTo.Console()
         .CreateLogger();
     
     var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -23,15 +23,12 @@ try
         BaseAddress = new Uri("http://localhost:5205/") // Matches what's in the server terminal output
     });
     
-    builder.Services.AddScoped<IWeatherService, WeatherService>();
     builder.Services.AddScoped<ICardService, CardService>();
-    builder.Services.AddScoped<WeatherViewModel>();
-    builder.Services.AddScoped<CounterViewModel>();
     builder.Services.AddScoped<CardPageViewModel>();
     
     await builder.Build().RunAsync();
 }
 catch (Exception ex)
 {
-    Log.Logger.Error(ex, "Error");
+    Console.Error.WriteLine($"Application start-up failed: {ex}");
 }
