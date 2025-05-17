@@ -1,35 +1,60 @@
 using System.Text.Json;
 using BlazorPokemonCardSetViewer.Contracts;
 using ReactiveUI;
-using Server.Features;
 using Shared.Models;
 
 namespace BlazorPokemonCardSetViewer.Services;
-
-public class CardService :  ReactiveObject, ICardService
+public class CardService : ReactiveObject, ICardService
 {
     private readonly HttpClient _httpClient;
-    private const string ApiKey = "15625e63-354d-4ce5-a221-a5c200ce57f4";
-
-    public CardService(HttpClient httpClient)
+    private readonly ILogger<CardService> _logger;
+    
+    public CardService(HttpClient httpClient, ILogger<CardService> logger)
     {
         _httpClient = httpClient;
-        _httpClient.BaseAddress = new Uri("https://api.pokemontcg.io/v2/");
-        _httpClient.DefaultRequestHeaders.Add("X-Api-Key", ApiKey);
+        _logger = logger;
+        // The BaseAddress should be set in Program.cs
+        _logger.LogInformation("CardService created with base address: {BaseAddress}", _httpClient.BaseAddress);
     }
     
     public async Task<PokemonCard> GetCardAsync(string cardId)
     {
-        var response = await _httpClient.GetAsync($"cards/{cardId}");
-        
-        if (response.IsSuccessStatusCode)
+        try
         {
-            var content = await response.Content.ReadAsStringAsync();
-            var cardResponse = JsonSerializer.Deserialize<PokemonCardResponse>(content, 
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            return cardResponse.Data;
+            _logger.LogInformation("Calling API for card: {CardId}", cardId);
+            // THIS IS IMPORTANT - call YOUR server API, not the Pokemon API directly
+            var response = await _httpClient.GetAsync($"api/PokemonCard/{cardId}");
+            
+            _logger.LogInformation("API response status: {StatusCode}", response.StatusCode);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                _logger.LogDebug("Response content: {Content}", content);
+                
+                var card = JsonSerializer.Deserialize<PokemonCard>(content, 
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                if (card != null)
+                {
+                    _logger.LogInformation("Card deserialized: {CardName}", card.Name);
+                    return card;
+                }
+                else
+                {
+                    _logger.LogWarning("Deserialized card is null");
+                    throw new Exception("Failed to deserialize card data");
+                }
+            }
+            
+            var errorContent = await response.Content.ReadAsStringAsync();
+            _logger.LogWarning("Error response: {ErrorContent}", errorContent);
+            throw new Exception($"Error fetching card: {response.StatusCode}, {errorContent}");
         }
-        
-        throw new Exception($"Error fetching card: {response.StatusCode}");
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception in CardService");
+            throw;
+        }
     }
 }

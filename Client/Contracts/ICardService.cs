@@ -4,5 +4,5 @@ namespace BlazorPokemonCardSetViewer.Contracts;
 
 public interface ICardService
 {
-    Task<PokemonCard> GetCardAsync(string cardId);
+    Task<PokemonCard?> GetCardAsync(string cardId);
 }

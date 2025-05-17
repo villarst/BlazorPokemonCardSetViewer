@@ -1,0 +1,57 @@
+@page "/card"
+@using System.Reactive.Linq
+@using BlazorPokemonCardSetViewer.Pages.ViewModels
+@* @using Shared.Models *@
+@inject CardPageViewModel ViewModel
+@inject ILogger<CardPage> Logger
+
+<h3>Pokemon Card Viewer</h3>
+
+<div class="mb-3">
+    <label for="cardId" class="form-label">Card ID:</label>
+    <div class="input-group">
+        <input id="cardId" class="form-control" @bind="@ViewModel.CardId" />
+        <button class="btn btn-primary" @onclick="LoadCard" disabled="@ViewModel.IsLoading">
+            @if (ViewModel.IsLoading)
+            {
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span>Loading...</span>
+            }
+            else
+            {
+                <span>Load Card</span>
+            }
+        </button>
+    </div>
+    <small class="form-text text-muted">Try ids like "xy1-1", "sm1-1", etc.</small>
+</div>
+
+@if (ViewModel.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @ViewModel.ErrorMessage
+    </div>
+}
+
+@if (ViewModel.Card != null)
+{
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">@ViewModel.Card.Name</h5>
+            <h6 class="card-subtitle mb-2 text-muted">ID: @ViewModel.Card.Id</h6>
+        </div>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        Logger.LogInformation("CardPage initialized");
+    }
+
+    private async Task LoadCard()
+    {
+        Logger.LogInformation("Load button clicked for card: {CardId}", ViewModel.CardId);
+        await ViewModel.LoadCardCommand.Execute(ViewModel.CardId).FirstOrDefaultAsync();
+    }
+}
