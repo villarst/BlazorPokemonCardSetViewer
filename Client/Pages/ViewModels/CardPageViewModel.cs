@@ -4,7 +4,6 @@ using BlazorPokemonCardSetViewer.Contracts;
 using Shared.Models;
 using System.Reactive.Linq;
 using System.Reactive.Disposables;
-using Server.Features;
 
 namespace BlazorPokemonCardSetViewer.Pages.ViewModels;
 public class CardPageViewModel : ReactiveObject, IDisposable
@@ -18,33 +17,39 @@ public class CardPageViewModel : ReactiveObject, IDisposable
     [Reactive] public bool IsLoading { get; private set; }
     [Reactive] public string? ErrorMessage { get; private set; }
     
-    // public ReactiveCommand<string, PokemonCard?> LoadCardCommand { get; }
-    
     public CardPageViewModel(ILogger<CardPageViewModel> logger, ICardService cardService)
     {
         _logger = logger;
         _cardService = cardService;
         _logger.LogDebug("CardPageViewModel created.");
     }
-
-    public async Task<PokemonCard?> GetPokemonCard(string cardId)
-    { 
+    
+    public async Task<PokemonCard?> LoadCardAsync(string cardId)
+    {
         IsLoading = true;
         ErrorMessage = null;
         try
         {
-         _logger.LogInformation("Requesting card: {CardId}", cardId);
-         return await _cardService.GetCardAsync(cardId);
+            _logger.LogInformation("Requesting card: {CardId}", cardId);
+            var card = await _cardService.GetCardAsync(cardId);
+            Card = card;
+            
+            if (card != null)
+            {
+                _logger.LogInformation("Card loaded: {CardName}", card.Name);
+            }
+            
+            return card;
         }
         catch (Exception ex)
         {
-         ErrorMessage = $"Failed to load card: {ex.Message}";
-         _logger.LogError(ex, "Error loading card {CardId}", cardId);
-         return null;
+            ErrorMessage = $"Failed to load card: {ex.Message}";
+            _logger.LogError(ex, "Error loading card {CardId}", cardId);
+            return null;
         }
         finally
         {
-         IsLoading = false;
+            IsLoading = false;
         }
     }
     
@@ -54,34 +59,3 @@ public class CardPageViewModel : ReactiveObject, IDisposable
         _logger.LogInformation("CardPageViewModel disposed");
     }
 }
-
-
-
-// LoadCardCommand = ReactiveCommand.CreateFromTask<string, PokemonCard?>(
-//     async (cardId) => {
-//         IsLoading = true;
-//         ErrorMessage = null;
-//         try
-//         {
-//             _logger.LogInformation("Requesting card: {CardId}", cardId);
-//             return await _cardService.GetCardAsync(cardId);
-//         }
-//         catch (Exception ex)
-//         {
-//             ErrorMessage = $"Failed to load card: {ex.Message}";
-//             _logger.LogError(ex, "Error loading card {CardId}", cardId);
-//             return null;
-//         }
-//         finally
-//         {
-//             IsLoading = false;
-//         }
-//     });
-//             
-// LoadCardCommand.Subscribe(card => {
-//     Card = card;
-//     if (card != null)
-//     {
-//         _logger.LogInformation("Card loaded: {CardName}", card.Name);
-//     }
-// }).DisposeWith(_disposables);

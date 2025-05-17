@@ -1,11 +1,9 @@
 @page "/card"
-@using System.Reactive.Linq
 @using BlazorPokemonCardSetViewer.Pages.ViewModels
 @inject CardPageViewModel ViewModel
 @inject ILogger<CardPage> Logger
 
 <h3>Pokemon Card Viewer</h3>
-
 <div class="mb-3">
     <label for="cardId" class="form-label">Card ID:</label>
     <div class="input-group">
@@ -51,7 +49,6 @@
     private async Task LoadCard()
     {
         Logger.LogInformation("Load button clicked for card: {CardId}", ViewModel.CardId);
-        await ViewModel.GetPokemonCard(ViewModel.CardId);
-        // await ViewModel.LoadCardCommand.Execute(ViewModel.CardId).FirstOrDefaultAsync();
+        await ViewModel.LoadCardAsync(ViewModel.CardId);
     }
 }
