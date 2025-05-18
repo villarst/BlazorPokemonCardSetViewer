@@ -51,7 +51,12 @@ public class PokemonCardController : ControllerBase
             {
                 Id = cardResponse.Data.Id,
                 Name = cardResponse.Data.Name,
-                Hp = cardResponse.Data.Hp
+                Hp = cardResponse.Data.Hp,
+                Images = new CardImages
+                {
+                    Small = cardResponse.Data.Images?.Small,
+                    Large = cardResponse.Data.Images?.Large,
+                }
             };
             return Ok(card);
         }

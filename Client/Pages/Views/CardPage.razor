@@ -33,6 +33,10 @@
 @if (ViewModel.Card != null)
 {
     <div class="card" style="width: 18rem;">
+        @if (ViewModel.Card.Images?.Small != null)
+        {
+            <img src="@ViewModel.Card.Images.Small" class="card-img-top" alt="@ViewModel.Card.Name">
+        }
         <div class="card-body">
             <h5 class="card-title">@ViewModel.Card.Name</h5>
             <h6 class="card-subtitle mb-2 text-muted">ID: @ViewModel.Card.Id</h6>
