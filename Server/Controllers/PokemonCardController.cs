@@ -50,7 +50,8 @@ public class PokemonCardController : ControllerBase
             var card = new PokemonCard
             {
                 Id = cardResponse.Data.Id,
-                Name = cardResponse.Data.Name
+                Name = cardResponse.Data.Name,
+                Hp = cardResponse.Data.Hp
             };
             return Ok(card);
         }

@@ -24,7 +24,7 @@ public class CardPageViewModel : ReactiveObject, IDisposable
         _logger.LogDebug("CardPageViewModel created.");
     }
     
-    public async Task<PokemonCard?> LoadCardAsync(string cardId)
+    public async Task LoadCardAsync(string cardId)
     {
         IsLoading = true;
         ErrorMessage = null;
@@ -38,14 +38,11 @@ public class CardPageViewModel : ReactiveObject, IDisposable
             {
                 _logger.LogInformation("Card loaded: {CardName}", card.Name);
             }
-            
-            return card;
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to load card: {ex.Message}";
+            ErrorMessage = $"Failed to load card {cardId}.";
             _logger.LogError(ex, "Error loading card {CardId}", cardId);
-            return null;
         }
         finally
         {

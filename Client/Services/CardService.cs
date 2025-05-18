@@ -21,7 +21,7 @@ public class CardService : ReactiveObject, ICardService
     {
         try
         {
-            _logger.LogInformation("Calling API for card: {CardId}", cardId);
+            _logger.LogInformation("Calling API for card: {CardId}.", cardId);
             // THIS IS IMPORTANT - call the server API.
             var response = await _httpClient.GetAsync($"api/PokemonCard/{cardId}");
             
@@ -40,11 +40,9 @@ public class CardService : ReactiveObject, ICardService
                     _logger.LogInformation("Card deserialized: {CardName}", card.Name);
                     return card;
                 }
-                else
-                {
-                    _logger.LogWarning("Deserialized card is null");
-                    throw new Exception("Failed to deserialize card data");
-                }
+
+                _logger.LogWarning("Deserialized card is null");
+                throw new Exception("Failed to deserialize card data");
             }
             
             var errorContent = await response.Content.ReadAsStringAsync();
