@@ -23,15 +23,18 @@ public class CardService : ReactiveObject, ICardService
         {
             _logger.LogInformation("Calling API for card: {CardId}.", cardId);
             // THIS IS IMPORTANT - call the server API.
+            // The URI called here is "https://localhost:5205/api/PokemonCard/{cardId}".
             var response = await _httpClient.GetAsync($"api/PokemonCard/{cardId}");
             
             _logger.LogInformation("API response status: {StatusCode}", response.StatusCode);
             
             if (response.IsSuccessStatusCode)
             {
+                // Convert the response to string(s).
                 var content = await response.Content.ReadAsStringAsync();
                 _logger.LogDebug("Response content: {Content}", content);
                 
+                // Deserialize the content to a PokemonCard object which is currently a string formatted json object.
                 var card = JsonSerializer.Deserialize<PokemonCard>(content, 
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 

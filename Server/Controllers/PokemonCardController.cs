@@ -5,6 +5,8 @@ using Shared.Models;
 
 namespace Server.Controllers;
 
+// Having "Controller" in the file name lets ASP.NET know that it needs to be seperated into "PokemonCard" and
+// "Controller". So [Route("api/[controller]")] becomes api/PokemonCard for your PokemonCardController class.
 [ApiController]
 [Route("api/[controller]")]
 public class PokemonCardController : ControllerBase
@@ -21,6 +23,8 @@ public class PokemonCardController : ControllerBase
         _httpClient.DefaultRequestHeaders.Add("X-Api-Key", ApiKey);
     }
     
+    // The requests here must have the "{cardId}" at the end of the URI.
+    // For instance, "https://localhost:5205/api/PokemonCard/xy1-1" works.
     [HttpGet("{cardId}")]
     public async Task<ActionResult<PokemonCard>> GetCard(string cardId)
     {
