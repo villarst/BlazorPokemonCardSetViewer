@@ -1,24 +1,24 @@
-﻿<div style="color: white; padding-left: 1rem; min-height: 3.5rem; background-color: rgba(0,0,0,0.4); display: flex; align-items: center;">
+﻿<div style="border-bottom: 1px solid #d6d5d5; color: white; min-height: 3.5rem; background-color: #f7f7f7; display: flex; align-items: center;">
     <div class="container-fluid" style="display: flex; align-items: center;">
-        <a style="color: white; font-size: 1.1rem; text-decoration: none;" href="">Client</a>
+        <a href="">
+            <img style="height: 3rem; width: 9rem; margin-left: 0.75rem;" src="images/Pokemon-Logo.png" alt=""/>
+        </a>
     </div>
 </div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="card">
-                <img src="icons/pokeball_logo.svg" width="20" height="20" alt=""/>
-                <text style="padding-left: 0.75rem">Card Page</text>
-            </NavLink>
-        </div>
-    </nav>
-</div>
+<nav class="nav flex-column">
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+        </NavLink>
+    </div>
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="card">
+            <img src="icons/pokeball_logo.svg" width="20" height="20" alt=""/>
+            <text style="padding-left: 0.75rem">Card Page</text>
+        </NavLink>
+    </div>
+</nav>
 
 @code {
     private bool _collapseNavMenu = true;

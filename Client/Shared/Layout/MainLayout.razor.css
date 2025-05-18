@@ -1,3 +1,11 @@
+.blank-row {
+    display: flex;
+    flex-direction: row;
+    background-color: black;
+    width: 100%;
+    height: 2.5rem;
+}
+
 .page {
     position: relative;
     display: flex;
@@ -9,7 +17,7 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-color: white;
 }
 
 .top-row {
@@ -52,7 +60,7 @@ main {
     }
 
     .sidebar {
-        width: 250px;
+        width: 12.5rem;
         height: 100vh;
         position: sticky;
         top: 0;
