@@ -1,0 +1,65 @@
+<div class="top-nav">
+    <div class="nav-content">
+        <a href="" class="logo">
+            <img src="images/Pokemon-Logo.png" alt=""/>
+        </a>
+        <a href="">Home</a>
+        <a href="card">Individual Cards</a>
+        <a href="sets">Sets</a>
+        <a href="energies">Energies</a>
+        <a href="about">About</a>
+    </div>
+</div>
+
+<style>
+    .top-nav {
+        background-color: #f7f7f7;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .nav-content {
+        display: flex;
+        align-items: center;
+        padding-left: 1.6rem;
+        margin-right: auto;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    
+    .top-nav a {
+        color: black;
+        text-align: center;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        text-decoration: none;
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
+    .top-nav a:not(.logo){
+        border-right: #939393 solid 0.094rem;
+        height: 25px;
+    }
+    
+    .top-nav .logo {
+        padding: 0.35rem 0;  /* Add vertical padding to the logo container */
+        margin-right: 1.6rem;
+    }
+    
+    .top-nav .logo img {
+        height: 3rem;
+        width: 9rem;
+        display: block;
+    }
+    
+    .top-nav a:not(.logo):hover {
+        background-color: #ddd;
+        border-right: #939393 solid 0.094rem;
+    }
+</style>
+
+@code {
+    
+}
