@@ -1,0 +1,13 @@
+@page "/sets"
+@using BlazorPokemonCardSetViewer.Pages.ViewModels
+@inject SetsPageViewModel ViewModel
+@inject ILogger<SetsPage> Logger
+
+<h3>Pokemon Sets</h3>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Logger.LogInformation("Sets Page initialized");
+    }
+}

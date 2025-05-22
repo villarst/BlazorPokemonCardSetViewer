@@ -2,7 +2,6 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using BlazorPokemonCardSetViewer.Contracts;
 using Shared.Models;
-using System.Reactive.Linq;
 using System.Reactive.Disposables;
 
 namespace BlazorPokemonCardSetViewer.Pages.ViewModels;
@@ -21,7 +20,7 @@ public class CardPageViewModel : ReactiveObject, IDisposable
     {
         _logger = logger;
         _cardService = cardService;
-        _logger.LogDebug("CardPageViewModel created.");
+        _logger.LogInformation("CardPageViewModel created.");
     }
     
     public async Task LoadCardAsync(string cardId)
