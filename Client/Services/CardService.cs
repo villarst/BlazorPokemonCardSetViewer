@@ -1,10 +1,9 @@
 using System.Text.Json;
 using BlazorPokemonCardSetViewer.Contracts;
-using ReactiveUI;
 using Shared.Models;
 
 namespace BlazorPokemonCardSetViewer.Services;
-public class CardService : ReactiveObject, ICardService
+public class CardService : ICardService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<CardService> _logger;
@@ -13,7 +12,8 @@ public class CardService : ReactiveObject, ICardService
     {
         _httpClient = httpClient;
         _logger = logger;
-        // The BaseAddress should be set in Program.cs
+        
+        // The 'BaseAddress' variable should be set in Program.cs
         _logger.LogInformation("CardService created with base address: {BaseAddress}", _httpClient.BaseAddress);
     }
     
