@@ -3,7 +3,38 @@
 @inject SetsPageViewModel ViewModel
 @inject ILogger<SetsPage> Logger
 
-<h3>Pokemon Sets</h3>
+<div class="content-container">
+    <div>
+        <h1 class="pokemon-sets-header" style="margin-bottom: 1rem">Pokemon Sets</h1>
+        <h3 class="pokemon-sets-header">Scarlet and Violet</h3>
+    </div>
+    <div>
+        <ul class="group-list">
+            <li>Item 1</li>
+            <li>Item 2</li>
+            <li>Item 3</li>
+            <li>Item 4</li>
+            <li>Item 5</li>
+            <li>Item 6</li>
+        </ul>
+    </div>
+</div>
+
+<style>
+    .content-container {
+        margin: auto;
+    }
+    .pokemon-sets-header{
+        text-align: center;
+    }
+    .group-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        list-style: none;
+        padding: 0;
+    }
+</style>
 
 @code {
     protected override void OnInitialized()
