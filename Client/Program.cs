@@ -25,7 +25,7 @@ try
     
     builder.Services.AddScoped<ICardService, CardService>();
     builder.Services.AddScoped<CardPageViewModel>();
-    builder.Services.AddScoped<SetsPageViewModel>();
+    builder.Services.AddScoped<SeriesPageViewModel>();
     
     await builder.Build().RunAsync();
 }

@@ -2,8 +2,8 @@ using Shared.Models;
 
 namespace BlazorPokemonCardSetViewer.Contracts;
 
-public interface ISetsService
+public interface ISeriesService
 {
     // Do not know what to implement yet. 
-    Task<PokemonSet?> GetSetAsync();
+    Task<PokemonSet?> GetSeriesAsync(string seriesName);
 }

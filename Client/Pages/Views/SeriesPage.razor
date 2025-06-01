@@ -1,0 +1,68 @@
+@page "/sets"
+@using BlazorPokemonCardSetViewer.Pages.ViewModels
+@inject SeriesPageViewModel ViewModel
+@inject ILogger<SeriesPage> Logger
+
+<div class="content-container">
+    <div>
+        <h1 class="pokemon-sets-header" style="margin-bottom: 1rem">Pokemon Sets</h1>
+        <h3 class="pokemon-sets-header">Scarlet and Violet</h3>
+    </div>
+    <div>
+        <ul class="group-list">
+            <li>
+                <div style="text-align: center">
+                    Card 1
+                </div>
+            </li>
+            <li>
+                <div style="text-align: center">
+                    Card 2
+                </div>
+            </li>
+            <li>
+                <div style="text-align: center">
+                    Card 3
+                </div>
+            </li>
+            <li>
+                <div style="text-align: center">
+                    Card 4
+                </div>
+            </li>
+            <li>
+                <div style="text-align: center">
+                    Card 5
+                </div>
+            </li>
+            <li>
+                <div style="text-align: center">
+                    Card 6
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<style>
+    .content-container {
+        margin: auto;
+    }
+    .pokemon-sets-header{
+        text-align: center;
+    }
+    .group-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        list-style: none;
+        padding: 0;
+    }
+</style>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Logger.LogInformation("Sets Page initialized");
+    }
+}
