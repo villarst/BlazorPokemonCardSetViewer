@@ -12,8 +12,8 @@ public class SeriesPageViewModel : ReactiveObject, IDisposable
     private readonly ISeriesService _seriesService;
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
     
-    [Reactive] public PokemonSet? Sets { get; set; }
-    [Reactive] public string Series { get; set; } = "Scarlet & Violet"; // Default set name used
+    [Reactive] public PokemonSeries Series { get; set; }
+    [Reactive] public string SeriesCalled { get; set; } = "Scarlet & Violet"; // Default set name used
     [Reactive] public bool IsLoading { get; set; }
     [Reactive] public string? ErrorMessage { get; set; }
 
@@ -30,9 +30,9 @@ public class SeriesPageViewModel : ReactiveObject, IDisposable
         ErrorMessage = null;
         try
         {
-            _logger.LogInformation("Requesting sets: {SetName}", setName);
-            var sets = await _seriesService.GetSeriesAsync(setName);
-            Sets = sets;
+            // _logger.LogInformation("Requesting sets: {SetName}", setName);
+            // var sets = await _seriesService.GetSeriesAsync(setName);
+            // Sets = sets;
         }
         catch (Exception e)
         {

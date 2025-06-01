@@ -24,7 +24,8 @@ public class PokemonCardController : ControllerBase
     }
     
     // The requests here must have the "{cardId}" at the end of the URI.
-    // For instance, "https://localhost:5205/api/PokemonCard/xy1-1" works.
+    // For instance, "https://api.pokemontcg.io/v2/cards/{cardId}" works
+    // where {cardId} is 'xy-1' as an example.
     [HttpGet("{cardId}")]
     public async Task<ActionResult<PokemonCard>> GetCard(string cardId)
     {
