@@ -20,7 +20,7 @@ try
     // Point to the Server project URL
     builder.Services.AddScoped(sp => new HttpClient 
     { 
-        BaseAddress = new Uri("http://localhost:5205/") // Matches what's in the server terminal output
+        BaseAddress = new Uri("https://localhost:7240/") // Matches what's in the server terminal output
     });
     
     builder.Services.AddScoped<ICardService, CardService>();

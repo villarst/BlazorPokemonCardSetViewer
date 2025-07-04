@@ -3,47 +3,87 @@
 @inject CardPageViewModel ViewModel
 @inject ILogger<CardPage> Logger
 
-<h3>Pokemon Card Viewer</h3>
-<div class="mb-3">
-    <label for="cardId" class="form-label">Card ID:</label>
-    <div class="input-group">
-        <input id="cardId" class="form-control" @bind="@ViewModel.CardId" />
-        <button class="btn btn-primary" @onclick="LoadCard" disabled="@ViewModel.IsLoading">
-            @if (ViewModel.IsLoading)
-            {
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                <span>Loading...</span>
-            }
-            else
-            {
-                <span>Load Card</span>
-            }
-        </button>
+<div class="main-container">
+    <div class="sidebar">
+        <label for="cardId" class="form-label">Card ID:</label>
+        <div class="input-group">
+            <input id="cardId" class="form-control" @bind="@ViewModel.CardId"/>
+            <button class="btn btn-primary" @onclick="LoadCard" disabled="@ViewModel.IsLoading">
+                @if (ViewModel.IsLoading)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span>Loading...</span>
+                }
+                else
+                {
+                    <span>Load Card</span>
+                }
+            </button>
+        </div>
+        <small class="form-text text-muted">Try ids like "xy1-1", "sm1-1", "sv8pt5-1", etc.</small>
     </div>
-    <small class="form-text text-muted">Try ids like "xy1-1", "sm1-1", "sv8pt5-1", etc.</small>
+    <div class="content">
+        @if (ViewModel.ErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                @ViewModel.ErrorMessage
+            </div>
+        }
+
+        @if (ViewModel.Card != null)
+        {
+            <div class="card" style="width: 18rem;">
+                @if (ViewModel.Card.Images?.Small != null)
+                {
+                    <img src="@ViewModel.Card.Images.Small" class="card-img-top" alt="@ViewModel.Card.Name">
+                }
+                <div class="card-body">
+                    <h5 class="card-title">@ViewModel.Card.Name</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">ID: @ViewModel.Card.Id</h6>
+                    <h6 class="card-title">HP: @ViewModel.Card.Hp</h6>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
-@if (ViewModel.ErrorMessage != null)
-{
-    <div class="alert alert-danger">
-        @ViewModel.ErrorMessage
-    </div>
-}
+@* <div class="mb-3"> *@
+@*     <label for="cardId" class="form-label">Card ID:</label> *@
+@*     <div class="input-group"> *@
+@*         <input id="cardId" class="form-control" @bind="@ViewModel.CardId" /> *@
+@*         <button class="btn btn-primary" @onclick="LoadCard" disabled="@ViewModel.IsLoading"> *@
+@*             @if (ViewModel.IsLoading) *@
+@*             { *@
+@*                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> *@
+@*                 <span>Loading...</span> *@
+@*             } *@
+@*             else *@
+@*             { *@
+@*                 <span>Load Card</span> *@
+@*             } *@
+@*         </button> *@
+@*     </div> *@
+@*     <small class="form-text text-muted">Try ids like "xy1-1", "sm1-1", "sv8pt5-1", etc.</small> *@
+@* </div> *@
 
-@if (ViewModel.Card != null)
-{
-    <div class="card" style="width: 18rem;">
-        @if (ViewModel.Card.Images?.Small != null)
-        {
-            <img src="@ViewModel.Card.Images.Small" class="card-img-top" alt="@ViewModel.Card.Name">
-        }
-        <div class="card-body">
-            <h5 class="card-title">@ViewModel.Card.Name</h5>
-            <h6 class="card-subtitle mb-2 text-muted">ID: @ViewModel.Card.Id</h6>
-            <h6 class="card-title">HP: @ViewModel.Card.Hp</h6>
-        </div>
-    </div>
-}
+<style>
+    .main-container {
+        display: grid;
+        gap: 2rem;
+        grid-template-columns: repeat(12,1fr);
+        margin: 1rem auto 10rem;
+        align-items: start;
+    }
+    .sidebar {
+        grid-column: span 3;
+        position: sticky;
+    }
+    .content {
+        order: 1;
+        grid-column: span 9;
+        box-sizing: border-box;
+    }
+</style>
 
 @code {
     protected override void OnInitialized()
