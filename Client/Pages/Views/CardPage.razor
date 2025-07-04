@@ -5,9 +5,9 @@
 
 <div class="main-container">
     <div class="sidebar">
-        <label for="searchCard" class="form-label">Card ID:</label>
+        <label for="cardId" class="form-label">Card ID:</label>
         <div class="input-group">
-            <input id="searchCard" class="form-control" @bind="@ViewModel.SearchParameter"/>
+            <input id="cardId" class="form-control" @bind="@ViewModel.CardId"/>
             <button class="btn btn-primary" @onclick="LoadCard" disabled="@ViewModel.IsLoading">
                 @if (ViewModel.IsLoading)
                 {
@@ -73,7 +73,7 @@
 
     private async Task LoadCard()
     {
-        Logger.LogInformation("Load button clicked for card: {CardId}", ViewModel.SearchParameter);
-        await ViewModel.LoadCardAsync(ViewModel.SearchParameter);
+        Logger.LogInformation("Load button clicked for card: {CardId}", ViewModel.CardId);
+        await ViewModel.LoadCardAsync(ViewModel.CardId);
     }
 }

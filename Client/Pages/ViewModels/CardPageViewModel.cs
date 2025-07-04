@@ -13,7 +13,7 @@ public class CardPageViewModel : ReactiveObject, IDisposable
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
     
     [Reactive] public PokemonCard? Card { get; private set; }
-    [Reactive] public string SearchParameter { get; set; } = "Charizard"; // Default search parameter used.
+    [Reactive] public string CardId { get; set; } = "xy1-1"; // Default search parameter used.
     [Reactive] public bool IsLoading { get; private set; }
     [Reactive] public string? ErrorMessage { get; private set; }
     
@@ -24,14 +24,14 @@ public class CardPageViewModel : ReactiveObject, IDisposable
         _logger.LogDebug("CardPageViewModel created.");
     }
     
-    public async Task LoadCardAsync(string searchParam)
+    public async Task LoadCardAsync(string cardId)
     {
         IsLoading = true;
         ErrorMessage = null;
         try
         {
-            _logger.LogInformation("Requesting card: {SearchParam}", searchParam);
-            var card = await _cardService.GetCardAsync(searchParam);
+            _logger.LogInformation("Requesting card: {CardId}", cardId);
+            var card = await _cardService.GetCardAsync(cardId);
             Card = card;
             
             if (card != null)
@@ -41,8 +41,8 @@ public class CardPageViewModel : ReactiveObject, IDisposable
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to load card {searchParam}.";
-            _logger.LogError(ex, "Error loading card {SearchParam}", searchParam);
+            ErrorMessage = $"Failed to load card {cardId}.";
+            _logger.LogError(ex, "Error loading card {CardId}", cardId);
         }
         finally
         {
