@@ -23,7 +23,7 @@ try
         BaseAddress = new Uri("https://localhost:7240/") // Matches what's in the server terminal output
     });
     
-    builder.Services.AddScoped<ICardService, CardService>();
+    builder.Services.AddScoped<ICardsService, CardsService>();
     builder.Services.AddScoped<CardPageViewModel>();
     
     await builder.Build().RunAsync();

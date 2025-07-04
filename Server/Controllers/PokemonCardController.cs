@@ -26,43 +26,44 @@ public class PokemonCardController : ControllerBase
     // The requests here must have the "{cardId}" at the end of the URI.
     // For instance, "https://localhost:5205/api/PokemonCard/xy1-1" works.
     [HttpGet("{cardId}")]
-    public async Task<ActionResult<PokemonCard>> GetCard(string cardId)
+    public async Task<ActionResult<IEnumerable<PokemonCard>>> GetCard(string cardId)
     {
         try
         {
             _logger.LogInformation("Getting card: {CardId}", cardId);
-            var response = await _httpClient.GetAsync($"cards/{cardId}");
-            
+            var response = await _httpClient.GetAsync($"cards?q=name:{cardId}");
             _logger.LogInformation("API Response: {StatusCode}", response.StatusCode);
-
+        
             if (!response.IsSuccessStatusCode)
                 return StatusCode((int)response.StatusCode,
                     $"Error fetching card: {response.StatusCode}");
+                
             var content = await response.Content.ReadAsStringAsync();
             _logger.LogDebug("Response content: {Content}", content);
-                
-            var cardResponse = JsonSerializer.Deserialize<GetPokemonCardResponse>(content, 
+            
+            var cardsResponse = JsonSerializer.Deserialize<GetPokemonCardsResponse>(content, 
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                
-            if (cardResponse?.Data == null)
+            
+            if (cardsResponse?.Data == null || cardsResponse.Data.Length == 0)
             {
-                _logger.LogWarning("Card data is null");
-                return NotFound("Card data not found");
+                _logger.LogWarning("No card data found");
+                return NotFound("No cards found");
             }
-                
-            // Map only the properties we need - (We will add more to this)
-            var card = new PokemonCard
+            
+            // Map all cards
+            var cards = cardsResponse.Data.Select(cardData => new PokemonCard
             {
-                Id = cardResponse.Data.Id,
-                Name = cardResponse.Data.Name,
-                Hp = cardResponse.Data.Hp,
+                Id = cardData.Id,
+                Name = cardData.Name,
+                Hp = cardData.Hp ?? "N/A", // or cardData.Hp ?? string.Empty
                 Images = new CardImages
                 {
-                    Small = cardResponse.Data.Images?.Small,
-                    Large = cardResponse.Data.Images?.Large,
+                    Small = cardData.Images?.Small,
+                    Large = cardData.Images?.Large,
                 }
-            };
-            return Ok(card);
+            }).ToList();
+        
+            return Ok(cards);
         }
         catch (Exception ex)
         {
@@ -70,4 +71,50 @@ public class PokemonCardController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+    // [HttpGet("{cardId}")]
+    // public async Task<ActionResult<PokemonCard>> GetCard(string cardId)
+    // {
+    //     try
+    //     {
+    //         _logger.LogInformation("Getting card: {CardId}", cardId);
+    //         // var response = await _httpClient.GetAsync($"cards/{cardId}");
+    //
+    //         var response = await _httpClient.GetAsync($"cards?q=name:{cardId}");
+    //         _logger.LogInformation("API Response: {StatusCode}", response.StatusCode);
+    //
+    //         if (!response.IsSuccessStatusCode)
+    //             return StatusCode((int)response.StatusCode,
+    //                 $"Error fetching card: {response.StatusCode}");
+    //         var content = await response.Content.ReadAsStringAsync();
+    //         _logger.LogDebug("Response content: {Content}", content);
+    //             
+    //         var cardResponse = JsonSerializer.Deserialize<GetPokemonCardResponse>(content, 
+    //             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    //             
+    //         if (cardResponse?.Data == null)
+    //         {
+    //             _logger.LogWarning("Card data is null");
+    //             return NotFound("Card data not found");
+    //         }
+    //             
+    //         // Map only the properties we need - (We will add more to this)
+    //         var card = new PokemonCard
+    //         {
+    //             Id = cardResponse.Data.Id,
+    //             Name = cardResponse.Data.Name,
+    //             Hp = cardResponse.Data.Hp,
+    //             Images = new CardImages
+    //             {
+    //                 Small = cardResponse.Data.Images?.Small,
+    //                 Large = cardResponse.Data.Images?.Large,
+    //             }
+    //         };
+    //         return Ok(card);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "Error getting card {CardId}", cardId);
+    //         return StatusCode(500, $"Internal server error: {ex.Message}");
+    //     }
+    // }
 }

@@ -10,6 +10,6 @@ public class PokemonCardData
 {
     public required string Id { get; init; }
     public required string Name { get; init; }
-    public required string Hp { get; init; }
+    public string? Hp { get; init; }
     public required CardImages Images { get; init; }
 }
