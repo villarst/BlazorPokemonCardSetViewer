@@ -10,50 +10,94 @@ namespace BlazorPokemonCardSetViewer.Pages.ViewModels;
 public class CardPageViewModel : ReactiveObject, IDisposable
 {
     private readonly ILogger<CardPageViewModel> _logger;
-    private readonly ICardsService _cardsService;
+    private readonly ICardsService _cardService;
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
     
-    [Reactive] public List<PokemonCard> Cards { get; private set; } = new List<PokemonCard>();
-    [Reactive] public string CardId { get; set; } = "Charizard"; // Default search parameter used.
+    [Reactive] public PagedList<PokemonCard> PagedCards { get; private set; } = new PagedList<PokemonCard>();
+    [Reactive] public string SearchTerm { get; set; } = "";
     [Reactive] public bool IsLoading { get; private set; }
     [Reactive] public string? ErrorMessage { get; private set; }
+    [Reactive] public int CurrentPage { get; set; } = 1;
+    [Reactive] public int PageSize { get; set; } = 12;
     
-    public CardPageViewModel(ILogger<CardPageViewModel> logger, ICardsService cardsService)
+    public CardPageViewModel(ILogger<CardPageViewModel> logger, ICardsService cardService)
     {
         _logger = logger;
-        _cardsService = cardsService;
+        _cardService = cardService;
         _logger.LogDebug("CardPageViewModel created.");
     }
     
-    public async Task LoadCardAsync(string cardId)
+    public async Task LoadCardsAsync(int? pageNumber = null)
     {
+        if (string.IsNullOrWhiteSpace(SearchTerm))
+        {
+            ErrorMessage = "Please enter a search term";
+            return;
+        }
+        
         IsLoading = true;
         ErrorMessage = null;
-        Cards.Clear(); // Clear previous results
+        
+        if (pageNumber.HasValue)
+            CurrentPage = pageNumber.Value;
         
         try
         {
-            _logger.LogInformation("Requesting cards for: {CardId}", cardId);
-            var cards = await _cardsService.GetCardsAsync(cardId); // Note: Changed to GetCardsAsync
-            
-            if (cards != null && cards.Any())
+            var request = new PagedRequest
             {
-                Cards = cards.ToList();
-                _logger.LogInformation("Loaded {Count} cards", Cards.Count);
+                SearchTerm = SearchTerm,
+                PageNumber = CurrentPage,
+                PageSize = PageSize
+            };
+            
+            _logger.LogInformation("Requesting cards: {SearchTerm}, Page: {PageNumber}", 
+                SearchTerm, CurrentPage);
+                
+            var result = await _cardService.GetCardsAsync(request);
+            PagedCards = result;
+            
+            if (result.Data.Any())
+            {
+                _logger.LogInformation("Loaded {Count} cards of {Total} total", 
+                    result.Data.Count, result.TotalCount);
             }
             else
             {
-                ErrorMessage = $"No cards found for '{cardId}'";
+                ErrorMessage = $"No cards found for '{SearchTerm}'";
             }
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to load cards for {cardId}.";
-            _logger.LogError(ex, "Error loading cards for {CardId}", cardId);
+            ErrorMessage = $"Failed to load cards for {SearchTerm}.";
+            _logger.LogError(ex, "Error loading cards for {SearchTerm}", SearchTerm);
         }
         finally
         {
             IsLoading = false;
+        }
+    }
+    
+    public async Task GoToPageAsync(int pageNumber)
+    {
+        if (pageNumber >= 1 && pageNumber <= PagedCards.TotalPages)
+        {
+            await LoadCardsAsync(pageNumber);
+        }
+    }
+    
+    public async Task NextPageAsync()
+    {
+        if (PagedCards.HasNextPage)
+        {
+            await GoToPageAsync(CurrentPage + 1);
+        }
+    }
+    
+    public async Task PreviousPageAsync()
+    {
+        if (PagedCards.HasPreviousPage)
+        {
+            await GoToPageAsync(CurrentPage - 1);
         }
     }
     
@@ -63,63 +107,3 @@ public class CardPageViewModel : ReactiveObject, IDisposable
         _logger.LogInformation("CardPageViewModel disposed");
     }
 }
-
-
-// using ReactiveUI;
-// using ReactiveUI.Fody.Helpers;
-// using BlazorPokemonCardSetViewer.Contracts;
-// using Shared.Models;
-// using System.Reactive.Linq;
-// using System.Reactive.Disposables;
-//
-// namespace BlazorPokemonCardSetViewer.Pages.ViewModels;
-// public class CardPageViewModel : ReactiveObject, IDisposable
-// {
-//     private readonly ILogger<CardPageViewModel> _logger;
-//     private readonly ICardService _cardService;
-//     private readonly CompositeDisposable _disposables = new CompositeDisposable();
-//     
-//     [Reactive] public PokemonCard? Card { get; private set; }
-//     [Reactive] public string CardId { get; set; } = "xy1-1"; // Default search parameter used.
-//     [Reactive] public bool IsLoading { get; private set; }
-//     [Reactive] public string? ErrorMessage { get; private set; }
-//     
-//     public CardPageViewModel(ILogger<CardPageViewModel> logger, ICardService cardService)
-//     {
-//         _logger = logger;
-//         _cardService = cardService;
-//         _logger.LogDebug("CardPageViewModel created.");
-//     }
-//     
-//     public async Task LoadCardAsync(string cardId)
-//     {
-//         IsLoading = true;
-//         ErrorMessage = null;
-//         try
-//         {
-//             _logger.LogInformation("Requesting card: {CardId}", cardId);
-//             var card = await _cardService.GetCardAsync(cardId);
-//             Card = card;
-//             
-//             if (card != null)
-//             {
-//                 _logger.LogInformation("Card loaded: {CardName}", card.Name);
-//             }
-//         }
-//         catch (Exception ex)
-//         {
-//             ErrorMessage = $"Failed to load card {cardId}.";
-//             _logger.LogError(ex, "Error loading card {CardId}", cardId);
-//         }
-//         finally
-//         {
-//             IsLoading = false;
-//         }
-//     }
-//     
-//     public void Dispose()
-//     {
-//         _disposables?.Dispose();
-//         _logger.LogInformation("CardPageViewModel disposed");
-//     }
-// }
