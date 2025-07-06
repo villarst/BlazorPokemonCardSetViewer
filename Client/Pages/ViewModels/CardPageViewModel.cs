@@ -14,7 +14,7 @@ public class CardPageViewModel : ReactiveObject, IDisposable
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
     
     [Reactive] public List<PokemonCard> Cards { get; private set; } = new List<PokemonCard>();
-    [Reactive] public string CardId { get; set; } = "xy1-1"; // Default search parameter used.
+    [Reactive] public string CardId { get; set; } = "Charizard"; // Default search parameter used.
     [Reactive] public bool IsLoading { get; private set; }
     [Reactive] public string? ErrorMessage { get; private set; }
     
