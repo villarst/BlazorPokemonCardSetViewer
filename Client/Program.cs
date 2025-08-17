@@ -17,13 +17,12 @@ try
     builder.RootComponents.Add<App>("#app");
     builder.RootComponents.Add<HeadOutlet>("head::after");
     
-    // Point to the Server project URL
     builder.Services.AddScoped(sp => new HttpClient 
     { 
-        BaseAddress = new Uri("http://localhost:5205/") // Matches what's in the server terminal output
+        BaseAddress = new Uri("https://localhost:7240/") // Server port number
     });
     
-    builder.Services.AddScoped<ICardService, CardService>();
+    builder.Services.AddScoped<ICardsService, CardsService>();
     builder.Services.AddScoped<CardPageViewModel>();
     
     await builder.Build().RunAsync();
