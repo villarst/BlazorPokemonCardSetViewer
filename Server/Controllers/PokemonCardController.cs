@@ -1,26 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using Server.Features;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
+using Server.Data;
 using Shared.Models;
 
 namespace Server.Controllers;
 
-// Having "Controller" in the file name lets ASP.NET know that it needs to be seperated into "PokemonCard" and
-// "Controller". So [Route("api/[controller]")] becomes api/PokemonCard for your PokemonCardController class.
 [ApiController]
 [Route("api/[controller]")]
 public class PokemonCardController : ControllerBase
 {
-    private readonly HttpClient _httpClient;
+    private readonly PokemonDbContext _context;
     private readonly ILogger<PokemonCardController> _logger;
-    private const string ApiKey = "15625e63-354d-4ce5-a221-a5c200ce57f4";
     
-    public PokemonCardController(IHttpClientFactory httpClientFactory, ILogger<PokemonCardController> logger)
+    public PokemonCardController(PokemonDbContext context, ILogger<PokemonCardController> logger)
     {
+        _context = context;
         _logger = logger;
-        _httpClient = httpClientFactory.CreateClient();
-        _httpClient.BaseAddress = new Uri("https://api.pokemontcg.io/v2/");
-        _httpClient.DefaultRequestHeaders.Add("X-Api-Key", ApiKey);
     }
     
     [HttpGet("{searchTerm}")]
@@ -33,59 +29,48 @@ public class PokemonCardController : ControllerBase
         {
             _logger.LogInformation("Getting cards: {SearchTerm}, Page: {PageNumber}, Size: {PageSize}", 
                 searchTerm, pageNumber, pageSize);
-                
-            var response = await _httpClient.GetAsync($"cards?q=name:{searchTerm}");
-            _logger.LogInformation("API Response: {StatusCode}", response.StatusCode);
             
-            if (!response.IsSuccessStatusCode)
-                return StatusCode((int)response.StatusCode,
-                    $"Error fetching cards: {response.StatusCode}");
-                    
-            var content = await response.Content.ReadAsStringAsync();
-            _logger.LogDebug("Response content: {Content}", content);
-                
-            var cardsResponse = JsonSerializer.Deserialize<GetPokemonCardsResponse>(content, 
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                
-            if (cardsResponse?.Data == null || cardsResponse.Data.Length == 0)
+            var query = _context.PokemonCards.AsQueryable();
+            
+            // Apply search filter - search by name (case-insensitive)
+            if (!string.IsNullOrEmpty(searchTerm) && searchTerm != "*")
             {
-                _logger.LogWarning("No card data found");
+                query = query.Where(c => EF.Functions.Like(c.Name.ToLower(), $"%{searchTerm.ToLower()}%"));
+            }
+            
+            var totalCount = await query.CountAsync();
+            
+            _logger.LogInformation("Total matching cards: {TotalCount}", totalCount);
+            
+            if (totalCount == 0)
+            {
+                _logger.LogWarning("No card data found for search term: {SearchTerm}", searchTerm);
                 return Ok(new PagedList<PokemonCard>
                 {
-                    Data = new List<PokemonCard>(),
+                    Data = [],
                     TotalCount = 0,
                     PageNumber = pageNumber,
                     PageSize = pageSize
                 });
             }
-                
-            // Map all cards first
-            var allCards = cardsResponse.Data.Select(cardData => new PokemonCard
-            {
-                Id = cardData.Id,
-                Name = cardData.Name,
-                Hp = cardData.Hp ?? "N/A",
-                Images = new CardImages
-                {
-                    Small = cardData.Images?.Small,
-                    Large = cardData.Images?.Large,
-                }
-            }).ToList();
             
-            // Apply pagination
-            var totalCount = allCards.Count;
-            var pagedCards = allCards
+            // Get paginated results
+            var cards = await query
+                .OrderBy(c => c.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
             
             var result = new PagedList<PokemonCard>
             {
-                Data = pagedCards,
+                Data = cards,
                 TotalCount = totalCount,
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
+            
+            _logger.LogInformation("Returning {Count} cards out of {TotalCount} total", 
+                cards.Count, totalCount);
             
             return Ok(result);
         }
@@ -96,52 +81,68 @@ public class PokemonCardController : ControllerBase
         }
     }
     
-    // // The requests here must have the "{cardName}" at the end of the URI.
-    // // For instance, "https://localhost:5205/api/PokemonCard/xy1-1" works.
-    // [HttpGet("{cardName}")]
-    // public async Task<ActionResult<IEnumerable<PokemonCard>>> GetCard(string cardName)
-    // {
-    //     try
-    //     {
-    //         _logger.LogInformation("Getting card: {CardName}", cardName);
-    //         var response = await _httpClient.GetAsync($"cards?q=name:{cardName}");
-    //         _logger.LogInformation("API Response: {StatusCode}", response.StatusCode);
-    //     
-    //         if (!response.IsSuccessStatusCode)
-    //             return StatusCode((int)response.StatusCode,
-    //                 $"Error fetching card: {response.StatusCode}");
-    //             
-    //         var content = await response.Content.ReadAsStringAsync();
-    //         _logger.LogDebug("Response content: {Content}", content);
-    //         
-    //         var cardsResponse = JsonSerializer.Deserialize<GetPokemonCardsResponse>(content, 
-    //             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-    //         
-    //         if (cardsResponse?.Data == null || cardsResponse.Data.Length == 0)
-    //         {
-    //             _logger.LogWarning("No card data found");
-    //             return NotFound("No cards found");
-    //         }
-    //         
-    //         // Map all cards
-    //         var cards = cardsResponse.Data.Select(cardData => new PokemonCard
-    //         {
-    //             Id = cardData.Id,
-    //             Name = cardData.Name,
-    //             Hp = cardData.Hp ?? "N/A", // or cardData.Hp ?? string.Empty
-    //             Images = new CardImages
-    //             {
-    //                 Small = cardData.Images?.Small,
-    //                 Large = cardData.Images?.Large,
-    //             }
-    //         }).ToList();
-    //     
-    //         return Ok(cards);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _logger.LogError(ex, "Error getting card {CardName}", cardName);
-    //         return StatusCode(500, $"Internal server error: {ex.Message}");
-    //     }
-    // }
+    [HttpGet("card/{cardId}")]
+    public async Task<ActionResult<PokemonCard>> GetCardById(string cardId)
+    {
+        try
+        {
+            _logger.LogInformation("Getting card by ID: {CardId}", cardId);
+            
+            var card = await _context.PokemonCards.FirstOrDefaultAsync(c => c.Id == cardId);
+
+            if (card != null) return Ok(card);
+            _logger.LogWarning("Card not found: {CardId}", cardId);
+            return NotFound($"Card with ID {cardId} not found");
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting card {CardId}", cardId);
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+    
+    [HttpGet("card/{cardId}/full")]
+    public async Task<ActionResult<object>> GetFullCardData(string cardId)
+    {
+        try
+        {
+            var dbCard = await _context.PokemonCards.FirstOrDefaultAsync(c => c.Id == cardId);
+            
+            if (dbCard == null)
+                return NotFound($"Card with ID {cardId} not found");
+            
+            if (string.IsNullOrEmpty(dbCard.RawJson))
+                return NotFound("Full JSON data not available for this card");
+            
+            var fullData = JObject.Parse(dbCard.RawJson);
+            return Ok(fullData);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting full card data {CardId}", cardId);
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+    
+    [HttpGet("sets")]
+    public async Task<ActionResult<IEnumerable<object>>> GetSets()
+    {
+        try
+        {
+            var sets = await _context.PokemonCards
+                .Where(c => !string.IsNullOrEmpty(c.SetId))
+                .Select(c => new { c.SetId, c.SetName })
+                .Distinct()
+                .OrderBy(s => s.SetName)
+                .ToListAsync();
+            
+            return Ok(sets);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting sets");
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
 }

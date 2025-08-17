@@ -51,9 +51,16 @@
                 {
                     <div class="card-wrapper">
                         <div class="card">
-                            @if (card.Images?.Small != null)
+                            @if (!string.IsNullOrEmpty(card.SmallImage))
                             {
-                                <img src="@card.Images.Small" class="card-img-top" alt="@card.Name" loading="lazy">
+                                <img src="@card.SmallImage" class="card-img-top" alt="@card.Name" loading="lazy">
+                            }
+                            else
+                            {
+                                <div class="card-img-placeholder">
+                                    <i class="fas fa-image"></i>
+                                    <span>No Image</span>
+                                </div>
                             }
                             <div class="card-body">
                                 <h5 class="card-title">@card.Name</h5>
@@ -62,13 +69,17 @@
                                 {
                                     <h6 class="card-text">HP: @card.Hp</h6>
                                 }
+                                @if (!string.IsNullOrEmpty(card.SetName))
+                                {
+                                    <small class="text-muted">Set: @card.SetName</small>
+                                }
                             </div>
                         </div>
                     </div>
                 }
             </div>
             
-            <!-- Pagination Controls -->
+            // For pagination controls
             @if (ViewModel.PagedCards.TotalPages > 1)
             {
                 <nav aria-label="Card pagination" class="pagination-nav">
@@ -80,7 +91,7 @@
                             </button>
                         </li>
                         
-                        @for (int i = Math.Max(1, ViewModel.CurrentPage - 2); 
+                        @for (var i = Math.Max(1, ViewModel.CurrentPage - 2); 
                               i <= Math.Min(ViewModel.PagedCards.TotalPages, ViewModel.CurrentPage + 2); 
                               i++)
                         {
@@ -109,18 +120,20 @@
                 </nav>
             }
         }
-        else if (!ViewModel.IsLoading && !string.IsNullOrEmpty(ViewModel.SearchTerm))
-        {
-            <div class="alert alert-info">
-                <i class="fas fa-search"></i> No cards found for "@ViewModel.SearchTerm"
-            </div>
-        }
-        else if (!ViewModel.IsLoading)
-        {
-            <div class="alert alert-info">
-                <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
-            </div>
-        }
+        else
+            switch (ViewModel.IsLoading)
+            {
+                case false when !string.IsNullOrEmpty(ViewModel.SearchTerm):
+                    <div class="alert alert-info">
+                        <i class="fas fa-search"></i> No cards found for "@ViewModel.SearchTerm"
+                    </div>
+                    break;
+                case false:
+                    <div class="alert alert-info">
+                        <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
+                    </div>
+                    break;
+            }
     </div>
 </div>
 
@@ -177,6 +190,21 @@
         width: 100%;
         height: auto;
         object-fit: cover;
+    }
+
+    .card-img-placeholder {
+        height: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        color: #6c757d;
+    }
+
+    .card-img-placeholder i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
     }
     
     .card-body {
@@ -301,177 +329,3 @@
         await ViewModel.LoadCardsAsync();
     }
 }
-
-@* @page "/card" *@
-@* @using BlazorPokemonCardSetViewer.Pages.ViewModels *@
-@* @inject CardPageViewModel ViewModel *@
-@* @inject ILogger<CardPage> Logger *@
-@* *@
-@* <div class="main-container"> *@
-@*     <div class="sidebar"> *@
-@*         <label for="cardId" class="form-label">Card Name:</label> *@
-@*         <div class="input-group"> *@
-@*             <input id="cardId" class="form-control" @bind="@ViewModel.CardName" placeholder="Enter card name..."/> *@
-@*             <button class="btn btn-primary" @onclick="LoadCard" disabled="@ViewModel.IsLoading"> *@
-@*                 @if (ViewModel.IsLoading) *@
-@*                 { *@
-@*                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> *@
-@*                     <span>Loading...</span> *@
-@*                 } *@
-@*                 else *@
-@*                 { *@
-@*                     <span>Search Cards</span> *@
-@*                 } *@
-@*             </button> *@
-@*         </div> *@
-@*         <small class="form-text text-muted">Try names like "Pikachu", "Charizard", "Blastoise", etc.</small> *@
-@*     </div> *@
-@*      *@
-@*     <div class="content"> *@
-@*         @if (ViewModel.ErrorMessage != null) *@
-@*         { *@
-@*             <div class="alert alert-danger"> *@
-@*                 @ViewModel.ErrorMessage *@
-@*             </div> *@
-@*         } *@
-@*          *@
-@*         @if (ViewModel.Cards.Any()) *@
-@*         { *@
-@*             <div class="cards-container"> *@
-@*                 @foreach (var card in ViewModel.Cards) *@
-@*                 { *@
-@*                     <div class="card-wrapper"> *@
-@*                         <div class="card"> *@
-@*                             @if (card.Images?.Small != null) *@
-@*                             { *@
-@*                                 <img src="@card.Images.Small" class="card-img-top" alt="@card.Name" loading="lazy"> *@
-@*                             } *@
-@*                             <div class="card-body"> *@
-@*                                 <h5 class="card-title">@card.Name</h5> *@
-@*                                 <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6> *@
-@*                                 @if (!string.IsNullOrEmpty(card.Hp) && card.Hp != "N/A") *@
-@*                                 { *@
-@*                                     <h6 class="card-text">HP: @card.Hp</h6> *@
-@*                                 } *@
-@*                             </div> *@
-@*                         </div> *@
-@*                     </div> *@
-@*                 } *@
-@*             </div> *@
-@*         } *@
-@*         else if (!ViewModel.IsLoading) *@
-@*         { *@
-@*             <div class="alert alert-info"> *@
-@*                 <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards. *@
-@*             </div> *@
-@*         } *@
-@*     </div> *@
-@* </div> *@
-@* *@
-@* <style> *@
-@*     .main-container { *@
-@*         display: grid; *@
-@*         gap: 2rem; *@
-@*         grid-template-columns: repeat(12, 1fr); *@
-@*         margin: 1rem auto 10rem; *@
-@*         align-items: start; *@
-@*     } *@
-@*      *@
-@*     .sidebar { *@
-@*         grid-column: span 3; *@
-@*         position: sticky; *@
-@*         top: 1rem; *@
-@*     } *@
-@*      *@
-@*     .content { *@
-@*         order: 1; *@
-@*         grid-column: span 9; *@
-@*         box-sizing: border-box; *@
-@*     } *@
-@*      *@
-@*     .cards-container { *@
-@*         display: grid; *@
-@*         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); *@
-@*         gap: 1.5rem; *@
-@*         margin-top: 1rem; *@
-@*     } *@
-@*      *@
-@*     .card-wrapper { *@
-@*         display: flex; *@
-@*         justify-content: center; *@
-@*     } *@
-@*      *@
-@*     .card { *@
-@*         width: 100%; *@
-@*         max-width: 250px; *@
-@*         border: 1px solid #ddd; *@
-@*         border-radius: 8px; *@
-@*         overflow: hidden; *@
-@*         box-shadow: 0 2px 4px rgba(0,0,0,0.1); *@
-@*         transition: transform 0.2s, box-shadow 0.2s; *@
-@*     } *@
-@*      *@
-@*     .card:hover { *@
-@*         transform: translateY(-5px); *@
-@*         box-shadow: 0 4px 8px rgba(0,0,0,0.2); *@
-@*     } *@
-@*      *@
-@*     .card-img-top { *@
-@*         width: 100%; *@
-@*         height: auto; *@
-@*         object-fit: cover; *@
-@*     } *@
-@*      *@
-@*     .card-body { *@
-@*         padding: 1rem; *@
-@*     } *@
-@*      *@
-@*     .card-title { *@
-@*         font-size: 1.1rem; *@
-@*         font-weight: bold; *@
-@*         margin-bottom: 0.5rem; *@
-@*     } *@
-@*      *@
-@*     .card-subtitle { *@
-@*         font-size: 0.9rem; *@
-@*         color: #666; *@
-@*     } *@
-@*      *@
-@*     .card-text { *@
-@*         font-size: 0.9rem; *@
-@*         margin-bottom: 0.25rem; *@
-@*     } *@
-@*      *@
-@*     /* Responsive design */ *@
-@*     @@media (max-width: 768px) { *@
-@*         .main-container { *@
-@*             grid-template-columns: 1fr; *@
-@*         } *@
-@*          *@
-@*         .sidebar { *@
-@*             grid-column: span 1; *@
-@*             position: static; *@
-@*         } *@
-@*          *@
-@*         .content { *@
-@*             grid-column: span 1; *@
-@*         } *@
-@*          *@
-@*         .cards-container { *@
-@*             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); *@
-@*         } *@
-@*     } *@
-@* </style> *@
-@* *@
-@* @code { *@
-@*     protected override void OnInitialized() *@
-@*     { *@
-@*         Logger.LogInformation("CardPage initialized"); *@
-@*     } *@
-@*      *@
-@*     private async Task LoadCard() *@
-@*     { *@
-@*         Logger.LogInformation("Load button clicked for card: {CardId}", ViewModel.CardName); *@
-@*         await ViewModel.LoadCardAsync(ViewModel.CardName); *@
-@*     } *@
-@* } *@

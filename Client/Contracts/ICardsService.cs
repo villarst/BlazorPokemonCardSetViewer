@@ -6,5 +6,4 @@ public interface ICardsService
 {
     Task<PagedList<PokemonCard>> GetCardsAsync(PagedRequest request);
     Task<IEnumerable<PokemonCard>> GetAllCardsAsync(string searchTerm); // Keep if needed
-    // Task<IEnumerable<PokemonCard>> GetCardsAsync(string searchTerm);
 }
