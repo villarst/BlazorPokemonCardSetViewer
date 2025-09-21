@@ -8,7 +8,7 @@
         <label for="cardId" class="form-label">Card Name:</label>
         <div class="input-group">
             <input id="cardId" class="form-control" @bind="@ViewModel.SearchTerm" 
-                   @onkeypress="@(async (e) => { if (e.Key == "Enter") await SearchCards(); })"
+                   @onkeyup="@(async (e) => { if (e.Key == "Enter") await SearchCards(); })"
                    placeholder="Enter card name..."/>
             <button class="btn btn-primary" @onclick="SearchCards" disabled="@ViewModel.IsLoading">
                 @if (ViewModel.IsLoading)
