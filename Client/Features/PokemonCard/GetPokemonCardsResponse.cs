@@ -1,6 +1,4 @@
-using Shared.Models;
-
-namespace Server.Features;
+namespace BlazorPokemonCardSetViewer.Features.PokemonCard;
 
 public class GetPokemonCardsResponse
 {

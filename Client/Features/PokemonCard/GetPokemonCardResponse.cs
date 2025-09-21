@@ -1,6 +1,6 @@
 using Shared.Models;
 
-namespace Server.Features;
+namespace BlazorPokemonCardSetViewer.Features.PokemonCard;
 public class GetPokemonCardResponse
 {
     public required PokemonCardData Data { get; set; }

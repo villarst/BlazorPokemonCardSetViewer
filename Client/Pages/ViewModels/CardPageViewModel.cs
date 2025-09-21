@@ -11,7 +11,7 @@ public class CardPageViewModel : ReactiveObject, IDisposable
 {
     private readonly ILogger<CardPageViewModel> _logger;
     private readonly ICardsService _cardService;
-    private readonly CompositeDisposable _disposables = new CompositeDisposable();
+    private readonly CompositeDisposable _disposables = new();
     
     [Reactive] public PagedList<PokemonCard> PagedCards { get; private set; } = new PagedList<PokemonCard>();
     [Reactive] public string SearchTerm { get; set; } = "";
