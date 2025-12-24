@@ -6,8 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<PokemonDbContext>(options =>
-    // From appsettings.json
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); 
+    options.UseSqlite("Data Source=Data/PokemonDb.db"));
 
 builder.Services.AddLogging();
 builder.Services.AddOpenApi();

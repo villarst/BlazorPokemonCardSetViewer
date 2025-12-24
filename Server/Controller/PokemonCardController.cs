@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 using Server.Data;
 using Shared.Models;
 
@@ -111,12 +110,12 @@ public class PokemonCardController : ControllerBase
             
             if (dbCard == null)
                 return NotFound($"Card with ID {cardId} not found");
+            //
+            // if (string.IsNullOrEmpty(dbCard))
+            //     return NotFound("Full JSON data not available for this card");
             
-            if (string.IsNullOrEmpty(dbCard.RawJson))
-                return NotFound("Full JSON data not available for this card");
-            
-            var fullData = JObject.Parse(dbCard.RawJson);
-            return Ok(fullData);
+            // var fullData = JObject.Parse(dbCard.RawJson);
+            return Ok(dbCard);
         }
         catch (Exception ex)
         {
@@ -125,24 +124,24 @@ public class PokemonCardController : ControllerBase
         }
     }
     
-    [HttpGet("sets")]
-    public async Task<ActionResult<IEnumerable<object>>> GetSets()
-    {
-        try
-        {
-            var sets = await _context.PokemonCards
-                .Where(c => !string.IsNullOrEmpty(c.SetId))
-                .Select(c => new { c.SetId, c.SetName })
-                .Distinct()
-                .OrderBy(s => s.SetName)
-                .ToListAsync();
-            
-            return Ok(sets);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting sets");
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
+    // [HttpGet("sets")]
+    // public async Task<ActionResult<IEnumerable<object>>> GetSets()
+    // {
+    //     try
+    //     {
+    //         var sets = await _context.PokemonCards
+    //             .Where(c => !string.IsNullOrEmpty(c.SetId))
+    //             .Select(c => new { c.SetId, c.SetName })
+    //             .Distinct()
+    //             .OrderBy(s => s.SetName)
+    //             .ToListAsync();
+    //         
+    //         return Ok(sets);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "Error getting sets");
+    //         return StatusCode(500, $"Internal server error: {ex.Message}");
+    //     }
+    // }
 }

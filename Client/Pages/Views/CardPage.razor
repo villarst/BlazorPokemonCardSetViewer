@@ -3,140 +3,6 @@
 @inject CardPageViewModel ViewModel
 @inject ILogger<CardPage> Logger
 
-<div class="main-container">
-    <div class="sidebar">
-        <label for="cardId" class="form-label">Card Name:</label>
-        <div class="input-group">
-            <input id="cardId" class="form-control" @bind="@ViewModel.SearchTerm" 
-                   @onkeyup="@(async (e) => { if (e.Key == "Enter") await SearchCards(); })"
-                   placeholder="Enter card name..."/>
-            <button class="btn btn-primary" @onclick="SearchCards" disabled="@ViewModel.IsLoading">
-                @if (ViewModel.IsLoading)
-                {
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    <span>Loading...</span>
-                }
-                else
-                {
-                    <span>Search Cards</span>
-                }
-            </button>
-        </div>
-        <small class="form-text text-muted">Try names like "Pikachu", "Charizard", "Blastoise", etc.</small>
-        
-        @if (ViewModel.PagedCards.TotalCount > 0)
-        {
-            <div class="mt-3">
-                <small class="text-muted">
-                    Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) - 
-                    @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount)) 
-                    of @ViewModel.PagedCards.TotalCount cards
-                </small>
-            </div>
-        }
-    </div>
-    
-    <div class="content">
-        @if (ViewModel.ErrorMessage != null)
-        {
-            <div class="alert alert-danger">
-                @ViewModel.ErrorMessage
-            </div>
-        }
-        
-        @if (ViewModel.PagedCards.Data.Any())
-        {
-            <div class="cards-container">
-                @foreach (var card in ViewModel.PagedCards.Data)
-                {
-                    <div class="card-wrapper">
-                        <div class="card">
-                            @if (!string.IsNullOrEmpty(card.SmallImage))
-                            {
-                                <img src="@card.SmallImage" class="card-img-top" alt="@card.Name" loading="lazy">
-                            }
-                            else
-                            {
-                                <div class="card-img-placeholder">
-                                    <i class="fas fa-image"></i>
-                                    <span>No Image</span>
-                                </div>
-                            }
-                            <div class="card-body">
-                                <h5 class="card-title">@card.Name</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
-                                @if (!string.IsNullOrEmpty(card.Hp) && card.Hp != "N/A")
-                                {
-                                    <h6 class="card-text">HP: @card.Hp</h6>
-                                }
-                                @if (!string.IsNullOrEmpty(card.SetName))
-                                {
-                                    <small class="text-muted">Set: @card.SetName</small>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-            
-            // For pagination controls
-            @if (ViewModel.PagedCards.TotalPages > 1)
-            {
-                <nav aria-label="Card pagination" class="pagination-nav">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item @(ViewModel.PagedCards.HasPreviousPage ? "" : "disabled")">
-                            <button class="page-link" @onclick="ViewModel.PreviousPageAsync" 
-                                    disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
-                                Previous
-                            </button>
-                        </li>
-                        
-                        @for (var i = Math.Max(1, ViewModel.CurrentPage - 2); 
-                              i <= Math.Min(ViewModel.PagedCards.TotalPages, ViewModel.CurrentPage + 2); 
-                              i++)
-                        {
-                            var pageNumber = i; // Capture for lambda
-                            <li class="page-item @(i == ViewModel.CurrentPage ? "active" : "")">
-                                <button class="page-link" @onclick="@(() => ViewModel.GoToPageAsync(pageNumber))"
-                                        disabled="@ViewModel.IsLoading">
-                                    @i
-                                </button>
-                            </li>
-                        }
-                        
-                        <li class="page-item @(ViewModel.PagedCards.HasNextPage ? "" : "disabled")">
-                            <button class="page-link" @onclick="ViewModel.NextPageAsync" 
-                                    disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
-                                Next
-                            </button>
-                        </li>
-                    </ul>
-                    
-                    <div class="text-center mt-2">
-                        <small class="text-muted">
-                            Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
-                        </small>
-                    </div>
-                </nav>
-            }
-        }
-        else
-            switch (ViewModel.IsLoading)
-            {
-                case false when !string.IsNullOrEmpty(ViewModel.SearchTerm):
-                    <div class="alert alert-info">
-                        <i class="fas fa-search"></i> No cards found for "@ViewModel.SearchTerm"
-                    </div>
-                    break;
-                case false:
-                    <div class="alert alert-info">
-                        <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
-                    </div>
-                    break;
-            }
-    </div>
-</div>
-
 <style>
     .main-container {
         display: grid;
@@ -315,6 +181,140 @@
         }
     }
 </style>
+
+<div class="main-container">
+    <div class="sidebar">
+        <label for="cardId" class="form-label">Card Name:</label>
+        <div class="input-group">
+            <input id="cardId" class="form-control" @bind="@ViewModel.SearchTerm" 
+                   @onkeyup="@(async (e) => { if (e.Key == "Enter") await SearchCards(); })"
+                   placeholder="Enter card name..."/>
+            <button class="btn btn-primary" @onclick="SearchCards" disabled="@ViewModel.IsLoading">
+                @if (ViewModel.IsLoading)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span>Loading...</span>
+                }
+                else
+                {
+                    <span>Search Cards</span>
+                }
+            </button>
+        </div>
+        <small class="form-text text-muted">Try names like "Pikachu", "Charizard", "Blastoise", etc.</small>
+        
+        @if (ViewModel.PagedCards.TotalCount > 0)
+        {
+            <div class="mt-3">
+                <small class="text-muted">
+                    Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) - 
+                    @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount)) 
+                    of @ViewModel.PagedCards.TotalCount cards
+                </small>
+            </div>
+        }
+    </div>
+    
+    <div class="content">
+        @if (ViewModel.ErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                @ViewModel.ErrorMessage
+            </div>
+        }
+        
+        @if (ViewModel.PagedCards.Data.Any())
+        {
+            <div class="cards-container">
+                @foreach (var card in ViewModel.PagedCards.Data)
+                {
+                    <div class="card-wrapper">
+                        <div class="card">
+                            @if (!string.IsNullOrEmpty(card.ImageSmall))
+                            {
+                                <img src="@card.ImageSmall" class="card-img-top" alt="@card.Name" loading="lazy">
+                            }
+                            else
+                            {
+                                <div class="card-img-placeholder">
+                                    <i class="fas fa-image"></i>
+                                    <span>No Image</span>
+                                </div>
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">@card.Name</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
+                                @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
+                                {
+                                    <h6 class="card-text">HP: @card.Hp</h6>
+                                }
+                                @if (!string.IsNullOrEmpty(card.SetNumber.ToString()))
+                                {
+                                    <small class="text-muted">Set: @card.SetNumber.ToString()</small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            // For pagination controls
+            @if (ViewModel.PagedCards.TotalPages > 1)
+            {
+                <nav aria-label="Card pagination" class="pagination-nav">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(ViewModel.PagedCards.HasPreviousPage ? "" : "disabled")">
+                            <button class="page-link" @onclick="ViewModel.PreviousPageAsync" 
+                                    disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
+                                Previous
+                            </button>
+                        </li>
+                        
+                        @for (var i = Math.Max(1, ViewModel.CurrentPage - 2); 
+                              i <= Math.Min(ViewModel.PagedCards.TotalPages, ViewModel.CurrentPage + 2); 
+                              i++)
+                        {
+                            var pageNumber = i; // Capture for lambda
+                            <li class="page-item @(i == ViewModel.CurrentPage ? "active" : "")">
+                                <button class="page-link" @onclick="@(() => ViewModel.GoToPageAsync(pageNumber))"
+                                        disabled="@ViewModel.IsLoading">
+                                    @i
+                                </button>
+                            </li>
+                        }
+                        
+                        <li class="page-item @(ViewModel.PagedCards.HasNextPage ? "" : "disabled")">
+                            <button class="page-link" @onclick="ViewModel.NextPageAsync" 
+                                    disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
+                                Next
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="text-center mt-2">
+                        <small class="text-muted">
+                            Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
+                        </small>
+                    </div>
+                </nav>
+            }
+        }
+        else
+            switch (ViewModel.IsLoading)
+            {
+                case false when !string.IsNullOrEmpty(ViewModel.SearchTerm):
+                    <div class="alert alert-info">
+                        <i class="fas fa-search"></i> No cards found for "@ViewModel.SearchTerm"
+                    </div>
+                    break;
+                case false:
+                    <div class="alert alert-info">
+                        <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
+                    </div>
+                    break;
+            }
+    </div>
+</div>
 
 @code {
     protected override void OnInitialized()

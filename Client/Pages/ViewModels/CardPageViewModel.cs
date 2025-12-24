@@ -7,18 +7,28 @@ using System.Reactive.Disposables;
 
 namespace BlazorPokemonCardSetViewer.Pages.ViewModels;
 
-public class CardPageViewModel : ReactiveObject, IDisposable
+public interface ICardPageViewModel
+{
+    public PagedList<PokemonCard> PagedCards { get; set; }
+    public string SearchTerm { get; set; }
+    public bool IsLoading { get; set; }
+    public string? ErrorMessage { get; set; }
+    public int CurrentPage { get; set; }
+    public int PageSize { get; set; }
+}
+
+public class CardPageViewModel : ICardPageViewModel, IDisposable
 {
     private readonly ILogger<CardPageViewModel> _logger;
     private readonly ICardsService _cardService;
     private readonly CompositeDisposable _disposables = new();
     
-    [Reactive] public PagedList<PokemonCard> PagedCards { get; private set; } = new PagedList<PokemonCard>();
-    [Reactive] public string SearchTerm { get; set; } = "";
-    [Reactive] public bool IsLoading { get; private set; }
-    [Reactive] public string? ErrorMessage { get; private set; }
-    [Reactive] public int CurrentPage { get; set; } = 1;
-    [Reactive] public int PageSize { get; set; } = 12;
+    public PagedList<PokemonCard> PagedCards { get; set; } = new PagedList<PokemonCard>();
+    public string SearchTerm { get; set; } = string.Empty;
+    public bool IsLoading { get; set; }
+    public string? ErrorMessage { get; set; }
+    public int CurrentPage { get; set; } = 1;
+    public int PageSize { get; set; } = 12;
     
     public CardPageViewModel(ILogger<CardPageViewModel> logger, ICardsService cardService)
     {
