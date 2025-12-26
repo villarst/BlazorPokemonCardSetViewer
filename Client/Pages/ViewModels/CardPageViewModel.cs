@@ -1,15 +1,13 @@
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-using BlazorPokemonCardSetViewer.Contracts;
 using Shared.Models;
-using System.Reactive.Linq;
 using System.Reactive.Disposables;
+using BlazorPokemonCardSetViewer.Features.PokemonCard;
+using BlazorPokemonCardSetViewer.Services;
 
 namespace BlazorPokemonCardSetViewer.Pages.ViewModels;
 
 public interface ICardPageViewModel
 {
-    public PagedList<PokemonCard> PagedCards { get; set; }
+    public PagedList<PokemonCardData> PagedCards { get; set; }
     public string SearchTerm { get; set; }
     public bool IsLoading { get; set; }
     public string? ErrorMessage { get; set; }
@@ -23,7 +21,7 @@ public class CardPageViewModel : ICardPageViewModel, IDisposable
     private readonly ICardsService _cardService;
     private readonly CompositeDisposable _disposables = new();
     
-    public PagedList<PokemonCard> PagedCards { get; set; } = new PagedList<PokemonCard>();
+    public PagedList<PokemonCardData> PagedCards { get; set; }
     public string SearchTerm { get; set; } = string.Empty;
     public bool IsLoading { get; set; }
     public string? ErrorMessage { get; set; }
@@ -35,6 +33,7 @@ public class CardPageViewModel : ICardPageViewModel, IDisposable
         _logger = logger;
         _cardService = cardService;
         _logger.LogDebug("CardPageViewModel created.");
+        PagedCards =  new PagedList<PokemonCardData>();
     }
     
     public async Task LoadCardsAsync(int? pageNumber = null)

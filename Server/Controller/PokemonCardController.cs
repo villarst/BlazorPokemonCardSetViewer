@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Shared.Models;
+using BlazorPokemonCardSetViewer.Features.PokemonCard; // Add this for your DTO
 
 namespace Server.Controller;
 
@@ -19,7 +20,7 @@ public class PokemonCardController : ControllerBase
     }
     
     [HttpGet("{searchTerm}")]
-    public async Task<ActionResult<PagedList<PokemonCard>>> GetCards(
+    public async Task<ActionResult<PagedList<PokemonCardData>>> GetCards(  // Changed return type
         string searchTerm, 
         [FromQuery] int pageNumber = 1, 
         [FromQuery] int pageSize = 12)
@@ -31,7 +32,6 @@ public class PokemonCardController : ControllerBase
             
             var query = _context.PokemonCards.AsQueryable();
             
-            // Apply search filter - search by name (case-insensitive)
             if (!string.IsNullOrEmpty(searchTerm) && searchTerm != "*")
             {
                 query = query.Where(c => EF.Functions.Like(c.Name.ToLower(), $"%{searchTerm.ToLower()}%"));
@@ -44,7 +44,7 @@ public class PokemonCardController : ControllerBase
             if (totalCount == 0)
             {
                 _logger.LogWarning("No card data found for search term: {SearchTerm}", searchTerm);
-                return Ok(new PagedList<PokemonCard>
+                return Ok(new PagedList<PokemonCardData>  // Changed to DTO
                 {
                     Data = [],
                     TotalCount = 0,
@@ -53,23 +53,33 @@ public class PokemonCardController : ControllerBase
                 });
             }
             
-            // Get paginated results
-            var cards = await query
+            // Get paginated results and map to DTO in one query
+            var cardDtos = await query
                 .OrderBy(c => c.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
+                .AsQueryable()
+                .Select(c => new PokemonCardData  // Map to DTO here
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Hp = c.Hp.ToString(),
+                    CardNumber = c.SetNumber.ToString(),
+                    ImageSmall = c.ImageSmall,   // Adjust these property names to match your PokemonCard model
+                    ImageLarge = c.ImageLarge    // Adjust these property names to match your PokemonCard model
+                })
                 .ToListAsync();
             
-            var result = new PagedList<PokemonCard>
+            var result = new PagedList<PokemonCardData>  // Changed to DTO
             {
-                Data = cards,
+                Data = cardDtos,
                 TotalCount = totalCount,
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
             
             _logger.LogInformation("Returning {Count} cards out of {TotalCount} total", 
-                cards.Count, totalCount);
+                cardDtos.Count, totalCount);
             
             return Ok(result);
         }
@@ -81,18 +91,30 @@ public class PokemonCardController : ControllerBase
     }
     
     [HttpGet("card/{cardId}")]
-    public async Task<ActionResult<PokemonCard>> GetCardById(string cardId)
+    public async Task<ActionResult<PokemonCardData>> GetCardById(string cardId)  // Changed return type
     {
         try
         {
             _logger.LogInformation("Getting card by ID: {CardId}", cardId);
             
-            var card = await _context.PokemonCards.FirstOrDefaultAsync(c => c.Id == cardId);
-
-            if (card != null) return Ok(card);
+            var cardDto = await _context.PokemonCards
+                .Where(c => c.Id == cardId)
+                .AsQueryable()
+                .Select(c => new PokemonCardData  // Map to DTO
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Hp = c.Hp.ToString(),
+                    CardNumber = c.SetNumber.ToString(),
+                    ImageSmall = c.ImageSmall,
+                    ImageLarge = c.ImageLarge
+                })
+                .FirstOrDefaultAsync();
+                
+            if (cardDto != null) return Ok(cardDto);
+            
             _logger.LogWarning("Card not found: {CardId}", cardId);
             return NotFound($"Card with ID {cardId} not found");
-
         }
         catch (Exception ex)
         {
@@ -101,46 +123,31 @@ public class PokemonCardController : ControllerBase
         }
     }
     
-    [HttpGet("card/{cardId}/full")]
-    public async Task<ActionResult<object>> GetFullCardData(string cardId)
-    {
-        try
-        {
-            var dbCard = await _context.PokemonCards.FirstOrDefaultAsync(c => c.Id == cardId);
-            
-            if (dbCard == null)
-                return NotFound($"Card with ID {cardId} not found");
-            //
-            // if (string.IsNullOrEmpty(dbCard))
-            //     return NotFound("Full JSON data not available for this card");
-            
-            // var fullData = JObject.Parse(dbCard.RawJson);
-            return Ok(dbCard);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting full card data {CardId}", cardId);
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
-    
-    // [HttpGet("sets")]
-    // public async Task<ActionResult<IEnumerable<object>>> GetSets()
+    // [HttpGet("card/{cardId}/full")]
+    // public async Task<ActionResult<PokemonCardData>> GetFullCardData(string cardId)  // Changed return type
     // {
     //     try
     //     {
-    //         var sets = await _context.PokemonCards
-    //             .Where(c => !string.IsNullOrEmpty(c.SetId))
-    //             .Select(c => new { c.SetId, c.SetName })
-    //             .Distinct()
-    //             .OrderBy(s => s.SetName)
-    //             .ToListAsync();
+    //         var cardDto = await _context.PokemonCards
+    //             .Where(c => c.Id == cardId)
+    //             .Select(c => new PokemonCardData  // Map to DTO
+    //             {
+    //                 Id = c.Id,
+    //                 Name = c.Name,
+    //                 Hp = c.Hp,
+    //                 ImageSmall = c.ImageSmall,
+    //                 ImageLarge = c.ImageLarge
+    //             })
+    //             .FirstOrDefaultAsync();
     //         
-    //         return Ok(sets);
+    //         if (cardDto == null)
+    //             return NotFound($"Card with ID {cardId} not found");
+    //         
+    //         return Ok(cardDto);
     //     }
     //     catch (Exception ex)
     //     {
-    //         _logger.LogError(ex, "Error getting sets");
+    //         _logger.LogError(ex, "Error getting full card data {CardId}", cardId);
     //         return StatusCode(500, $"Internal server error: {ex.Message}");
     //     }
     // }

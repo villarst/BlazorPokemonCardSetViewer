@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Serilog;
 using BlazorPokemonCardSetViewer;
-using BlazorPokemonCardSetViewer.Contracts;
 using BlazorPokemonCardSetViewer.Pages.ViewModels;
 using BlazorPokemonCardSetViewer.Services;
 

@@ -1,9 +1,14 @@
 using System.Text.Json;
-using BlazorPokemonCardSetViewer.Contracts;
-using ReactiveUI;
+using BlazorPokemonCardSetViewer.Features.PokemonCard;
 using Shared.Models;
 
 namespace BlazorPokemonCardSetViewer.Services;
+
+public interface ICardsService
+{
+    Task<PagedList<PokemonCardData>> GetCardsAsync(PagedRequest request);
+    Task<IEnumerable<PokemonCardData>> GetAllCardsAsync(string searchTerm); // Keep if needed
+}
 
 public class CardsService : ICardsService
 {
@@ -17,7 +22,7 @@ public class CardsService : ICardsService
         _logger.LogInformation("CardService created with base address: {BaseAddress}", httpClient.BaseAddress);
     }
     
-    public async Task<PagedList<PokemonCard>> GetCardsAsync(PagedRequest request)
+    public async Task<PagedList<PokemonCardData>> GetCardsAsync(PagedRequest request)
     {
         try
         {
@@ -34,7 +39,7 @@ public class CardsService : ICardsService
                 var content = await response.Content.ReadAsStringAsync();
                 _logger.LogDebug("Response content: {Content}", content);
                 
-                var result = JsonSerializer.Deserialize<PagedList<PokemonCard>>(content, 
+                var result = JsonSerializer.Deserialize<PagedList<PokemonCardData>>(content, 
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 
                 if (result != null)
@@ -45,7 +50,7 @@ public class CardsService : ICardsService
                 }
                 
                 _logger.LogWarning("Deserialized result is null");
-                return new PagedList<PokemonCard>();
+                return new PagedList<PokemonCardData>();
             }
             
             var errorContent = await response.Content.ReadAsStringAsync();
@@ -59,7 +64,7 @@ public class CardsService : ICardsService
         }
     }
     
-    public async Task<IEnumerable<PokemonCard>> GetAllCardsAsync(string searchTerm)
+    public async Task<IEnumerable<PokemonCardData>> GetAllCardsAsync(string searchTerm)
     {
         // Implementation for getting all cards without pagination if needed
         var request = new PagedRequest { SearchTerm = searchTerm, PageSize = 1000 };

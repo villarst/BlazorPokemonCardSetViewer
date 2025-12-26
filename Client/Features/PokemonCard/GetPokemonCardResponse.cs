@@ -11,6 +11,7 @@ public class PokemonCardData
     public required string Id { get; init; }
     public required string Name { get; init; }
     public string? Hp { get; init; }
-    public required string ImageSmall { get; init; }
-    public required string ImageLarge { get; init; }
+    public string? ImageSmall { get; init; }
+    public string? ImageLarge { get; init; }
+    public string? CardNumber { get; init; }
 }

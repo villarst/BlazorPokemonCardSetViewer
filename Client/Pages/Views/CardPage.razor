@@ -244,9 +244,9 @@
                             <div class="card-body">
                                 <h5 class="card-title">@card.Name</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
-                                @if (!string.IsNullOrEmpty(card.SetNumber.ToString()))
+                                @if (!string.IsNullOrEmpty(card.CardNumber))
                                 {
-                                    <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.SetNumber.ToString()</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
                                 }                                
                                 @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
                                 {
