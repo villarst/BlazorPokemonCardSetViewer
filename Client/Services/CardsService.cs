@@ -5,7 +5,7 @@ using Shared.Models;
 
 namespace BlazorPokemonCardSetViewer.Services;
 
-public class CardsService : ReactiveObject, ICardsService
+public class CardsService : ICardsService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<CardsService> _logger;

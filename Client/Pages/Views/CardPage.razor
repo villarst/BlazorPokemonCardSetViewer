@@ -244,13 +244,13 @@
                             <div class="card-body">
                                 <h5 class="card-title">@card.Name</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
+                                @if (!string.IsNullOrEmpty(card.SetNumber.ToString()))
+                                {
+                                    <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.SetNumber.ToString()</h6>
+                                }                                
                                 @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
                                 {
                                     <h6 class="card-text">HP: @card.Hp</h6>
-                                }
-                                @if (!string.IsNullOrEmpty(card.SetNumber.ToString()))
-                                {
-                                    <small class="text-muted">Set: @card.SetNumber.ToString()</small>
                                 }
                             </div>
                         </div>
