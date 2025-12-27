@@ -21,7 +21,7 @@ public abstract class Program
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
     
-            builder.Services.AddScoped(sp => new HttpClient 
+            builder.Services.AddScoped(_ => new HttpClient 
             { 
                 BaseAddress = new Uri("https://localhost:7240/") // Server port number
             });
@@ -33,7 +33,7 @@ public abstract class Program
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Application start-up failed: {ex}");
+            await Console.Error.WriteLineAsync($"Application start-up failed: {ex}");
         }
     }
 }
