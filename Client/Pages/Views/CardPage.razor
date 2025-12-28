@@ -7,26 +7,27 @@
     .main-container {
         display: grid;
         gap: 2rem;
-        grid-template-columns: repeat(12, 1fr);
+        grid-template-columns: 1fr 1fr 8fr;
         margin: 1rem auto 10rem;
+        padding: 1rem;
         align-items: start;
     }
     
     .sidebar {
-        grid-column: span 3;
+        grid-column: 1 / span 2;
         position: sticky;
         top: 1rem;
     }
     
-    .content {
+    .main-content {
         order: 1;
-        grid-column: span 9;
+        grid-column: 3;
         box-sizing: border-box;
     }
     
     .cards-container {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(4, 1fr); /* is the same as 1fr 1fr 1fr 1fr */
         gap: 1.5rem;
         margin-top: 1rem;
         margin-bottom: 2rem;
@@ -95,7 +96,7 @@
     
     /* Pagination Styles */
     .pagination-nav {
-        margin-top: 2rem;
+        margin-top: 1rem;
     }
     
     .pagination {
@@ -163,7 +164,7 @@
             position: static;
         }
         
-        .content {
+        .main-content {
             grid-column: span 1;
         }
         
@@ -185,8 +186,6 @@
 <div class="main-container">
     <div class="sidebar">
         <label for="cardId" class="form-label">Card Name:</label>
-        
-        
         <div class="input-group">
             <input id="cardId" class="form-control" @bind="@ViewModel.SearchTerm"
                    @onkeyup="@(async (e) =>
@@ -207,69 +206,13 @@
             </button>
         </div>
         
-        
         <small class="form-text text-muted">Try names like "Pikachu", "Charizard", "Blastoise", etc.</small>
 
-        @if (ViewModel.PagedCards.TotalCount > 0)
-        {
-            <div class="mt-3">
-                <small class="text-muted">
-                    Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) -
-                    @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount))
-                    of @ViewModel.PagedCards.TotalCount cards
-                </small>
-            </div>
-        }
-    </div>
-    
-    <div class="content">
-        @if (ViewModel.ErrorMessage != null)
-        {
-            <div class="alert alert-danger">
-                @ViewModel.ErrorMessage
-            </div>
-        }
-        
-        @if (ViewModel.PagedCards.Data.Any())
-        {
-            <div class="cards-container">
-                @foreach (var card in ViewModel.PagedCards.Data)
-                {
-                    <div class="card-wrapper">
-                        <div class="card">
-                            @if (!string.IsNullOrEmpty(card.ImageSmall))
-                            {
-                                <img src="@card.ImageSmall" class="card-img-top" alt="@card.Name" loading="lazy">
-                            }
-                            else
-                            {
-                                <div class="card-img-placeholder">
-                                    <i class="fas fa-image"></i>
-                                    <span>No Image</span>
-                                </div>
-                            }
-                            <div class="card-body">
-                                <h5 class="card-title">@card.Name</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
-                                @if (!string.IsNullOrEmpty(card.CardNumber))
-                                {
-                                    <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
-                                }                                
-                                @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
-                                {
-                                    <h6 class="card-text">HP: @card.Hp</h6>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-            
-            // For pagination controls
+        <div>
             @if (ViewModel.PagedCards.TotalPages > 1)
             {
                 <nav aria-label="Card pagination" class="pagination-nav">
-                    <ul class="pagination justify-content-center">
+                    <ul class="pagination">
                         <li class="page-item @(ViewModel.PagedCards.HasPreviousPage ? "" : "disabled")">
                             <button class="page-link" @onclick="ViewModel.PreviousPageAsync" 
                                     disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
@@ -305,6 +248,64 @@
                     </div>
                 </nav>
             }
+        </div>
+        
+        @if (ViewModel.PagedCards.TotalCount > 0)
+        {
+            <div class="mt-3">
+                <small class="text-muted">
+                    Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) -
+                    @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount))
+                    of @ViewModel.PagedCards.TotalCount cards
+                </small>
+            </div>
+        }
+    </div>
+    
+    <div class="main-content">
+        @if (ViewModel.ErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                @ViewModel.ErrorMessage
+            </div>
+        }
+        
+        @if (ViewModel.PagedCards.Data.Any())
+        {
+            <div class="cards-container">
+                @foreach (var card in ViewModel.PagedCards.Data)
+                {
+                    <div class="card-wrapper">
+                        <div class="card">
+                            @if (!string.IsNullOrEmpty(card.ImageSmall))
+                            {
+                                <img src="@card.ImageSmall" class="card-img-top" alt="@card.Name" loading="lazy">
+                            }
+                            else
+                            {
+                                <div class="card-img-placeholder">
+                                    <i class="fas fa-image"></i>
+                                    <span>No Image</span>
+                                </div>
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">@card.Name</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
+                                @if (!string.IsNullOrEmpty(card.CardNumber.ToString()))
+                                {
+                                    <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
+                                }                                
+                                @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
+                                {
+                                    <h6 class="card-text">HP: @card.Hp</h6>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            
         }
         else
             switch (ViewModel.IsLoading)
