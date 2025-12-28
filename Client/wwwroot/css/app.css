@@ -13,15 +13,184 @@ h1:focus {
 a, .btn-link {
     color: #0071c1;
 }
-
-.btn-primary {
+.button-primary {
     color: #fff;
     background-color: #1b6ec2;
     border-color: #1861ac;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.button-primary:hover {
+    color: #fff;
+    background-color: #175fa8;
+    border-color: #114d8a;
+}
+
+.btn-check:focus + .button-primary,
+.button-primary:focus {
+    color: #fff;
+    background-color: #175fa8;
+    border-color: #114d8a;
+    box-shadow: 0 0 0 0.25rem rgba(44, 118, 255, 0.5);
+}
+
+.btn-check:active + .button-primary,
+.btn-check:checked + .button-primary,
+.button-primary.active,
+.button-primary:active,
+.show > .button-primary.dropdown-toggle {
+    color: #fff;
+    background-color: #114d8a;
+    border-color: #0d4ead;
+}
+
+.btn-check:active + .button-primary:focus,
+.btn-check:checked + .button-primary:focus,
+.button-primary.active:focus,
+.button-primary:active:focus,
+.show > .button-primary.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.25rem rgba(49, 132, 255, 0.5);
+}
+
+.button-primary.disabled,
+.button-primary:disabled {
+    color: #acacac;
+    background-color: #17599c;
+    border-color: #13487d;
+}
+
+.button-success {
+    color: #fff;
+    background-color: #198754;
+    border-color: #137e4d;
+}
+
+.button-success:hover {
+    color: #fff;
+    background-color: #17754a;
+    border-color: #106b41;
+}
+
+.btn-check:focus + .button-success,
+.button-success:focus {
+    color: #fff;
+    background-color: #17754a;
+    border-color: #106b41;
+    box-shadow: 0 0 0 0.25rem rgba(19, 124, 76, 0.5);
+}
+
+.btn-check:active + .button-success,
+.btn-check:checked + .button-success,
+.button-success.active,
+.button-success:active,
+.show > .button-success.dropdown-toggle {
+    color: #fff;
+    background-color: #106b41;
+    border-color: #128550;
+}
+
+.btn-check:active + .button-success:focus,
+.btn-check:checked + .button-success:focus,
+.button-success.active:focus,
+.button-success:active:focus,
+.show > .button-success.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.25rem rgba(24, 138, 104, 0.5);
+}
+
+.button-success.disabled,
+.button-success:disabled {
+    color: #acacac;
+    background-color: #198754;
+    border-color: #137e4d;
+}
+
+.button-danger{
+    color: #fff;
+    background-color: #da3545;
+    border-color: #b42230;
+}
+
+.button-danger:hover {
+    color: #fff;
+    background-color: #c2303e;
+    border-color: #a21f2b;
+}
+
+.btn-check:focus + .button-danger,
+.button-danger:focus {
+    color: #fff;
+    background-color: #c2303e;
+    border-color: #a21f2b;
+    box-shadow: 0 0 0 0.25rem rgba(16, 31, 43, 0.5);
+}
+
+.btn-check:active + .button-danger,
+.btn-check:checked + .button-danger,
+.button-danger.active,
+.button-danger:active,
+.show > .button-danger.dropdown-toggle {
+    color: #fff;
+    background-color: #a21f2b;
+    border-color: #b62331;
+}
+
+.btn-check:active + .button-danger:focus,
+.btn-check:checked + .button-danger:focus,
+.button-danger.active:focus,
+.button-danger:active:focus,
+.show > .button-danger.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.25rem rgba(167, 45, 71, 0.5);
+}
+
+.button-danger.disabled,
+.button-danger:disabled {
+    color: #acacac;
+    background-color: #da3545;
+    border-color: #b42230;
+}
+
+.button-info{
+    color: #fff;
+    background-color: #1694a8;
+    border-color: #138494;
+}
+
+.button-info:hover {
+    color: #fff;
+    background-color: #14879a;
+    border-color: #12798a;
+}
+
+.btn-check:focus + .button-info,
+.button-info:focus {
+    color: #fff;
+    background-color: #14879a;
+    border-color: #12798a;
+    box-shadow: 0 0 0 0.25rem rgba(18, 121, 138, 0.5);
+}
+
+.btn-check:active + .button-info,
+.btn-check:checked + .button-info,
+.button-info.active,
+.button-info:active,
+.show > .button-info.dropdown-toggle {
+    color: #fff;
+    background-color: #12798a;
+    border-color: #138294;
+}
+
+.btn-check:active + .button-info:focus,
+.btn-check:checked + .button-info:focus,
+.button-info.active:focus,
+.button-info:active:focus,
+.show > .button-info.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.25rem rgba(16, 110, 126, 0.5);
+}
+
+.button-info.disabled,
+.button-info:disabled {
+    color: #acacac;
+    background-color: #1694a8;
+    border-color: #138494;
 }
 
 .content {

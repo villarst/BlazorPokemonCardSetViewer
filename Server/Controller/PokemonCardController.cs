@@ -123,32 +123,4 @@ public class PokemonCardController : ControllerBase
         }
     }
     
-    // [HttpGet("card/{cardId}/full")]
-    // public async Task<ActionResult<PokemonCardData>> GetFullCardData(string cardId)  // Changed return type
-    // {
-    //     try
-    //     {
-    //         var cardDto = await _context.PokemonCards
-    //             .Where(c => c.Id == cardId)
-    //             .Select(c => new PokemonCardData  // Map to DTO
-    //             {
-    //                 Id = c.Id,
-    //                 Name = c.Name,
-    //                 Hp = c.Hp,
-    //                 ImageSmall = c.ImageSmall,
-    //                 ImageLarge = c.ImageLarge
-    //             })
-    //             .FirstOrDefaultAsync();
-    //         
-    //         if (cardDto == null)
-    //             return NotFound($"Card with ID {cardId} not found");
-    //         
-    //         return Ok(cardDto);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _logger.LogError(ex, "Error getting full card data {CardId}", cardId);
-    //         return StatusCode(500, $"Internal server error: {ex.Message}");
-    //     }
-    // }
 }

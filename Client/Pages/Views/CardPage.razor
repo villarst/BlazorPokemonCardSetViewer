@@ -185,11 +185,16 @@
 <div class="main-container">
     <div class="sidebar">
         <label for="cardId" class="form-label">Card Name:</label>
+        
+        
         <div class="input-group">
-            <input id="cardId" class="form-control" @bind="@ViewModel.SearchTerm" 
-                   @onkeyup="@(async (e) => { if (e.Key == "Enter") await SearchCards(); })"
+            <input id="cardId" class="form-control" @bind="@ViewModel.SearchTerm"
+                   @onkeyup="@(async (e) =>
+                             {
+                                 if (e.Key == "Enter") await SearchCards();
+                             })"
                    placeholder="Enter card name..."/>
-            <button class="btn btn-primary" @onclick="SearchCards" disabled="@ViewModel.IsLoading">
+            <button class="btn button-primary" @onclick="SearchCards" disabled="@ViewModel.IsLoading">
                 @if (ViewModel.IsLoading)
                 {
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -201,14 +206,16 @@
                 }
             </button>
         </div>
-        <small class="form-text text-muted">Try names like "Pikachu", "Charizard", "Blastoise", etc.</small>
         
+        
+        <small class="form-text text-muted">Try names like "Pikachu", "Charizard", "Blastoise", etc.</small>
+
         @if (ViewModel.PagedCards.TotalCount > 0)
         {
             <div class="mt-3">
                 <small class="text-muted">
-                    Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) - 
-                    @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount)) 
+                    Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) -
+                    @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount))
                     of @ViewModel.PagedCards.TotalCount cards
                 </small>
             </div>
