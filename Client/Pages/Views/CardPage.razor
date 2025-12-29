@@ -17,6 +17,7 @@
         grid-column: 1 / span 2;
         position: sticky;
         top: 1rem;
+        border-right: 2px solid #939393;
     }
     
     .main-content {
@@ -93,8 +94,12 @@
         font-size: 0.9rem;
         margin-bottom: 0.25rem;
     }
-    
+
     /* Pagination Styles */
+    .pagination-container {
+        width: 100%;
+    }
+    
     .pagination-nav {
         margin-top: 1rem;
     }
@@ -141,46 +146,6 @@
         border-bottom-right-radius: 0.25rem;
     }
     
-    /* Responsive design */
-    @@media (max-width: 1200px) {
-        .cards-container {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-    
-    @@media (max-width: 900px) {
-        .cards-container {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    
-    @@media (max-width: 768px) {
-        .main-container {
-            grid-template-columns: 1fr;
-        }
-        
-        .sidebar {
-            grid-column: span 1;
-            position: static;
-        }
-        
-        .main-content {
-            grid-column: span 1;
-        }
-        
-        .cards-container {
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        }
-        
-        .pagination {
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .page-item {
-            margin: 2px;
-        }
-    }
 </style>
 
 <div class="main-container">
@@ -208,23 +173,28 @@
         
         <small class="form-text text-muted">Try names like "Pikachu", "Charizard", "Blastoise", etc.</small>
 
-        <div>
+        <div class="pagination-container">
             @if (ViewModel.PagedCards.TotalPages > 1)
             {
                 <nav aria-label="Card pagination" class="pagination-nav">
                     <ul class="pagination">
                         <li class="page-item @(ViewModel.PagedCards.HasPreviousPage ? "" : "disabled")">
-                            <button class="page-link" @onclick="ViewModel.PreviousPageAsync" 
+                            <button class="page-link" @onclick="ViewModel.PreviousPageAsync"
                                     disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
                                 Previous
                             </button>
                         </li>
-                        
-                        @for (var i = Math.Max(1, ViewModel.CurrentPage - 2); 
-                              i <= Math.Min(ViewModel.PagedCards.TotalPages, ViewModel.CurrentPage + 2); 
-                              i++)
+                        @{
+                            var totalPages = ViewModel.PagedCards.TotalPages;
+                            var currentPage = ViewModel.CurrentPage;
+            
+                            var start = Math.Max(1, Math.Min(currentPage - 2, totalPages - 4));
+                            var end = Math.Min(totalPages, Math.Max(currentPage + 2, 5));
+                        }
+            
+                        @for (var i = start; i <= end; i++)
                         {
-                            var pageNumber = i; // Capture for lambda
+                            var pageNumber = i;
                             <li class="page-item @(i == ViewModel.CurrentPage ? "active" : "")">
                                 <button class="page-link" @onclick="@(() => ViewModel.GoToPageAsync(pageNumber))"
                                         disabled="@ViewModel.IsLoading">
@@ -232,34 +202,25 @@
                                 </button>
                             </li>
                         }
-                        
+            
                         <li class="page-item @(ViewModel.PagedCards.HasNextPage ? "" : "disabled")">
-                            <button class="page-link" @onclick="ViewModel.NextPageAsync" 
+                            <button class="page-link" @onclick="ViewModel.NextPageAsync"
                                     disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
                                 Next
                             </button>
                         </li>
                     </ul>
-                    
-                    <div class="text-center mt-2">
-                        <small class="text-muted">
-                            Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
-                        </small>
+            
+                    <div class="mt-2">
+                        <div class="text-right">
+                            <small class="text-muted">
+                                Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
+                            </small>
+                        </div>
                     </div>
                 </nav>
             }
         </div>
-        
-        @if (ViewModel.PagedCards.TotalCount > 0)
-        {
-            <div class="mt-3">
-                <small class="text-muted">
-                    Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) -
-                    @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount))
-                    of @ViewModel.PagedCards.TotalCount cards
-                </small>
-            </div>
-        }
     </div>
     
     <div class="main-content">
@@ -304,8 +265,16 @@
                     </div>
                 }
             </div>
-            
-            
+            <div class="text-right" style="width: 100%; margin-left: 1.6rem;">
+                @if (ViewModel.PagedCards.TotalCount > 0)
+                {
+                    <small class="text-muted">
+                        Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) -
+                        @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount))
+                        of @ViewModel.PagedCards.TotalCount cards
+                    </small>
+                }
+            </div>
         }
         else
             switch (ViewModel.IsLoading)
