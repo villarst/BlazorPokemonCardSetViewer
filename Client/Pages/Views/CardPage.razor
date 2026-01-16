@@ -14,6 +14,7 @@
         padding-right: 1rem;
         padding-top: 1rem;
         align-items: start;
+        min-width: 900px;
     }
     
     .sidebar {
@@ -33,7 +34,7 @@
         margin-left: 1.5rem;
     }
     
-    .cards-container {
+    .cards-section {
         display: grid;
         grid-template-columns: repeat(4, 1fr); /* is the same as 1fr 1fr 1fr 1fr */
         gap: 1.5rem;
@@ -41,27 +42,23 @@
         margin-bottom: 2rem;
     }
     
-    .card-wrapper {
+    .card-container {
         display: flex;
+        flex-direction: column;
         justify-content: center;
-    }
-    
-    .card {
-        width: 100%;
-        max-width: 250px;
+        max-width: 275px;
         border: none;
         overflow: hidden;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         transition: transform 0.2s, box-shadow 0.2s;
     }
-    
-    .card:hover {
+    .card-container:hover {
         transform: translateY(-5px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     
-    .card-img-top {
-        width: 100%;
+    .card-image {
+        width: 95%;
         height: auto;
         object-fit: cover;
     }
@@ -82,6 +79,10 @@
     }
     
     .card-body {
+        width: 100%;
+        max-width: 275px;
+        max-height: 125px;
+        overflow: hidden;
         padding: 1rem;
     }
     
@@ -163,34 +164,25 @@
         border-bottom-right-radius: 0.25rem;
     }
     
+    .search-box {
+        width: 150px;
+        height: 45px;
+    }
 </style>
 
 <div class="main-container">
     <div class="sidebar">
-        <label for="cardId" class="form-label">Card Name:</label>
-        <div class="input-group">
-            <input id="cardId" class="form-control" @bind="@ViewModel.SearchTerm"
-                   @onkeyup="@(async (e) =>
-                             {
-                                 if (e.Key == "Enter") await SearchCards();
-                             })"
-                   placeholder="Enter card name..."/>
-            <button class="btn button-primary" @onclick="SearchCards" disabled="@ViewModel.IsLoading">
-                @if (ViewModel.IsLoading)
-                {
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    <span>Loading...</span>
-                }
-                else
-                {
-                    <span>Search Cards</span>
-                }
-            </button>
-        </div>
-        
-        <small class="form-text text-muted">Try names like "Pikachu", "Charizard", "Blastoise", etc.</small>
+        <label class="form-label">
+            Card Name:
+            <InputText 
+                @bind-Value="@ViewModel.SearchTerm"
+                @onkeyup="@(async (e) =>
+                          {
+                              if (e.Key == "Enter") await SearchCards();
+                          })"
+                />
+        </label>
     </div>
-    
     <div class="main-content">
         @if (ViewModel.ErrorMessage != null)
         {
@@ -204,34 +196,32 @@
             <small class="card-totals text-muted">
                 @ViewModel.PagedCards.TotalCount results
             </small>
-            <div class="cards-container">
+            <div class="cards-section">
                 @foreach (var card in ViewModel.PagedCards.Data)
                 {
-                    <div class="card-wrapper">
-                        <div class="card">
-                            @if (!string.IsNullOrEmpty(card.ImageSmall))
-                            {
-                                <img src="@card.ImageSmall" class="card-img-top" alt="@card.Name" loading="lazy">
-                            }
-                            else
-                            {
-                                <div class="card-img-placeholder">
-                                    <i class="fas fa-image"></i>
-                                    <span>No Image</span>
-                                </div>
-                            }
-                            <div class="card-body">
-                                <h5 class="card-title">@card.Name</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
-                                @if (!string.IsNullOrEmpty(card.CardNumber.ToString()))
-                                {
-                                    <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
-                                }
-                                @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
-                                {
-                                    <h6 class="card-text">HP: @card.Hp</h6>
-                                }
+                    <div class="card-container">
+                        @if (!string.IsNullOrEmpty(card.ImageSmall))
+                        {
+                            <img src="@card.ImageSmall" class="card-image" alt="@card.Name" loading="lazy">
+                        }
+                        else
+                        {
+                            <div class="card-img-placeholder">
+                                <i class="fas fa-image"></i>
+                                <span>No Image</span>
                             </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@card.Name</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
+                            @if (!string.IsNullOrEmpty(card.CardNumber.ToString()))
+                            {
+                                <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
+                            }
+                            @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
+                            {
+                                <h6 class="card-text">HP: @card.Hp</h6>
+                            }
                         </div>
                     </div>
                 }
@@ -248,24 +238,6 @@
                                         Previous
                                     </button>
                                 </li>
-                                @* @{ *@
-                                @*     var totalPages = ViewModel.PagedCards.TotalPages; *@
-                                @*     var currentPage = ViewModel.CurrentPage; *@
-                                @* *@
-                                @*     var start = Math.Max(1, Math.Min(currentPage - 2, totalPages - 4)); *@
-                                @*     var end = Math.Min(totalPages, Math.Max(currentPage + 2, 5)); *@
-                                @* } *@
-                                @* *@
-                                @* @for (var i = start; i <= end; i++) *@
-                                @* { *@
-                                @*     var pageNumber = i; *@
-                                @*     <li class="page-item @(i == ViewModel.CurrentPage ? "active" : "")"> *@
-                                @*         <button class="page-link" @onclick="@(() => ViewModel.GoToPageAsync(pageNumber))" *@
-                                @*                 disabled="@ViewModel.IsLoading"> *@
-                                @*             @i *@
-                                @*         </button> *@
-                                @*     </li> *@
-                                @* } *@
                                 <li class="page-item @(ViewModel.PagedCards.HasNextPage ? "" : "disabled")">
                                     <button class="page-link" @onclick="ViewModel.NextPageAsync"
                                             disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
@@ -292,12 +264,7 @@
                         </small>
                     }
                 </div>
-            </div>            
-            
-            
-            
-                
-            
+            </div>
         }
         else
             switch (ViewModel.IsLoading)
