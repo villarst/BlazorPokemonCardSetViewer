@@ -16,24 +16,20 @@
         align-items: start;
         min-width: 900px;
     }
-    
     .sidebar {
         grid-column: 1 / span 2;
         position: sticky;
         top: 1rem;
-        height: 80vh;
+        height: 85vh;
     }
-    
     .main-content {
         order: 1;
         grid-column: 3;
         box-sizing: border-box;
     }
-    
     .card-totals {
         margin-left: 1.5rem;
     }
-    
     .cards-section {
         display: grid;
         grid-template-columns: repeat(4, 1fr); /* is the same as 1fr 1fr 1fr 1fr */
@@ -41,28 +37,26 @@
         margin-top: 1rem;
         margin-bottom: 2rem;
     }
-    
     .card-container {
         display: flex;
-        flex-direction: column;
-        justify-content: center;
-        max-width: 275px;
-        border: none;
-        overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        flex-direction: column; 
+        align-items: center;
+        justify-content: flex-start;
+        height: 500px;
+        border-radius: 1rem;
+        border: 1px solid #e3e3e3;
+        padding-top: 0.75rem;
+        box-sizing: border-box;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         transition: transform 0.2s, box-shadow 0.2s;
     }
     .card-container:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        transform: translateY(-6px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
-    
     .card-image {
         width: 95%;
-        height: auto;
-        object-fit: cover;
     }
-
     .card-img-placeholder {
         height: 12.5rem;
         display: flex;
@@ -72,31 +66,25 @@
         background-color: rgba(255, 255, 255, 0);
         color: #6c757d;
     }
-
     .card-img-placeholder i {
         font-size: 2rem;
         margin-bottom: 0.5rem;
     }
-    
     .card-body {
-        width: 100%;
-        max-width: 275px;
-        max-height: 125px;
+        width: 275px;
+        height: 125px;
         overflow: hidden;
         padding: 1rem;
     }
-    
     .card-title {
         font-size: 1.1rem;
         font-weight: bold;
         margin-bottom: 0.5rem;
     }
-    
     .card-subtitle {
         font-size: 0.9rem;
         color: #666;
     }
-    
     .card-text {
         font-size: 0.9rem;
         margin-bottom: 0.25rem;
@@ -124,8 +112,6 @@
         margin-top: 8px;
         margin-left: 1rem;
     }
-    
-    
     .page-link {
         color: #007bff;
         border: 1px solid #dee2e6;
@@ -134,36 +120,30 @@
         background-color: #fff;
         border-radius: 0;
     }
-    
     .page-link:hover {
         color: #0056b3;
         background-color: #e9ecef;
         border-color: #dee2e6;
     }
-    
     .page-item.active .page-link {
         background-color: #007bff;
         border-color: #007bff;
         color: #fff;
     }
-    
     .page-item.disabled .page-link {
         color: #6c757d;
         background-color: #fff;
         border-color: #dee2e6;
         cursor: not-allowed;
     }
-    
     .page-item:first-child .page-link {
         border-top-left-radius: 0.25rem;
         border-bottom-left-radius: 0.25rem;
     }
-    
     .page-item:last-child .page-link {
         border-top-right-radius: 0.25rem;
         border-bottom-right-radius: 0.25rem;
     }
-    
     .search-box {
         width: 150px;
         height: 45px;
@@ -200,9 +180,9 @@
                 @foreach (var card in ViewModel.PagedCards.Data)
                 {
                     <div class="card-container">
-                        @if (!string.IsNullOrEmpty(card.ImageSmall))
+                        @if (!string.IsNullOrEmpty(card.ImageLarge))
                         {
-                            <img src="@card.ImageSmall" class="card-image" alt="@card.Name" loading="lazy">
+                            <img src="@card.ImageLarge" class="card-image" alt="@card.Name" loading="lazy">
                         }
                         else
                         {
