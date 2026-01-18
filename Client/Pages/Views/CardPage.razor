@@ -4,6 +4,9 @@
 @inject ILogger<CardPage> Logger
 
 <style>
+    .card-page {
+        width: 100vw;
+    }
     .sidebar {
         position: fixed;
         left: 0;
@@ -23,7 +26,7 @@
         min-width: 600px;
     }
     .card-totals-container {
-        margin-left: 1rem;
+        margin-left: 0.5rem;
         margin-top: 0.5rem;
     }
     .cards-section {
@@ -51,7 +54,9 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
     .card-image {
-        width: 95%;
+        max-height: 412px;
+        min-height: 406px;
+        width: 296px;
     }
     .card-img-placeholder {
         height: 12.5rem;
@@ -104,6 +109,13 @@
         list-style: none;
         padding: 0;
     }
+    .showing-current-page-container {
+        margin-top: 0.5rem;
+        margin-left: 1rem;
+    }
+    .showing-current-cards-container {
+        margin-right: 0.2rem;
+    }
     .page-link {
         color: #007bff;
         border: 1px solid #dee2e6;
@@ -132,119 +144,124 @@
     }
 </style>
 
-<div class="sidebar">
-    <label class="form-label">
-        Card Name:
-        <InputText 
-            @bind-Value="@ViewModel.SearchTerm"
-            @onkeyup="@(async (e) =>
-                      {
-                          if (e.Key == "Enter") await SearchCards();
-                      })"
-        />
-    </label>
-</div>
-<div class="main-content">
-    @if (ViewModel.ErrorMessage != null)
-    {
-        <div class="alert alert-danger">
-            @ViewModel.ErrorMessage
-        </div>
-    }
-    @if (ViewModel.PagedCards.Data.Any())
-    {
-        <div class="card-totals-container">
-            <small class="text-muted">
-                @ViewModel.PagedCards.TotalCount - results
-            </small>
-        </div>
-        <div class="cards-section">
-            @foreach (var card in ViewModel.PagedCards.Data)
-            {
-                <div class="card-container">
-                    @if (!string.IsNullOrEmpty(card.ImageLarge))
-                    {
-                        <img src="@card.ImageLarge" class="card-image" alt="@card.Name" loading="lazy">
-                    }
-                    else
-                    {
-                        <div class="card-img-placeholder">
-                            <i class="fas fa-image"></i>
-                            <span>No Image</span>
-                        </div>
-                    }
-                    <div class="card-body">
-                        <h5 class="card-title">@card.Name</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
-                        @if (!string.IsNullOrEmpty(card.CardNumber.ToString()))
-                        {
-                            <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
-                        }
-                        @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
-                        {
-                            <h6 class="card-text">HP: @card.Hp</h6>
-                        }
-                    </div>
-                </div>
-            }
-        </div>
-        <div class="pagination-container">
-            @if (ViewModel.PagedCards.TotalPages > 1)
-            {
-                <nav aria-label="Card pagination" class="pagination-nav">
-                    <div style="display: flex;">
-                        <ul class="pagination">
-                            <li class="page-item @(ViewModel.PagedCards.HasPreviousPage ? "" : "disabled")">
-                                <button class="page-link" @onclick="ViewModel.PreviousPageAsync"
-                                        disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
-                                    Previous
-                                </button>
-                            </li>
-                            <li class="page-item @(ViewModel.PagedCards.HasNextPage ? "" : "disabled")">
-                                <button class="page-link" @onclick="ViewModel.NextPageAsync"
-                                        disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
-                                    Next
-                                </button>
-                            </li>
-                        </ul>
-                        <div class="showing-current-page-container">
-                            <small class="text-muted">
-                                Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
-                            </small>
-                        </div>
-                    </div>
-                </nav>
-                
-            }
-            <div class="showing-current-cards-container">
-                @if (ViewModel.PagedCards.TotalCount > 0)
+<div class="card-page">
+    <aside class="sidebar">
+        <label class="form-label">
+            Card Name:
+            <InputText 
+                @bind-Value="@ViewModel.SearchTerm"
+                @onkeyup="@(async (e) =>
+                          {
+                              if (e.Key == "Enter") await SearchCards();
+                          })"
+            />
+        </label>
+    </aside>
+    <div class="main-content">
+        @if (ViewModel.ErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                @ViewModel.ErrorMessage
+            </div>
+        }
+        @if (ViewModel.PagedCards.Data.Any())
+        {
+            <div class="card-totals-container">
+                <small class="text-muted">
+                    @ViewModel.PagedCards.TotalCount - results
+                </small>
+            </div>
+            <div class="cards-section">
+                @foreach (var card in ViewModel.PagedCards.Data)
                 {
-                    <small class="text-muted showing-current-cards-text">
-                        Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) -
-                        @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount))
-                        of @ViewModel.PagedCards.TotalCount cards
-                    </small>
+                    <div class="card-container">
+                        <!---- Need to eventually address ImageSmall to be ImageLarge 
+                        and make rendering of the images faster .--->
+                        @if (!string.IsNullOrEmpty(card.ImageSmall))
+                        {
+                            <img src="@card.ImageSmall" class="card-image" alt="@card.Name">
+                        }
+                        else
+                        {
+                            <div class="card-img-placeholder">
+                                <i class="fas fa-image"></i>
+                                <span>No Image</span>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@card.Name</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
+                            @if (!string.IsNullOrEmpty(card.CardNumber.ToString()))
+                            {
+                                <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
+                            }
+                            @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
+                            {
+                                <h6 class="card-text">HP: @card.Hp</h6>
+                            }
+                        </div>
+                    </div>
                 }
             </div>
-        </div>
-    }
-    else
-    {
-        switch (ViewModel.IsLoading)
-        {
-            case false when !string.IsNullOrEmpty(ViewModel.SearchTerm):
-                <div class="alert alert-info">
-                    <i class="fas fa-search"></i> No cards found for "@ViewModel.SearchTerm"
+            <div class="pagination-container">
+                @if (ViewModel.PagedCards.TotalPages > 1)
+                {
+                    <nav aria-label="Card pagination" class="pagination-nav">
+                        <div style="display: flex;">
+                            <ul class="pagination">
+                                <li class="page-item @(ViewModel.PagedCards.HasPreviousPage ? "" : "disabled")">
+                                    <button class="page-link" @onclick="ViewModel.PreviousPageAsync"
+                                            disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
+                                        Previous
+                                    </button>
+                                </li>
+                                <li class="page-item @(ViewModel.PagedCards.HasNextPage ? "" : "disabled")">
+                                    <button class="page-link" @onclick="ViewModel.NextPageAsync"
+                                            disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
+                                        Next
+                                    </button>
+                                </li>
+                            </ul>
+                            <div class="showing-current-page-container">
+                                <small class="text-muted">
+                                    Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
+                                </small>
+                            </div>
+                        </div>
+                    </nav>
+                    
+                }
+                <div class="showing-current-cards-container">
+                    @if (ViewModel.PagedCards.TotalCount > 0)
+                    {
+                        <small class="text-muted showing-current-cards-text">
+                            Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) -
+                            @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount))
+                            of @ViewModel.PagedCards.TotalCount cards
+                        </small>
+                    }
                 </div>
-                break;
-            case false:
-                <div class="alert alert-info">
-                    <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
-                </div>
-                break;
+            </div>
         }
-    }
+        else
+        {
+            switch (ViewModel.IsLoading)
+            {
+                case false when !string.IsNullOrEmpty(ViewModel.SearchTerm):
+                    <div class="alert alert-info">
+                        <i class="fas fa-search"></i> No cards found for "@ViewModel.SearchTerm"
+                    </div>
+                    break;
+                case false:
+                    <div class="alert alert-info">
+                        <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
+                    </div>
+                    break;
+            }
+        }
+    </div>
 </div>
+
 
 @code {
 
