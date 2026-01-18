@@ -1,4 +1,4 @@
-@page "/card"
+@page "/cards"
 @using BlazorPokemonCardSetViewer.Pages.ViewModels
 @inject CardPageViewModel ViewModel
 @inject ILogger<CardPage> Logger
@@ -22,14 +22,15 @@
         padding: 0 1rem 2rem 1rem;
         min-width: 600px;
     }
-    .card-totals {
-        margin-left: 1.5rem;
+    .card-totals-container {
+        margin-left: 1rem;
+        margin-top: 0.5rem;
     }
     .cards-section {
         display: grid;
         grid-template-columns: repeat(4, 1fr); /* is the same as 1fr 1fr 1fr 1fr */
         gap: 1.5rem;
-        margin-top: 1rem;
+        margin-top: 0.6rem;
         margin-bottom: 2rem;
     }
     .card-container {
@@ -152,9 +153,11 @@
     }
     @if (ViewModel.PagedCards.Data.Any())
     {
-        <small class="card-totals text-muted">
-            @ViewModel.PagedCards.TotalCount results
-        </small>
+        <div class="card-totals-container">
+            <small class="text-muted">
+                @ViewModel.PagedCards.TotalCount - results
+            </small>
+        </div>
         <div class="cards-section">
             @foreach (var card in ViewModel.PagedCards.Data)
             {
