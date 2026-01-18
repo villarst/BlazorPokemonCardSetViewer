@@ -4,264 +4,313 @@
 @inject ILogger<CardPage> Logger
 
 <style>
-    .card-page {
-        width: 100vw;
+    .page-container {
+        display: grid;
+        gap: 2rem;
+        grid-template-columns: repeat(12, 1fr);
+        min-width: 992px;
+        max-width: 100vw;
+        align-items: start;
     }
-    .sidebar {
-        position: fixed;
-        left: 0;
-        top: 6rem;
-        width: 320px;
-        height: calc(100vh - 6rem);
-        padding: 1rem;
+    .page-sidebar {
+        grid-column: span 3;
+        grid-row: span 1/-1;
+        position: sticky;
+        top: 92px;
+        min-width: 272px;
+        height: calc(100vh - 6.2rem);
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
         background-color: white;
-        box-sizing: border-box;
         overflow-y: auto;
         z-index: 50;
     }
-    .main-content {
-        margin-left: 340px; /* sidebar width + some gap */
-        padding: 0 1rem 2rem 1rem;
-        min-width: 600px;
+    .page-items {
+        order: 1;
+        grid-column: span 9;
     }
-    .card-totals-container {
-        margin-left: 0.5rem;
-        margin-top: 0.5rem;
-    }
-    .cards-section {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr); /* is the same as 1fr 1fr 1fr 1fr */
-        gap: 1.5rem;
-        margin-top: 0.6rem;
-        margin-bottom: 2rem;
-    }
-    .card-container {
-        display: flex;
-        flex-direction: column; 
-        align-items: center;
-        justify-content: flex-start;
-        height: 540px;
-        border-radius: 1rem;
-        border: 1px solid #e3e3e3;
-        padding-top: 0.75rem;
-        box-sizing: border-box;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .card-container:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-    .card-image {
-        max-height: 412px;
-        min-height: 406px;
-        width: 296px;
-    }
-    .card-img-placeholder {
-        height: 12.5rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background-color: rgba(255, 255, 255, 0);
-        color: #6c757d;
-    }
-    .card-img-placeholder i {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-    }
-    .card-body {
-        width: 275px;
-        height: 125px;
-        overflow: hidden;
-        padding: 1rem;
-    }
-    .card-title {
-        font-size: 1.1rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-    .card-subtitle {
-        font-size: 0.9rem;
-        color: #666;
-    }
-    .card-text {
-        font-size: 0.9rem;
-        margin-bottom: 0.25rem;
-    }
-    
-    /* Pagination Styles */
-    .pagination-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 0.5rem;
-    }
-    .pagination-nav {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-    .pagination {
-        margin: 0;
-        display: flex;
-        list-style: none;
-        padding: 0;
-    }
-    .showing-current-page-container {
-        margin-top: 0.5rem;
-        margin-left: 1rem;
-    }
-    .showing-current-cards-container {
-        margin-right: 0.2rem;
-    }
-    .page-link {
-        color: #007bff;
-        border: 1px solid #dee2e6;
-        padding: 0.5rem 0.75rem;
-        text-decoration: none;
-        background-color: #fff;
-    }
-    .page-link:hover {
-        color: #0056b3;
-        background-color: #e9ecef;
-        border-color: #dee2e6;
-    }
-    .page-item.disabled .page-link {
-        color: #6c757d;
-        background-color: #fff;
-        border-color: #dee2e6;
-        cursor: not-allowed;
-    }
-    .page-item:first-child .page-link {
-        border-top-left-radius: 0.25rem;
-        border-bottom-left-radius: 0.25rem;
-    }
-    .page-item:last-child .page-link {
-        border-top-right-radius: 0.25rem;
-        border-bottom-right-radius: 0.25rem;
+    .sidebar-container {
+        
     }
 </style>
 
-<div class="card-page">
-    <aside class="sidebar">
-        <label class="form-label">
-            Card Name:
-            <InputText 
-                @bind-Value="@ViewModel.SearchTerm"
-                @onkeyup="@(async (e) =>
-                          {
-                              if (e.Key == "Enter") await SearchCards();
-                          })"
-            />
-        </label>
-    </aside>
-    <div class="main-content">
-        @if (ViewModel.ErrorMessage != null)
-        {
-            <div class="alert alert-danger">
-                @ViewModel.ErrorMessage
-            </div>
-        }
-        @if (ViewModel.PagedCards.Data.Any())
-        {
-            <div class="card-totals-container">
-                <small class="text-muted">
-                    @ViewModel.PagedCards.TotalCount - results
-                </small>
-            </div>
-            <div class="cards-section">
-                @foreach (var card in ViewModel.PagedCards.Data)
-                {
-                    <div class="card-container">
-                        <!---- Need to eventually address ImageSmall to be ImageLarge 
-                        and make rendering of the images faster .--->
-                        @if (!string.IsNullOrEmpty(card.ImageSmall))
-                        {
-                            <img src="@card.ImageSmall" class="card-image" alt="@card.Name">
-                        }
-                        else
-                        {
-                            <div class="card-img-placeholder">
-                                <i class="fas fa-image"></i>
-                                <span>No Image</span>
-                            </div>
-                        }
-                        <div class="card-body">
-                            <h5 class="card-title">@card.Name</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
-                            @if (!string.IsNullOrEmpty(card.CardNumber.ToString()))
-                            {
-                                <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
-                            }
-                            @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
-                            {
-                                <h6 class="card-text">HP: @card.Hp</h6>
-                            }
-                        </div>
-                    </div>
-                }
-            </div>
-            <div class="pagination-container">
-                @if (ViewModel.PagedCards.TotalPages > 1)
-                {
-                    <nav aria-label="Card pagination" class="pagination-nav">
-                        <div style="display: flex;">
-                            <ul class="pagination">
-                                <li class="page-item @(ViewModel.PagedCards.HasPreviousPage ? "" : "disabled")">
-                                    <button class="page-link" @onclick="ViewModel.PreviousPageAsync"
-                                            disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
-                                        Previous
-                                    </button>
-                                </li>
-                                <li class="page-item @(ViewModel.PagedCards.HasNextPage ? "" : "disabled")">
-                                    <button class="page-link" @onclick="ViewModel.NextPageAsync"
-                                            disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
-                                        Next
-                                    </button>
-                                </li>
-                            </ul>
-                            <div class="showing-current-page-container">
-                                <small class="text-muted">
-                                    Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
-                                </small>
-                            </div>
-                        </div>
-                    </nav>
-                    
-                }
-                <div class="showing-current-cards-container">
-                    @if (ViewModel.PagedCards.TotalCount > 0)
-                    {
-                        <small class="text-muted showing-current-cards-text">
-                            Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) -
-                            @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount))
-                            of @ViewModel.PagedCards.TotalCount cards
-                        </small>
-                    }
-                </div>
-            </div>
-        }
-        else
-        {
-            switch (ViewModel.IsLoading)
-            {
-                case false when !string.IsNullOrEmpty(ViewModel.SearchTerm):
-                    <div class="alert alert-info">
-                        <i class="fas fa-search"></i> No cards found for "@ViewModel.SearchTerm"
-                    </div>
-                    break;
-                case false:
-                    <div class="alert alert-info">
-                        <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
-                    </div>
-                    break;
-            }
-        }
+<div class="page-container">
+    <div class="page-sidebar">
+        <div class="sidebar-container">
+            <label class="form-label">
+                Card Name:
+                <InputText
+                    @bind-Value="@ViewModel.SearchTerm"
+                    @onkeyup="@(async (e) =>
+                              {
+                                  if (e.Key == "Enter") await SearchCards();
+                              })"
+                />
+            </label>
+        </div>
+    </div>
+    <div class="page-items">
+        
     </div>
 </div>
 
+@* <style> *@
+@*     .card-page { *@
+@*         width: 100vw; *@
+@*     } *@
+@*     .sidebar { *@
+@*         position: fixed; *@
+@*         left: 0; *@
+@*         top: 6rem; *@
+@*         width: 320px; *@
+@*         height: calc(100vh - 6rem); *@
+@*         padding: 1rem; *@
+@*         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1); *@
+@*         background-color: white; *@
+@*         box-sizing: border-box; *@
+@*         overflow-y: auto; *@
+@*         z-index: 50; *@
+@*     } *@
+@*     .main-content { *@
+@*         margin-left: 340px; /* sidebar width + some gap */ *@
+@*         padding: 0 1rem 2rem 1rem; *@
+@*         min-width: 600px; *@
+@*     } *@
+@*     .card-totals-container { *@
+@*         margin-left: 0.5rem; *@
+@*         margin-top: 0.5rem; *@
+@*     } *@
+@*     .cards-section { *@
+@*         display: grid; *@
+@*         grid-template-columns: repeat(4, 1fr); /* is the same as 1fr 1fr 1fr 1fr */ *@
+@*         gap: 1.5rem; *@
+@*         margin-top: 0.6rem; *@
+@*         margin-bottom: 2rem; *@
+@*     } *@
+@*     .card-container { *@
+@*         display: flex; *@
+@*         flex-direction: column;  *@
+@*         align-items: center; *@
+@*         justify-content: flex-start; *@
+@*         height: 540px; *@
+@*         border-radius: 1rem; *@
+@*         border: 1px solid #e3e3e3; *@
+@*         padding-top: 0.75rem; *@
+@*         box-sizing: border-box; *@
+@*         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); *@
+@*         transition: transform 0.2s, box-shadow 0.2s; *@
+@*     } *@
+@*     .card-container:hover { *@
+@*         transform: translateY(-6px); *@
+@*         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); *@
+@*     } *@
+@*     .card-image { *@
+@*         max-height: 412px; *@
+@*         min-height: 406px; *@
+@*         width: 296px; *@
+@*     } *@
+@*     .card-img-placeholder { *@
+@*         height: 12.5rem; *@
+@*         display: flex; *@
+@*         flex-direction: column; *@
+@*         align-items: center; *@
+@*         justify-content: center; *@
+@*         background-color: rgba(255, 255, 255, 0); *@
+@*         color: #6c757d; *@
+@*     } *@
+@*     .card-img-placeholder i { *@
+@*         font-size: 2rem; *@
+@*         margin-bottom: 0.5rem; *@
+@*     } *@
+@*     .card-body { *@
+@*         width: 275px; *@
+@*         height: 125px; *@
+@*         overflow: hidden; *@
+@*         padding: 1rem; *@
+@*     } *@
+@*     .card-title { *@
+@*         font-size: 1.1rem; *@
+@*         font-weight: bold; *@
+@*         margin-bottom: 0.5rem; *@
+@*     } *@
+@*     .card-subtitle { *@
+@*         font-size: 0.9rem; *@
+@*         color: #666; *@
+@*     } *@
+@*     .card-text { *@
+@*         font-size: 0.9rem; *@
+@*         margin-bottom: 0.25rem; *@
+@*     } *@
+@*      *@
+@*     /* Pagination Styles */ *@
+@*     .pagination-container { *@
+@*         display: flex; *@
+@*         justify-content: space-between; *@
+@*         align-items: center; *@
+@*         margin-top: 0.5rem; *@
+@*     } *@
+@*     .pagination-nav { *@
+@*         display: flex; *@
+@*         align-items: center; *@
+@*         gap: 1rem; *@
+@*     } *@
+@*     .pagination { *@
+@*         margin: 0; *@
+@*         display: flex; *@
+@*         list-style: none; *@
+@*         padding: 0; *@
+@*     } *@
+@*     .showing-current-page-container { *@
+@*         margin-top: 0.5rem; *@
+@*         margin-left: 1rem; *@
+@*     } *@
+@*     .showing-current-cards-container { *@
+@*         margin-right: 0.2rem; *@
+@*     } *@
+@*     .page-link { *@
+@*         color: #007bff; *@
+@*         border: 1px solid #dee2e6; *@
+@*         padding: 0.5rem 0.75rem; *@
+@*         text-decoration: none; *@
+@*         background-color: #fff; *@
+@*     } *@
+@*     .page-link:hover { *@
+@*         color: #0056b3; *@
+@*         background-color: #e9ecef; *@
+@*         border-color: #dee2e6; *@
+@*     } *@
+@*     .page-item.disabled .page-link { *@
+@*         color: #6c757d; *@
+@*         background-color: #fff; *@
+@*         border-color: #dee2e6; *@
+@*         cursor: not-allowed; *@
+@*     } *@
+@*     .page-item:first-child .page-link { *@
+@*         border-top-left-radius: 0.25rem; *@
+@*         border-bottom-left-radius: 0.25rem; *@
+@*     } *@
+@*     .page-item:last-child .page-link { *@
+@*         border-top-right-radius: 0.25rem; *@
+@*         border-bottom-right-radius: 0.25rem; *@
+@*     } *@
+@* </style> *@
+@* *@
+@* <div class="card-page"> *@
+@*     <aside class="sidebar"> *@
+@*         <label class="form-label"> *@
+@*             Card Name: *@
+@*             <InputText  *@
+@*                 @bind-Value="@ViewModel.SearchTerm" *@
+@*                 @onkeyup="@(async (e) => *@
+@*                           { *@
+@*                               if (e.Key == "Enter") await SearchCards(); *@
+@*                           })" *@
+@*             /> *@
+@*         </label> *@
+@*     </aside> *@
+@*     <div class="main-content"> *@
+@*         @if (ViewModel.ErrorMessage != null) *@
+@*         { *@
+@*             <div class="alert alert-danger"> *@
+@*                 @ViewModel.ErrorMessage *@
+@*             </div> *@
+@*         } *@
+@*         @if (ViewModel.PagedCards.Data.Any()) *@
+@*         { *@
+@*             <div class="card-totals-container"> *@
+@*                 <small class="text-muted"> *@
+@*                     @ViewModel.PagedCards.TotalCount - results *@
+@*                 </small> *@
+@*             </div> *@
+@*             <div class="cards-section"> *@
+@*                 @foreach (var card in ViewModel.PagedCards.Data) *@
+@*                 { *@
+@*                     <div class="card-container"> *@
+@*                         <!---- Need to eventually address ImageSmall to be ImageLarge  *@
+@*                         and make rendering of the images faster .---> *@
+@*                         @if (!string.IsNullOrEmpty(card.ImageSmall)) *@
+@*                         { *@
+@*                             <img src="@card.ImageSmall" class="card-image" alt="@card.Name"> *@
+@*                         } *@
+@*                         else *@
+@*                         { *@
+@*                             <div class="card-img-placeholder"> *@
+@*                                 <i class="fas fa-image"></i> *@
+@*                                 <span>No Image</span> *@
+@*                             </div> *@
+@*                         } *@
+@*                         <div class="card-body"> *@
+@*                             <h5 class="card-title">@card.Name</h5> *@
+@*                             <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6> *@
+@*                             @if (!string.IsNullOrEmpty(card.CardNumber.ToString())) *@
+@*                             { *@
+@*                                 <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6> *@
+@*                             } *@
+@*                             @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A") *@
+@*                             { *@
+@*                                 <h6 class="card-text">HP: @card.Hp</h6> *@
+@*                             } *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 } *@
+@*             </div> *@
+@*             <div class="pagination-container"> *@
+@*                 @if (ViewModel.PagedCards.TotalPages > 1) *@
+@*                 { *@
+@*                     <nav aria-label="Card pagination" class="pagination-nav"> *@
+@*                         <div style="display: flex;"> *@
+@*                             <ul class="pagination"> *@
+@*                                 <li class="page-item @(ViewModel.PagedCards.HasPreviousPage ? "" : "disabled")"> *@
+@*                                     <button class="page-link" @onclick="ViewModel.PreviousPageAsync" *@
+@*                                             disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)"> *@
+@*                                         Previous *@
+@*                                     </button> *@
+@*                                 </li> *@
+@*                                 <li class="page-item @(ViewModel.PagedCards.HasNextPage ? "" : "disabled")"> *@
+@*                                     <button class="page-link" @onclick="ViewModel.NextPageAsync" *@
+@*                                             disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)"> *@
+@*                                         Next *@
+@*                                     </button> *@
+@*                                 </li> *@
+@*                             </ul> *@
+@*                             <div class="showing-current-page-container"> *@
+@*                                 <small class="text-muted"> *@
+@*                                     Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages *@
+@*                                 </small> *@
+@*                             </div> *@
+@*                         </div> *@
+@*                     </nav> *@
+@*                      *@
+@*                 } *@
+@*                 <div class="showing-current-cards-container"> *@
+@*                     @if (ViewModel.PagedCards.TotalCount > 0) *@
+@*                     { *@
+@*                         <small class="text-muted showing-current-cards-text"> *@
+@*                             Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) - *@
+@*                             @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount)) *@
+@*                             of @ViewModel.PagedCards.TotalCount cards *@
+@*                         </small> *@
+@*                     } *@
+@*                 </div> *@
+@*             </div> *@
+@*         } *@
+@*         else *@
+@*         { *@
+@*             switch (ViewModel.IsLoading) *@
+@*             { *@
+@*                 case false when !string.IsNullOrEmpty(ViewModel.SearchTerm): *@
+@*                     <div class="alert alert-info"> *@
+@*                         <i class="fas fa-search"></i> No cards found for "@ViewModel.SearchTerm" *@
+@*                     </div> *@
+@*                     break; *@
+@*                 case false: *@
+@*                     <div class="alert alert-info"> *@
+@*                         <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards. *@
+@*                     </div> *@
+@*                     break; *@
+@*             } *@
+@*         } *@
+@*     </div> *@
+@* </div> *@
 
 @code {
 

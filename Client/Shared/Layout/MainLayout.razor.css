@@ -1,49 +1,11 @@
 .app-container {
-    position: relative;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    min-width: 1080px;
 }
 main {
     flex: 1;
-}
-.top-navigation-bar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    justify-content: flex-end;
-    display: flex;
-    align-items: center;
-}
-.top-navigation-bar ::deep a, .top-navigation-bar ::deep .btn-link {
-    white-space: nowrap;
-    margin-left: 1.5rem;
-    text-decoration: none;
-}
-.top-navigation-bar ::deep a:hover, .top-navigation-bar ::deep .btn-link:hover {
-    text-decoration: underline;
-}
-.top-navigation-bar ::deep a:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-@media (max-width: 641px) {
-    .top-navigation-bar {
-        justify-content: space-between;
-    }
-    .top-navigation-bar ::deep a, .top-navigation-bar ::deep .btn-link {
-        margin-left: 0;
-    }
-}
-@media (min-width: 641px) {
-    .page {
-        flex-direction: row;
-    }
-    .top-navigation-bar.auth ::deep a:first-child {
-        flex: 1;
-        text-align: right;
-        width: 0;
-    }
 }
 #blazor-error-ui {
     color-scheme: light only;

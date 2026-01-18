@@ -5,7 +5,7 @@
         background-color: black;
         width: 100%;
         height: 2.5rem;
-        min-width: 900px;
+        min-width: 1080px
     }
     .top-nav {
         background-color: #f7f7f7;
@@ -13,7 +13,7 @@
         margin: 0;
         padding: 0;
         border-bottom: #b7b7b7 solid 0.02rem;
-        min-width: 900px;
+        min-width: 1080px;
         position: sticky;
         top: 0;
         z-index: 100;
@@ -24,12 +24,16 @@
         padding-top: 0;
         padding-bottom: 0;
     }
+    .pokemon-logo {
+        margin-left: 1.5rem;
+    }
     .top-nav a {
         color: black;
         text-align: center;
         text-decoration: none;
         font-size: 1.1rem;
         font-weight: bold;
+        margin-right: 1.5rem;
     }
     .top-nav a:not(.logo){
         height: 25px;
@@ -48,17 +52,19 @@
 </style>
 
 <div class="top-nav">
-    <div class="blank-row">
-    </div>
+    <div class="blank-row"></div>
     <div class="nav-content">
-        <a href="" class="logo">
+        <a href="" class="logo pokemon-logo">
             <img src="images/Pokemon-Logo.png" alt=""/>
         </a>
-        <a href="">Home</a>
-        <a href="cards">Cards</a>
-        <a href="sets">Sets</a>
-        <a href="energies">Energies</a>
-        <a href="about">About</a>
+        <div>
+            <a href="">Home</a>
+            <a href="cards">Cards</a>
+            <a href="sets">Sets</a>
+            <a href="energies">Energies</a>
+            <a href="about">About</a>    
+        </div>
+        
     </div>
 </div>
 
