@@ -4,12 +4,16 @@
 @inject ILogger<CardPage> Logger
 
 <style>
+    /* Apply to all four sides */
+    /* top and bottom | left and right ==> 0 0 */
+    /* top | left and right | bottom ==> 0 0 0 */
+    /* top | right | bottom | left  ==> 0 0 0 0 */
     .sidebar {
         position: fixed;
         left: 0;
-        top: 6rem;
+        top: 5.875rem;
         width: 320px;
-        height: calc(100vh - 6rem);
+        height: calc(100vh - 5.87rem);
         padding: 1rem;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
         background-color: white;
@@ -19,7 +23,7 @@
     }
     .main-content {
         margin-left: 340px; /* sidebar width + some gap */
-        padding: 0 1rem 2rem 1rem;
+        padding: 6.125rem 1rem 2rem 1rem;
         min-width: 600px;
     }
     .card-totals-container {
@@ -38,7 +42,8 @@
         flex-direction: column; 
         align-items: center;
         justify-content: flex-start;
-        height: 540px;
+        min-width: 19.5rem;
+        height: 560px;
         border-radius: 1rem;
         border: 1px solid #e3e3e3;
         padding-top: 0.75rem;
@@ -51,7 +56,7 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
     .card-image {
-        width: 95%;
+        width: 18.585rem;
     }
     .card-img-placeholder {
         height: 12.5rem;
@@ -162,9 +167,9 @@
             @foreach (var card in ViewModel.PagedCards.Data)
             {
                 <div class="card-container">
-                    @if (!string.IsNullOrEmpty(card.ImageLarge))
+                    @if (!string.IsNullOrEmpty(card.ImageSmall))
                     {
-                        <img src="@card.ImageLarge" class="card-image" alt="@card.Name" loading="lazy">
+                        <img src="@card.ImageSmall" class="card-image" alt="@card.Name">
                     }
                     else
                     {
