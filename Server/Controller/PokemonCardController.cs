@@ -54,7 +54,7 @@ public class PokemonCardController : ControllerBase
             }
             
             // Get paginated results and map to DTO in one query
-            var cardDtos = await query
+            var cardDto = await query
                 .OrderBy(c => c.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -64,7 +64,7 @@ public class PokemonCardController : ControllerBase
                     Id = c.Id,
                     Name = c.Name,
                     Hp = c.Hp.ToString(),
-                    CardNumber = c.SetNumber.ToString(),
+                    CardNumber = c.SetNumber,
                     ImageSmall = c.ImageSmall,   // Adjust these property names to match your PokemonCard model
                     ImageLarge = c.ImageLarge    // Adjust these property names to match your PokemonCard model
                 })
@@ -72,14 +72,14 @@ public class PokemonCardController : ControllerBase
             
             var result = new PagedList<PokemonCardData>  // Changed to DTO
             {
-                Data = cardDtos,
+                Data = cardDto,
                 TotalCount = totalCount,
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
             
             _logger.LogInformation("Returning {Count} cards out of {TotalCount} total", 
-                cardDtos.Count, totalCount);
+                cardDto.Count, totalCount);
             
             return Ok(result);
         }
@@ -89,66 +89,72 @@ public class PokemonCardController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-    
-    [HttpGet("card/{cardId}")]
-    public async Task<ActionResult<PokemonCardData>> GetCardById(string cardId)  // Changed return type
-    {
-        try
-        {
-            _logger.LogInformation("Getting card by ID: {CardId}", cardId);
-            
-            var cardDto = await _context.PokemonCards
-                .Where(c => c.Id == cardId)
-                .AsQueryable()
-                .Select(c => new PokemonCardData  // Map to DTO
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    Hp = c.Hp.ToString(),
-                    CardNumber = c.SetNumber.ToString(),
-                    ImageSmall = c.ImageSmall,
-                    ImageLarge = c.ImageLarge
-                })
-                .FirstOrDefaultAsync();
-                
-            if (cardDto != null) return Ok(cardDto);
-            
-            _logger.LogWarning("Card not found: {CardId}", cardId);
-            return NotFound($"Card with ID {cardId} not found");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting card {CardId}", cardId);
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
-    
-    // [HttpGet("card/{cardId}/full")]
-    // public async Task<ActionResult<PokemonCardData>> GetFullCardData(string cardId)  // Changed return type
+
+
+    // [HttpGet("{cardNumber}")]
+    // public async Task<ActionResult<PokemonCardData>> GetCardByNumber(string cardNumber)
     // {
     //     try
     //     {
+    //         _logger.LogInformation("Getting cards by Set Numbers: {CardNumber}", cardNumber);
+    //          var cardDto = await _context.PokemonCards
+    //              .Where(c => c.SetNumber == int.Parse(cardNumber))
+    //              .AsQueryable()
+    //              .Select(c => new PokemonCardData  // Map to DTO
+    //              {
+    //                  Id = c.Id,
+    //                  Name = c.Name,
+    //                  Hp = c.Hp.ToString(),
+    //                  CardNumber = c.SetNumber,
+    //                  ImageSmall = c.ImageSmall,
+    //                  ImageLarge = c.ImageLarge
+    //              })
+    //              .FirstOrDefaultAsync();
+    //              
+    //          if (cardDto != null) return Ok(cardDto);
+    //          
+    //          _logger.LogWarning("Cards with Set Number {CardNumber} not found", cardNumber);
+    //          return NotFound($"Cards with Set Number {cardNumber} not found");
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "Error getting cards with number: {CardNumber}", cardNumber);
+    //         return StatusCode(500, $"Internal server error: {ex.Message}");
+    //     }
+    // }
+    
+    
+    // [HttpGet("card/{cardId}")]
+    // public async Task<ActionResult<PokemonCardData>> GetCardById(string cardId)  // Changed return type
+    // {
+    //     try
+    //     {
+    //         _logger.LogInformation("Getting card by ID: {CardId}", cardId);
+    //         
     //         var cardDto = await _context.PokemonCards
     //             .Where(c => c.Id == cardId)
+    //             .AsQueryable()
     //             .Select(c => new PokemonCardData  // Map to DTO
     //             {
     //                 Id = c.Id,
     //                 Name = c.Name,
-    //                 Hp = c.Hp,
+    //                 Hp = c.Hp.ToString(),
+    //                 CardNumber = c.SetNumber.ToString(),
     //                 ImageSmall = c.ImageSmall,
     //                 ImageLarge = c.ImageLarge
     //             })
     //             .FirstOrDefaultAsync();
+    //             
+    //         if (cardDto != null) return Ok(cardDto);
     //         
-    //         if (cardDto == null)
-    //             return NotFound($"Card with ID {cardId} not found");
-    //         
-    //         return Ok(cardDto);
+    //         _logger.LogWarning("Card not found: {CardId}", cardId);
+    //         return NotFound($"Card with ID {cardId} not found");
     //     }
     //     catch (Exception ex)
     //     {
-    //         _logger.LogError(ex, "Error getting full card data {CardId}", cardId);
+    //         _logger.LogError(ex, "Error getting card {CardId}", cardId);
     //         return StatusCode(500, $"Internal server error: {ex.Message}");
     //     }
     // }
+    
 }

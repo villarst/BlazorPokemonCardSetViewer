@@ -13,5 +13,5 @@ public class PokemonCardData
     public string? Hp { get; init; }
     public string? ImageSmall { get; init; }
     public string? ImageLarge { get; init; }
-    public string? CardNumber { get; init; }
+    public int? CardNumber { get; init; }
 }

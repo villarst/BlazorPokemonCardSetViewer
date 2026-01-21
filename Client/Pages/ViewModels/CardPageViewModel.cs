@@ -1,3 +1,4 @@
+using Microsoft.JSInterop;
 using Shared.Models;
 using System.Reactive.Disposables;
 using BlazorPokemonCardSetViewer.Features.PokemonCard;
@@ -15,8 +16,9 @@ public interface ICardPageViewModel
     public int PageSize { get; set; }
 }
 
-public class CardPageViewModel : ICardPageViewModel, IDisposable
+public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
 {
+    private readonly IJSRuntime _js;
     private readonly ILogger<CardPageViewModel> _logger;
     private readonly ICardsService _cardService;
     private readonly CompositeDisposable _disposables = new();
@@ -28,9 +30,10 @@ public class CardPageViewModel : ICardPageViewModel, IDisposable
     public int CurrentPage { get; set; } = 1;
     public int PageSize { get; set; } = 12;
     
-    public CardPageViewModel(ILogger<CardPageViewModel> logger, ICardsService cardService)
+    public CardPageViewModel(ILogger<CardPageViewModel> logger, IJSRuntime js, ICardsService cardService) : this(js)
     {
         _logger = logger;
+        _js = js;
         _cardService = cardService;
         _logger.LogDebug("CardPageViewModel created.");
         PagedCards =  new PagedList<PokemonCardData>();
@@ -99,6 +102,7 @@ public class CardPageViewModel : ICardPageViewModel, IDisposable
         if (PagedCards.HasNextPage)
         {
             await GoToPageAsync(CurrentPage + 1);
+            await CallJsScrollUp();
         }
     }
     
@@ -107,6 +111,19 @@ public class CardPageViewModel : ICardPageViewModel, IDisposable
         if (PagedCards.HasPreviousPage)
         {
             await GoToPageAsync(CurrentPage - 1);
+        }
+    }
+    
+    private async Task CallJsScrollUp()
+    {
+        try
+        {
+            await _js.InvokeVoidAsync("scrollToTop");
+            
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error: {ExMessage}", ex.Message);
         }
     }
     

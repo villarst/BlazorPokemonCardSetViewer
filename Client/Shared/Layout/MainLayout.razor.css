@@ -1,85 +1,66 @@
-.blank-row {
-    display: flex;
-    flex-direction: row;
-    background-color: black;
-    width: 100%;
-    height: 2.5rem;
-}
-
-.page {
+.app-container {
     position: relative;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
 }
-
 main {
     flex: 1;
 }
-
-.sidebar {
-    background-color: white;
-}
-
-.top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
+.top-navigation-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     justify-content: flex-end;
-    height: 3.5rem;
     display: flex;
     align-items: center;
 }
-
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-        text-decoration: none;
-    }
-
-    .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
-        text-decoration: underline;
-    }
-
-    .top-row ::deep a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-@media (max-width: 640.98px) {
-    .top-row {
+.top-navigation-bar ::deep a, .top-navigation-bar ::deep .btn-link {
+    white-space: nowrap;
+    margin-left: 1.5rem;
+    text-decoration: none;
+}
+.top-navigation-bar ::deep a:hover, .top-navigation-bar ::deep .btn-link:hover {
+    text-decoration: underline;
+}
+.top-navigation-bar ::deep a:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+@media (max-width: 641px) {
+    .top-navigation-bar {
         justify-content: space-between;
     }
-
-    .top-row ::deep a, .top-row ::deep .btn-link {
+    .top-navigation-bar ::deep a, .top-navigation-bar ::deep .btn-link {
         margin-left: 0;
     }
 }
-
 @media (min-width: 641px) {
     .page {
         flex-direction: row;
     }
-
-    .sidebar {
-        width: 12.5rem;
-        height: 100vh;
-        position: sticky;
-        top: 0;
-    }
-
-    .top-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-    }
-
-    .top-row.auth ::deep a:first-child {
+    .top-navigation-bar.auth ::deep a:first-child {
         flex: 1;
         text-align: right;
         width: 0;
     }
-
-    .top-row, article {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
-    }
+}
+#blazor-error-ui {
+    color-scheme: light only;
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
 }
