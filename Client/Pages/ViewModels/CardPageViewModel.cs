@@ -10,6 +10,7 @@ public interface ICardPageViewModel
 {
     public PagedList<PokemonCardData> PagedCards { get; set; }
     public string SearchTerm { get; set; }
+    public string CardId { get; set; }
     public bool IsLoading { get; set; }
     public string? ErrorMessage { get; set; }
     public int CurrentPage { get; set; }
@@ -25,6 +26,7 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
     
     public PagedList<PokemonCardData> PagedCards { get; set; }
     public string SearchTerm { get; set; } = string.Empty;
+    public string CardId { get; set; } = string.Empty;
     public bool IsLoading { get; set; }
     public string? ErrorMessage { get; set; }
     public int CurrentPage { get; set; } = 1;
@@ -39,7 +41,7 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
         PagedCards =  new PagedList<PokemonCardData>();
     }
     
-    public async Task LoadCardsAsync(int? pageNumber = null)
+    public async Task LoadCardsBySearchTermAsync(int? pageNumber = null)
     {
         if (string.IsNullOrWhiteSpace(SearchTerm))
         {
@@ -89,11 +91,61 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
         }
     }
     
+    public async Task LoadCardByCardIdAsync(int? pageNumber = null)
+    {
+        if (string.IsNullOrWhiteSpace(CardId))
+        {
+            ErrorMessage = "Card Id is required.";
+            return;
+        }
+        
+        IsLoading = true;
+        ErrorMessage = null;
+        
+        if (pageNumber.HasValue)
+            CurrentPage = pageNumber.Value;
+        
+        try
+        {
+            var request = new PagedRequest
+            {
+                CardId = CardId,
+                PageNumber = CurrentPage,
+                PageSize = PageSize
+            };
+            
+            _logger.LogInformation("Requesting card with Card ID: {CardId}, Page: {PageNumber}", 
+                CardId, CurrentPage);
+                
+            var result = await _cardService.GetCardByIdAsync(request);
+            PagedCards = result;
+            
+            if (result.Data.Any())
+            {
+                _logger.LogInformation("Loaded {Count} card of {Total} total", 
+                    result.Data.Count, result.TotalCount);
+            }
+            else
+            {
+                ErrorMessage = $"No card found with Card ID '{CardId}'";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to load card with Card ID: {CardId}.";
+            _logger.LogError(ex, "Error loading card for Card ID: {CardId}", CardId);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+    
     public async Task GoToPageAsync(int pageNumber)
     {
         if (pageNumber >= 1 && pageNumber <= PagedCards.TotalPages)
         {
-            await LoadCardsAsync(pageNumber);
+            await LoadCardsBySearchTermAsync(pageNumber);
         }
     }
     

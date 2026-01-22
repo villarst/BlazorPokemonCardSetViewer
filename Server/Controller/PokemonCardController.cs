@@ -89,39 +89,42 @@ public class PokemonCardController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-
-
-    // [HttpGet("{cardNumber}")]
-    // public async Task<ActionResult<PokemonCardData>> GetCardByNumber(string cardNumber)
-    // {
-    //     try
-    //     {
-    //         _logger.LogInformation("Getting cards by Set Numbers: {CardNumber}", cardNumber);
-    //          var cardDto = await _context.PokemonCards
-    //              .Where(c => c.SetNumber == int.Parse(cardNumber))
-    //              .AsQueryable()
-    //              .Select(c => new PokemonCardData  // Map to DTO
-    //              {
-    //                  Id = c.Id,
-    //                  Name = c.Name,
-    //                  Hp = c.Hp.ToString(),
-    //                  CardNumber = c.SetNumber,
-    //                  ImageSmall = c.ImageSmall,
-    //                  ImageLarge = c.ImageLarge
-    //              })
-    //              .FirstOrDefaultAsync();
-    //              
-    //          if (cardDto != null) return Ok(cardDto);
-    //          
-    //          _logger.LogWarning("Cards with Set Number {CardNumber} not found", cardNumber);
-    //          return NotFound($"Cards with Set Number {cardNumber} not found");
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _logger.LogError(ex, "Error getting cards with number: {CardNumber}", cardNumber);
-    //         return StatusCode(500, $"Internal server error: {ex.Message}");
-    //     }
-    // }
+    
+    [HttpGet("id/{cardId}")]
+    public async Task<ActionResult<PagedList<PokemonCardData>>> GetCardById(  
+        string cardId, 
+        [FromQuery] int pageNumber = 1, 
+        [FromQuery] int pageSize = 12)
+    {
+        try
+        {
+            _logger.LogInformation("Getting card by ID: {CardId}", cardId);
+            
+            var cardDto = await _context.PokemonCards
+                .Where(c => c.Id == cardId)
+                .AsQueryable()
+                .Select(c => new PokemonCardData  // Map to DTO
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Hp = c.Hp.ToString(),
+                    CardNumber = c.SetNumber,
+                    ImageSmall = c.ImageSmall,
+                    ImageLarge = c.ImageLarge
+                })
+                .FirstOrDefaultAsync();
+                
+            if (cardDto != null) return Ok(cardDto);
+            
+            _logger.LogWarning("Card not found: {CardId}", cardId);
+            return NotFound($"Card with ID {cardId} not found");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting card {CardId}", cardId);
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
     
     
     // [HttpGet("card/{cardId}")]

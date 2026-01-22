@@ -262,6 +262,6 @@
     {
         Logger.LogInformation("Search button clicked for: {SearchTerm}", ViewModel.SearchTerm);
         ViewModel.CurrentPage = 1; // Reset to first page
-        await ViewModel.LoadCardsAsync();
+        await ViewModel.LoadCardsBySearchTermAsync();
     }
 }

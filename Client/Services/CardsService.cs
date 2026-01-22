@@ -7,6 +7,7 @@ namespace BlazorPokemonCardSetViewer.Services;
 public interface ICardsService
 {
     Task<PagedList<PokemonCardData>> GetCardsAsync(PagedRequest request);
+    Task<PagedList<PokemonCardData>> GetCardByIdAsync(PagedRequest request);
     Task<IEnumerable<PokemonCardData>> GetAllCardsAsync(string searchTerm); // Keep if needed
 }
 
@@ -45,6 +46,48 @@ public class CardsService : ICardsService
                 if (result != null)
                 {
                     _logger.LogInformation("Deserialized {Count} cards of {Total} total", 
+                        result.Data.Count, result.TotalCount);
+                    return result;
+                }
+                
+                _logger.LogWarning("Deserialized result is null");
+                return new PagedList<PokemonCardData>();
+            }
+            
+            var errorContent = await response.Content.ReadAsStringAsync();
+            _logger.LogWarning("Error response: {ErrorContent}", errorContent);
+            throw new Exception($"Error fetching cards: {response.StatusCode}, {errorContent}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception in CardService.GetCardsAsync");
+            throw;
+        }
+    }
+
+    public async Task<PagedList<PokemonCardData>> GetCardByIdAsync(PagedRequest request)
+    {
+        try
+        {
+            _logger.LogInformation("Calling API for card with ID: {CardId}, Page: {PageNumber}", 
+                request.CardId, request.PageNumber);
+                
+            var response = await _httpClient.GetAsync(
+                $"api/PokemonCard/id/{request.CardId}?pageNumber={request.PageNumber}&pageSize={request.PageSize}");
+            
+            _logger.LogInformation("API response status: {StatusCode}", response.StatusCode);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                _logger.LogDebug("Response content: {Content}", content);
+                
+                var result = JsonSerializer.Deserialize<PagedList<PokemonCardData>>(content, 
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                if (result != null)
+                {
+                    _logger.LogInformation("Deserialized {Count} card of {Total} total", 
                         result.Data.Count, result.TotalCount);
                     return result;
                 }
