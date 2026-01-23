@@ -1,0 +1,91 @@
+<style>
+    .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background-color: rgba(0,0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+    .dialog {
+        width: 750px;
+        background-color: white;
+        border-radius: 10px;
+        padding: 1rem;
+    }
+    .dialog .dialog-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 2rem;
+    }
+    .dialog .dialog-body {
+        padding: 2rem;
+    }
+    .dialog .dialog-footer {
+        padding: 2rem;
+    }
+    .close {
+        height: 40px;
+        width: 40px;
+        background-color: transparent;
+        transition: 0.25s ease;
+        border-radius: 10px;
+        
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        
+        cursor: pointer;
+    }
+    .close:hover {
+        background-color: #DDD;
+    }
+    .close i {
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+@if (Opened)
+{
+    <div class="overlay">
+        <div class="dialog">
+            <div class="dialog-header">
+                @TitleContent
+                <div @onclick="CloseDialog">
+                    <div class="close">
+                        <i class="bi bi-x-circle" style="font-size: 2rem; color: black;"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-body">
+                @BodyContent
+            </div>
+            <div class="dialog-footer">
+                @FooterContent
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public required RenderFragment TitleContent { get; set; }
+    [Parameter] public required RenderFragment BodyContent { get; set; }
+    [Parameter] public required RenderFragment FooterContent { get; set; }
+    [Parameter] public bool Opened { get; set; }
+    [Parameter] public EventCallback CloseButtonClicked { get; set; }
+
+    void CloseDialog()
+    {
+        Opened = false;
+        CloseButtonClicked.InvokeAsync();
+    }
+}
