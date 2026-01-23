@@ -19,7 +19,7 @@ public class PokemonCardController : ControllerBase
         _logger = logger;
     }
     
-    [HttpGet("{searchTerm}")]
+    [HttpGet("{searchTerm}")] // Example: https://localhost:7240/api/PokemonCard/Pikachu?pageSize=12&pageNumber=1
     public async Task<ActionResult<PagedList<PokemonCardData>>> GetCards(  // Changed return type
         string searchTerm, 
         [FromQuery] int pageNumber = 1, 
@@ -65,8 +65,8 @@ public class PokemonCardController : ControllerBase
                     Name = c.Name,
                     Hp = c.Hp.ToString(),
                     CardNumber = c.SetNumber,
-                    ImageSmall = c.ImageSmall,   // Adjust these property names to match your PokemonCard model
-                    ImageLarge = c.ImageLarge    // Adjust these property names to match your PokemonCard model
+                    ImageSmall = c.ImageSmall,
+                    ImageLarge = c.ImageLarge
                 })
                 .ToListAsync();
             
@@ -90,7 +90,7 @@ public class PokemonCardController : ControllerBase
         }
     }
     
-    [HttpGet("id/{cardId}")]
+    [HttpGet("id/{cardId}")] // Example: https://localhost:7240/api/PokemonCard/id/ex14-46/?pageSize=1&pageNumber=1
     public async Task<ActionResult<PagedList<PokemonCardData>>> GetCardById(  
         string cardId, 
         [FromQuery] int pageNumber = 1, 
@@ -125,39 +125,4 @@ public class PokemonCardController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-    
-    
-    // [HttpGet("card/{cardId}")]
-    // public async Task<ActionResult<PokemonCardData>> GetCardById(string cardId)  // Changed return type
-    // {
-    //     try
-    //     {
-    //         _logger.LogInformation("Getting card by ID: {CardId}", cardId);
-    //         
-    //         var cardDto = await _context.PokemonCards
-    //             .Where(c => c.Id == cardId)
-    //             .AsQueryable()
-    //             .Select(c => new PokemonCardData  // Map to DTO
-    //             {
-    //                 Id = c.Id,
-    //                 Name = c.Name,
-    //                 Hp = c.Hp.ToString(),
-    //                 CardNumber = c.SetNumber.ToString(),
-    //                 ImageSmall = c.ImageSmall,
-    //                 ImageLarge = c.ImageLarge
-    //             })
-    //             .FirstOrDefaultAsync();
-    //             
-    //         if (cardDto != null) return Ok(cardDto);
-    //         
-    //         _logger.LogWarning("Card not found: {CardId}", cardId);
-    //         return NotFound($"Card with ID {cardId} not found");
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _logger.LogError(ex, "Error getting card {CardId}", cardId);
-    //         return StatusCode(500, $"Internal server error: {ex.Message}");
-    //     }
-    // }
-    
 }

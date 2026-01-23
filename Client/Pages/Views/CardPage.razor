@@ -1,4 +1,5 @@
 @page "/cards"
+@using BlazorPokemonCardSetViewer.Components
 @using BlazorPokemonCardSetViewer.Pages.ViewModels
 @inject CardPageViewModel ViewModel
 @inject ILogger<CardPage> Logger
@@ -146,6 +147,7 @@
                       {
                           if (e.Key == "Enter") await SearchCards();
                       })"
+            disabled="@_disableSearchBox"
         />
     </label>
 </div>
@@ -169,7 +171,9 @@
                 <div class="card-container">
                     @if (!string.IsNullOrEmpty(card.ImageSmall))
                     {
-                        <img src="@card.ImageSmall" class="card-image" alt="@card.Name">
+                        <div @onclick="() => CardImageClicked(card.Id)">
+                            <img src="@card.ImageSmall" class="card-image" alt="@card.Name">
+                        </div>
                     }
                     else
                     {
@@ -185,7 +189,7 @@
                         {
                             <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
                         }
-                        @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
+                        @if (!string.IsNullOrEmpty(card.Hp) && card.Hp != "N/A")
                         {
                             <h6 class="card-text">HP: @card.Hp</h6>
                         }
@@ -250,18 +254,56 @@
         }
     }
 </div>
+<ModalDialog Opened="_showDialog" CloseButtonClicked="ResetDialog">
+    <TitleContent>
+        <div>
+            <h2>My Modal Dialog Box</h2>
+        </div>
+    </TitleContent>
+    <BodyContent>
+        <p style="font-size: 13px;">
+            Lorem, ipsum dolor sit amet consectetur...
+        </p>
+    </BodyContent>
+    <FooterContent>
+    </FooterContent>
+</ModalDialog>
+
+
 
 @code {
-
+    bool _showDialog;
+    bool _disableSearchBox;
+        
     protected override void OnInitialized()
     {
         Logger.LogInformation("CardPage initialized");
     }
 
-    private async Task SearchCards()
+    async Task SearchCards()
     {
         Logger.LogInformation("Search button clicked for: {SearchTerm}", ViewModel.SearchTerm);
         ViewModel.CurrentPage = 1; // Reset to first page
         await ViewModel.LoadCardsBySearchTermAsync();
+    }
+
+    void CardImageClicked(string id)
+    {
+        ShowDialog();
+        Console.WriteLine();
+    }
+
+    void ShowDialog()
+    {
+        _showDialog = true;
+        _disableSearchBox = true;
+        StateHasChanged();
+    }
+
+    void ResetDialog()
+    {
+        _showDialog = false;
+        _disableSearchBox = false;
+        StateHasChanged();
     }
 }
