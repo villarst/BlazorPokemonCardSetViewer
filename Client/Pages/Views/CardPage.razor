@@ -1,5 +1,6 @@
 @page "/cards"
 @using BlazorPokemonCardSetViewer.Components
+@using BlazorPokemonCardSetViewer.Features.PokemonCard
 @using BlazorPokemonCardSetViewer.Pages.ViewModels
 @inject CardPageViewModel ViewModel
 @inject ILogger<CardPage> Logger
@@ -56,8 +57,11 @@
         transform: translateY(-6px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
-    .card-image {
+    .card-image-small {
         width: 18.585rem;
+    }
+    .card-image-large {
+        height: 56rem;
     }
     .card-img-placeholder {
         height: 12.5rem;
@@ -171,8 +175,8 @@
                 <div class="card-container">
                     @if (!string.IsNullOrEmpty(card.ImageSmall))
                     {
-                        <div @onclick="() => CardImageClicked(card.Id)">
-                            <img src="@card.ImageSmall" class="card-image" alt="@card.Name">
+                        <div @onclick="() => CardImageClicked(card)">
+                            <img src="@card.ImageSmall" class="card-image-small" alt="@card.Name">
                         </div>
                     }
                     else
@@ -254,16 +258,12 @@
         }
     }
 </div>
+
 <ModalDialog Opened="_showDialog" CloseButtonClicked="ResetDialog">
     <TitleContent>
-        <div>
-            <h2>My Modal Dialog Box</h2>
-        </div>
     </TitleContent>
     <BodyContent>
-        <p style="font-size: 13px;">
-            Lorem, ipsum dolor sit amet consectetur...
-        </p>
+        <img src="@_selectedCardLargeImageUrl" class="card-image-large" alt="">
     </BodyContent>
     <FooterContent>
     </FooterContent>
@@ -274,6 +274,7 @@
 @code {
     bool _showDialog;
     bool _disableSearchBox;
+    string _selectedCardLargeImageUrl = string.Empty;
         
     protected override void OnInitialized()
     {
@@ -287,10 +288,10 @@
         await ViewModel.LoadCardsBySearchTermAsync();
     }
 
-    void CardImageClicked(string id)
+    void CardImageClicked(PokemonCardData card)
     {
+        _selectedCardLargeImageUrl = card.ImageLarge!;
         ShowDialog();
-        Console.WriteLine();
     }
 
     void ShowDialog()
