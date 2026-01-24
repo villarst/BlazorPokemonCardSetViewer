@@ -258,18 +258,7 @@
         }
     }
 </div>
-
-<ModalDialog Opened="_showDialog" CloseButtonClicked="ResetDialog">
-    <TitleContent>
-    </TitleContent>
-    <BodyContent>
-        <img src="@_selectedCardLargeImageUrl" class="card-image-large" alt="">
-    </BodyContent>
-    <FooterContent>
-    </FooterContent>
-</ModalDialog>
-
-
+<ModalDialog Opened="@_showDialog" ImageSource="@_selectedCardLargeImageUrl" CloseButtonClicked="ResetDialog"/>
 
 @code {
     bool _showDialog;

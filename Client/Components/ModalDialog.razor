@@ -5,7 +5,7 @@
         height: 100%;
         top: 0;
         left: 0;
-        background-color: rgba(0,0, 0, 0.5);
+        background-color: rgba(0,0, 0, 0.85);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -13,82 +13,39 @@
         -webkit-backdrop-filter: blur(10px);
         z-index: 100;
     }
-    .dialog {
-        height: 700px;
-        width: 750px;
-        background-color: white;
-        border-radius: 10px;
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
+    .image-container {
+        max-width: 90vw;
+        max-height: 90vh;
+        object-fit: contain; /* Keep the Pokemon Card image aspect ratio the same */
+        border-radius: 4px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
     }
-    .dialog .dialog-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px;
-        flex-shrink: 0;
-    }
-    .dialog .dialog-body {
-        padding: 2rem;
-        overflow: auto;
-        flex: 1;
-        min-height: 0;
-    }
-    .dialog .dialog-footer {
-        padding: 2rem;
-        flex-shrink: 0;
-    }
-    .close {
-        height: 40px;
-        width: 40px;
-        background-color: transparent;
-        transition: 0.25s ease;
-        border-radius: 10px;
-        
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        
+    .close-button {
+        position: fixed; 
+        top: 20px;
+        right: 30px;
+        font-size: 3rem;
+        color: white;
         cursor: pointer;
-    }
-    .close:hover {
-        background-color: #DDD;
-    }
-    .close i {
+        transition: 0.2s ease;
         line-height: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        z-index: 101;
+    }
+    .close-button:hover {
+        color: #ff6b6b;
+        transform: scale(1.1);
     }
 </style>
 @if (Opened)
 {
     <div class="overlay">
-        <div class="dialog">
-            <div class="dialog-header">
-                @TitleContent
-                <div @onclick="CloseDialog">
-                    <div class="close">
-                        <i class="bi bi-x-circle" style="font-size: 2rem; color: black;"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="dialog-body">
-                @BodyContent
-            </div>
-            <div class="dialog-footer">
-                @FooterContent
-            </div>
-        </div>
+        <span class="close-button" @onclick="CloseDialog">&times;</span>
+        <img class="image-container" src="@ImageSource"/>
     </div>
 }
 
 @code {
-    [Parameter] public required RenderFragment TitleContent { get; set; }
-    [Parameter] public required RenderFragment BodyContent { get; set; }
-    [Parameter] public required RenderFragment FooterContent { get; set; }
+    [Parameter] public string ImageSource { get; set; }
     [Parameter] public bool Opened { get; set; }
     [Parameter] public EventCallback CloseButtonClicked { get; set; }
 
