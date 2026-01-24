@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Shared.Models;
-using BlazorPokemonCardSetViewer.Features.PokemonCard; // Add this for your DTO
+using BlazorPokemonCardSetViewer.Features.PokemonCard;
 
 namespace Server.Controller;
 
@@ -20,11 +20,12 @@ public class PokemonCardController : ControllerBase
     }
     
     [HttpGet("{searchTerm}")] // Example: https://localhost:7240/api/PokemonCard/Pikachu?pageSize=12&pageNumber=1
-    public async Task<ActionResult<PagedList<PokemonCardData>>> GetCards(  // Changed return type
+    public async Task<ActionResult<PagedList<PokemonCardData>>> GetCards(
         string searchTerm, 
         [FromQuery] int pageNumber = 1, 
         [FromQuery] int pageSize = 12)
     {
+        // TODO: Need to eventually move to a PokemonBackEnd.cs file and have a PokemonFrontEnd.cs file. 
         try
         {
             _logger.LogInformation("Getting cards: {SearchTerm}, Page: {PageNumber}, Size: {PageSize}", 
@@ -32,9 +33,11 @@ public class PokemonCardController : ControllerBase
             
             var query = _context.PokemonCards.AsQueryable();
             
-            if (!string.IsNullOrEmpty(searchTerm) && searchTerm != "*")
+            if (!string.IsNullOrEmpty(searchTerm))
             {
-                query = query.Where(c => EF.Functions.Like(c.Name.ToLower(), $"%{searchTerm.ToLower()}%"));
+                searchTerm = searchTerm.ToLower();
+                query = query
+                    .Where(c => c.Name.ToLower().StartsWith(searchTerm));
             }
             
             var totalCount = await query.CountAsync();
@@ -53,13 +56,13 @@ public class PokemonCardController : ControllerBase
                 });
             }
             
-            // Get paginated results and map to DTO in one query
+            // Get paginated results and map to the DTO in one query
             var cardDto = await query
                 .OrderBy(c => c.Name)
-                .Skip((pageNumber - 1) * pageSize)
+                .Skip((pageNumber - 1) * pageSize) // Neat trick for pagination I did not know about until I saw at work.
                 .Take(pageSize)
                 .AsQueryable()
-                .Select(c => new PokemonCardData  // Map to DTO here
+                .Select(c => new PokemonCardData  // Map to the DTO here
                 {
                     Id = c.Id,
                     Name = c.Name,
