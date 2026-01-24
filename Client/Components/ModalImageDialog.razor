@@ -38,14 +38,14 @@
 </style>
 @if (Opened)
 {
-    <div class="overlay">
+    <div class="overlay" @onclick="@CloseDialog">
         <span class="close-button" @onclick="CloseDialog">&times;</span>
-        <img class="image-container" src="@ImageSource"/>
+        <img class="image-container" src="@ImageSource" alt="Pokemon Card"/>
     </div>
 }
 
 @code {
-    [Parameter] public string ImageSource { get; set; }
+    [Parameter] public required string ImageSource { get; set; }
     [Parameter] public bool Opened { get; set; }
     [Parameter] public EventCallback CloseButtonClicked { get; set; }
 

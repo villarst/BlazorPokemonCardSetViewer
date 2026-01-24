@@ -258,7 +258,10 @@
         }
     }
 </div>
-<ModalDialog Opened="@_showDialog" ImageSource="@_selectedCardLargeImageUrl" CloseButtonClicked="ResetDialog"/>
+<ModalImageDialog 
+    Opened="@_showDialog" 
+    ImageSource="@_selectedCardLargeImageUrl" 
+    CloseButtonClicked="ResetDialog"/>
 
 @code {
     bool _showDialog;
@@ -288,6 +291,7 @@
         _showDialog = true;
         _disableSearchBox = true;
         StateHasChanged();
+        Logger.LogInformation("Card image shown in \"Large\" format.");
     }
 
     void ResetDialog()
@@ -295,5 +299,6 @@
         _showDialog = false;
         _disableSearchBox = false;
         StateHasChanged();
+        Logger.LogInformation("Card image dialog closed.");
     }
 }
