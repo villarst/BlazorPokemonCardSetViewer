@@ -1,4 +1,6 @@
 @page "/cards"
+@using BlazorPokemonCardSetViewer.Components
+@using BlazorPokemonCardSetViewer.Features.PokemonCard
 @using BlazorPokemonCardSetViewer.Pages.ViewModels
 @inject CardPageViewModel ViewModel
 @inject ILogger<CardPage> Logger
@@ -55,8 +57,11 @@
         transform: translateY(-6px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
-    .card-image {
+    .card-image-small {
         width: 18.585rem;
+    }
+    .card-image-large {
+        height: 56rem;
     }
     .card-img-placeholder {
         height: 12.5rem;
@@ -146,6 +151,7 @@
                       {
                           if (e.Key == "Enter") await SearchCards();
                       })"
+            disabled="@_disableSearchBox"
         />
     </label>
 </div>
@@ -169,7 +175,9 @@
                 <div class="card-container">
                     @if (!string.IsNullOrEmpty(card.ImageSmall))
                     {
-                        <img src="@card.ImageSmall" class="card-image" alt="@card.Name">
+                        <div @onclick="() => CardImageClicked(card)">
+                            <img src="@card.ImageSmall" class="card-image-small" alt="@card.Name">
+                        </div>
                     }
                     else
                     {
@@ -185,7 +193,7 @@
                         {
                             <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
                         }
-                        @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
+                        @if (!string.IsNullOrEmpty(card.Hp) && card.Hp != "N/A")
                         {
                             <h6 class="card-text">HP: @card.Hp</h6>
                         }
@@ -250,18 +258,47 @@
         }
     }
 </div>
+<ModalImageDialog 
+    Opened="@_showDialog" 
+    ImageSource="@_selectedCardLargeImageUrl" 
+    CloseButtonClicked="ResetDialog"/>
 
 @code {
-
+    bool _showDialog;
+    bool _disableSearchBox;
+    string _selectedCardLargeImageUrl = string.Empty;
+        
     protected override void OnInitialized()
     {
         Logger.LogInformation("CardPage initialized");
     }
 
-    private async Task SearchCards()
+    async Task SearchCards()
     {
         Logger.LogInformation("Search button clicked for: {SearchTerm}", ViewModel.SearchTerm);
         ViewModel.CurrentPage = 1; // Reset to first page
-        await ViewModel.LoadCardsAsync();
+        await ViewModel.LoadCardsBySearchTermAsync();
+    }
+
+    void CardImageClicked(PokemonCardData card)
+    {
+        _selectedCardLargeImageUrl = card.ImageLarge!;
+        ShowDialog();
+    }
+
+    void ShowDialog()
+    {
+        _showDialog = true;
+        _disableSearchBox = true;
+        StateHasChanged();
+        Logger.LogInformation("Card image shown in \"Large\" format.");
+    }
+
+    void ResetDialog()
+    {
+        _showDialog = false;
+        _disableSearchBox = false;
+        StateHasChanged();
+        Logger.LogInformation("Card image dialog closed.");
     }
 }
