@@ -28,8 +28,8 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #ffffff;
-        outline: 2px solid rgb(121 , 121, 121);
+        background: rgb(220, 220, 230);
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
         -webkit-transition: .4s;
         transition: .4s;
     }
@@ -40,15 +40,14 @@
         width: 16px;
         left: 3px;
         bottom: 3px;
-        background-color: rgb(121, 121, 121);
+        background-color: #FFFFFF;
         -webkit-transition: .2s;
         transition: .2s;
     }
     input:checked + .slider {
-        background-color: #00c241;
+        background-color: rgba(0, 202, 123);
     }
     input:focus + .slider {
-        box-shadow: 0 0 1px #ffffff;
     }
     input:checked + .slider:before {
         -webkit-transform: translateX(17px);
