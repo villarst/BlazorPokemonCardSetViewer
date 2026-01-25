@@ -11,6 +11,7 @@
     /* top | left and right | bottom ==> 0 0 0 */
     /* top | right | bottom | left  ==> 0 0 0 0 */
     .sidebar {
+        display: block;
         position: fixed;
         left: 0;
         top: 5.875rem;
@@ -154,8 +155,10 @@
             disabled="@_disableSearchBox"
         />
     </label>
-    
-    <RoundedSwitch></RoundedSwitch>
+    @foreach (var rarity in ViewModel.Rarities.Data)
+    {
+        <RoundedSwitch RarityName="@rarity.Name"></RoundedSwitch>
+    }
 </div>
 <div class="main-content">
     @if (ViewModel.ErrorMessage != null)
@@ -269,18 +272,19 @@
     bool _showDialog;
     bool _disableSearchBox;
     string _selectedCardLargeImageUrl = string.Empty;
-        
-    protected override void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
+        await GrabRarities();
         Logger.LogInformation("CardPage initialized");
     }
+
 
     async Task SearchCards()
     {
         Logger.LogInformation("Search button clicked for: {SearchTerm}", ViewModel.SearchTerm);
         ViewModel.CurrentPage = 1; // Reset to first page
         await ViewModel.LoadCardsBySearchTermAsync();
-        await GrabRarities();
     }
 
     async Task GrabRarities()

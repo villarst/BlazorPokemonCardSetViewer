@@ -1,10 +1,12 @@
 <style>
+    .rounded-switch-container {}
     .filter-labels {
         /* margin-top: 20px; */
         margin-left: 20px;
         font-size: 20px;
         font-family: "Kanit-Regular", serif;
         margin-top: 30px;
+        text-wrap: auto;
 
         /* border: 2px solid #333;
         outline: 2px solid blue;
@@ -20,8 +22,8 @@
         position: relative;
         float: right;
         margin-right: 2px;
-        width: 60px;
-        height: 24px;
+        width: 40px; /* 40 */
+        height: 20px; /* 20px */
         margin-left: 40px;
         margin-top: 33px;
     }
@@ -44,7 +46,7 @@
         bottom: 0;
         /* background-color: #878787; */
         background-color: #ffffff;
-        outline: 2px solid rgb(121 , 121, 121); /* Change 'blue' to your desired outline color */
+        outline: 2px solid rgb(121 , 121, 121);
 
         -webkit-transition: .4s;
         transition: .4s;
@@ -53,9 +55,9 @@
     .slider:before {
         position: absolute;
         content: "";
-        height: 18px;
-        width: 18px;
-        left: 4px;
+        height: 16px;
+        width: 16px;
+        left: 2px;
         bottom: 3px;
         background-color: rgb(121, 121, 121);
         -webkit-transition: .2s;
@@ -71,9 +73,9 @@
     }
 
     input:checked + .slider:before {
-        -webkit-transform: translateX(34px);
-        -ms-transform: translateX(34px);
-        transform: translateX(34px);
+        -webkit-transform: translateX(19px);
+        -ms-transform: translateX(19px);
+        transform: translateX(19px);
     }
 
     /* Rounded sliders */
@@ -87,8 +89,8 @@
 
 </style>
 
-<div>
-    <label class="filter-labels">Thing</label>
+<div class="rounded-switch-container">
+    <label class="filter-labels">@RarityName</label>
     <label class="switch">
         <input type="checkbox" (change)="applyHit($event, 'paldeanFates')">
         <span class="slider round"></span>
@@ -96,5 +98,5 @@
 </div>
 
 @code {
-    
+    [Parameter] public string RarityName { get; set; }
 }
