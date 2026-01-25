@@ -8,7 +8,8 @@ namespace BlazorPokemonCardSetViewer.Pages.ViewModels;
 
 public interface ICardPageViewModel
 {
-    public PagedList<PokemonCardData> PagedCards { get; set; }
+    public PagedList<PokemonCardDataResponse> PagedCards { get; set; }
+    public PagedList<RarityResponse> Rarities { get; set; }
     public string SearchTerm { get; set; }
     public string CardId { get; set; }
     public bool IsLoading { get; set; }
@@ -24,7 +25,8 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
     private readonly ICardsService _cardService;
     private readonly CompositeDisposable _disposables = new();
     
-    public PagedList<PokemonCardData> PagedCards { get; set; }
+    public PagedList<PokemonCardDataResponse> PagedCards { get; set; }
+    public PagedList<RarityResponse> Rarities { get; set; }
     public string SearchTerm { get; set; } = string.Empty;
     public string CardId { get; set; } = string.Empty;
     public bool IsLoading { get; set; }
@@ -38,7 +40,8 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
         _js = js;
         _cardService = cardService;
         _logger.LogDebug("CardPageViewModel created.");
-        PagedCards =  new PagedList<PokemonCardData>();
+        PagedCards =  new PagedList<PokemonCardDataResponse>();
+        Rarities = new PagedList<RarityResponse>();
     }
     
     public async Task LoadCardsBySearchTermAsync(int? pageNumber = null)
@@ -134,6 +137,44 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
         {
             ErrorMessage = $"Failed to load card with Card ID: {CardId}.";
             _logger.LogError(ex, "Error loading card for Card ID: {CardId}", CardId);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    public async Task LoadRaritiesOfCards()
+    {
+        IsLoading = true;
+        ErrorMessage = null;
+        try
+        {
+            var request = new PagedRequest
+            {
+                PageNumber = 1,
+                PageSize = 50
+            };
+            
+            _logger.LogInformation("Requesting all cards.");
+                
+            var result = await _cardService.GetRaritiesAsync(request);
+            Rarities = result;
+            
+            if (result.Data.Any())
+            {
+                _logger.LogInformation("Loaded {Count} rarities", 
+                    result.Data.Count);
+            }
+            else
+            {
+                ErrorMessage = "No rarities found.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Failed to load rarities.";
+            _logger.LogError(ex, "Failed to load rarities.");
         }
         finally
         {

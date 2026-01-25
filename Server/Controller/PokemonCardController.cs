@@ -20,7 +20,7 @@ public class PokemonCardController : ControllerBase
     }
     
     [HttpGet("{searchTerm}")] // Example: https://localhost:7240/api/PokemonCard/Pikachu?pageSize=12&pageNumber=1
-    public async Task<ActionResult<PagedList<PokemonCardData>>> GetCards(
+    public async Task<ActionResult<PagedList<PokemonCardDataResponse>>> GetCards(
         string searchTerm, 
         [FromQuery] int pageNumber = 1, 
         [FromQuery] int pageSize = 12)
@@ -47,7 +47,7 @@ public class PokemonCardController : ControllerBase
             if (totalCount == 0)
             {
                 _logger.LogWarning("No card data found for search term: {SearchTerm}", searchTerm);
-                return Ok(new PagedList<PokemonCardData>  // Changed to DTO
+                return Ok(new PagedList<PokemonCardDataResponse>  // Changed to DTO
                 {
                     Data = [],
                     TotalCount = 0,
@@ -62,7 +62,7 @@ public class PokemonCardController : ControllerBase
                 .Skip((pageNumber - 1) * pageSize) // Neat trick for pagination I did not know about until I saw at work.
                 .Take(pageSize)
                 .AsQueryable()
-                .Select(c => new PokemonCardData  // Map to the DTO here
+                .Select(c => new PokemonCardDataResponse  // Map to the DTO here
                 {
                     Id = c.Id,
                     Name = c.Name,
@@ -73,7 +73,7 @@ public class PokemonCardController : ControllerBase
                 })
                 .ToListAsync();
             
-            var result = new PagedList<PokemonCardData>  // Changed to DTO
+            var result = new PagedList<PokemonCardDataResponse>  // Changed to DTO
             {
                 Data = cardDto,
                 TotalCount = totalCount,
@@ -94,7 +94,7 @@ public class PokemonCardController : ControllerBase
     }
     
     [HttpGet("id/{cardId}")] // Example: https://localhost:7240/api/PokemonCard/id/ex14-46/?pageSize=1&pageNumber=1
-    public async Task<ActionResult<PagedList<PokemonCardData>>> GetCardById(  
+    public async Task<ActionResult<PagedList<PokemonCardDataResponse>>> GetCardById(  
         string cardId, 
         [FromQuery] int pageNumber = 1, 
         [FromQuery] int pageSize = 12)
@@ -106,7 +106,7 @@ public class PokemonCardController : ControllerBase
             var cardDto = await _context.PokemonCards
                 .Where(c => c.Id == cardId)
                 .AsQueryable()
-                .Select(c => new PokemonCardData  // Map to DTO
+                .Select(c => new PokemonCardDataResponse  // Map to DTO
                 {
                     Id = c.Id,
                     Name = c.Name,
@@ -126,6 +126,46 @@ public class PokemonCardController : ControllerBase
         {
             _logger.LogError(ex, "Error getting card {CardId}", cardId);
             return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpGet("rarities")] // Example: https://localhost:7240/api/PokemonCard/rarities
+    public async Task<ActionResult<PagedList<RarityResponse>>> GetCardRarities(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 50)
+    {
+        try
+        {
+            _logger.LogInformation("Getting all card rarities.");
+            var query = _context.PokemonCards.AsQueryable();
+
+            var rarityDto = await query
+                .OrderBy(c => c.Rarity)
+                .Select(c => new RarityResponse
+                {
+                    Name = c.Rarity,
+                })
+                .Where(c => c.Name != null)
+                .Distinct()
+                .ToListAsync();
+            var totalCount = rarityDto.Count();
+
+            var result = new PagedList<RarityResponse>
+            {
+                Data = rarityDto,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            _logger.LogInformation("Returning {Count} results for card rarities.", totalCount);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting card rarities.");
+            throw new HttpRequestException("Error getting card rarities. (Http Request Exception)");
         }
     }
 }

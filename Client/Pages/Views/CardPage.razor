@@ -154,6 +154,8 @@
             disabled="@_disableSearchBox"
         />
     </label>
+    
+    <RoundedSwitch></RoundedSwitch>
 </div>
 <div class="main-content">
     @if (ViewModel.ErrorMessage != null)
@@ -278,9 +280,16 @@
         Logger.LogInformation("Search button clicked for: {SearchTerm}", ViewModel.SearchTerm);
         ViewModel.CurrentPage = 1; // Reset to first page
         await ViewModel.LoadCardsBySearchTermAsync();
+        await GrabRarities();
     }
 
-    void CardImageClicked(PokemonCardData card)
+    async Task GrabRarities()
+    {
+        Logger.LogInformation("Grabbing card rarities.");
+        await ViewModel.LoadRaritiesOfCards();
+    }
+
+    void CardImageClicked(PokemonCardDataResponse card)
     {
         _selectedCardLargeImageUrl = card.ImageLarge!;
         ShowDialog();
