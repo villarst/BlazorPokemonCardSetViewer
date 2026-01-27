@@ -93,6 +93,15 @@ public class PokemonCardController : ControllerBase
         }
     }
     
+    
+    // TODO: Make GetCards be one POST request that accepts a body of PagedRequest instead of different FromQuery parameters.
+    // [HttpPost] // Example: https://localhost:7240/api/PokemonCard/Pikachu?pageSize=12&pageNumber=1
+    //
+    // public async Task<ActionResult<PagedList<PokemonCardDataResponse>>> GetCards(
+    //     [FromBody] PagedRequest request)
+    // {
+    // }
+
     [HttpGet("id/{cardId}")] // Example: https://localhost:7240/api/PokemonCard/id/ex14-46/?pageSize=1&pageNumber=1
     public async Task<ActionResult<PagedList<PokemonCardDataResponse>>> GetCardById(  
         string cardId, 

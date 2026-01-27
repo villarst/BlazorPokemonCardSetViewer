@@ -113,7 +113,6 @@ public class CardsService : ICardsService
         // var result = await GetCardsAsync(request);
         // return result.Data;
         //
-        
         try
         {
             _logger.LogInformation("Calling API for all cards.");

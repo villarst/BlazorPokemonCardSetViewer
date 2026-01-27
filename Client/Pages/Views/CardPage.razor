@@ -368,14 +368,12 @@
     bool _showDialog;
     bool _disableSearchBox;
     bool _showRarities;
-    string _selectedCardLargeImageUrl;
-    string _rarityFilterText;
+    string _selectedCardLargeImageUrl = string.Empty;
+    string _rarityFilterText = "Show Rarities";
 
     protected override async Task OnInitializedAsync()
     {
         _showRarities = false;
-        _selectedCardLargeImageUrl = string.Empty;
-        _rarityFilterText = "Show Rarities";
         await GrabRarities();
         Logger.LogInformation("CardPage initialized");
     }
