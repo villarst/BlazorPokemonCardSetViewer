@@ -17,12 +17,79 @@
         top: 5.875rem;
         width: 320px;
         height: calc(100vh - 5.87rem);
-        padding: 0.5rem 0.75rem;
+        padding: 0.5rem 1.25rem 0.5rem 0.75rem;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
         background-color: white;
         box-sizing: border-box;
         overflow-y: auto;
         z-index: 50;
+    }
+    .cards-header {
+        margin: 0 0 1.625rem 1rem;
+        padding: 0;
+    }
+    .rarities-header {
+        margin: 0 0 0.75rem 1rem;
+        padding: 0;
+        border-bottom-style: solid;
+        border-color: #a5a5a5;
+        border-width: 2px;
+    }
+    .search-box-container {
+        display: flex;
+        align-items: center;
+        line-height: 1;
+        margin-bottom: 1rem;
+    }
+    .search-box-label {
+        margin-left: 1rem;
+        margin-right: 0.75rem;
+        font-size: 20px;
+    }
+    .search-box-input {
+        margin-right: 2rem;
+        position: relative;
+        width: 158px;
+        height: 24px;
+    }
+    .rarities-filter-container {
+        display: flex;
+        margin-bottom: 0.75rem;
+    }
+    .rarities-logo {
+        height: 22px;
+        width: 22px;
+        margin-left: 20px;
+        margin-top: 6px;
+    }
+    .rarities-icon-container {
+        position: relative;
+        display: inline-flex;
+    }
+    .rarities-icon-container:hover .transparent-box {
+        display: block;
+    }
+    .transparent-box {
+        position: absolute;
+        top: 0;
+        height: 26px;
+        width: 25px;
+        margin-left: 18px;
+        margin-top: 4px;
+        background-color: rgba(128, 128, 128, 0.5); /* Adjust the last value (0.5) for the transparency */
+        display: none;
+    }
+    .hide-rarities-button {
+        font-family: "Kanit-Light", serif;
+        margin-top: 0px;
+        margin-left: 10px;
+        font-size: 20px;
+        background-color: #ffffff;
+        border: #ffffff;
+        text-decoration: underline; /* Adding an underline to the text */
+    }
+    .hide-rarities-button:hover {
+        background-color: rgba(128, 128, 128, 0.5);
     }
     .main-content {
         margin-left: 340px; /* sidebar width + some gap */
@@ -141,24 +208,53 @@
         border-top-right-radius: 0.25rem;
         border-bottom-right-radius: 0.25rem;
     }
+    .transparent-box {
+        position: absolute;
+        top: 0;
+        height: 26px;
+        width: 25px;
+        margin-left: 18px;
+        margin-top: 4px;
+        background-color: rgba(128, 128, 128, 0.5); /* Adjust the last value (0.5) for the transparency */
+        display: none;
+    }
 </style>
 
 <div class="sidebar">
-    <label class="form-label">
-        Card Name:
-        <InputText 
+    <div>
+        <h3 class="cards-header">Cards</h3>
+    </div>
+    <div class="search-box-container">
+        <label class="search-box-label">
+            Search:
+        </label>
+        <InputText
+            class="search-box-input"
             @bind-Value="@ViewModel.SearchTerm"
             @onkeyup="@(async (e) =>
                       {
                           if (e.Key == "Enter") await SearchCards();
                       })"
-            disabled="@_disableSearchBox"
-        />
-    </label>
-    @foreach (var rarity in ViewModel.Rarities.Data)
-    {
-        <RoundedSwitch RarityName="@rarity.Name"></RoundedSwitch>
-    }
+            disabled="@_disableSearchBox"/>
+    </div>
+    <div>
+        <div class="rarities-filter-container">
+            <div class="rarities-icon-container" @onclick="ToggleRarityFilters">
+                <img class="rarities-logo" src="icons/BulletPoint.png" alt="filters">
+                <div class="transparent-box"></div>
+            </div>
+            <button class="hide-rarities-button" @onclick="ToggleRarityFilters">@_rarityFilterText</button>
+        </div>
+        @if (_showRarities)
+        {
+            <h3 class="rarities-header">Rarities</h3>
+            @foreach (var rarity in ViewModel.Rarities.Data)
+            {
+                <RoundedSwitch RarityName="@rarity.Name"></RoundedSwitch>
+            }
+        }
+    </div>
+    
 </div>
 <div class="main-content">
     @if (ViewModel.ErrorMessage != null)
@@ -271,15 +367,19 @@
 @code {
     bool _showDialog;
     bool _disableSearchBox;
-    string _selectedCardLargeImageUrl = string.Empty;
+    bool _showRarities;
+    string _selectedCardLargeImageUrl;
+    string _rarityFilterText;
 
     protected override async Task OnInitializedAsync()
     {
+        _showRarities = false;
+        _selectedCardLargeImageUrl = string.Empty;
+        _rarityFilterText = "Show Rarities";
         await GrabRarities();
         Logger.LogInformation("CardPage initialized");
     }
-
-
+    
     async Task SearchCards()
     {
         Logger.LogInformation("Search button clicked for: {SearchTerm}", ViewModel.SearchTerm);
@@ -313,5 +413,20 @@
         _disableSearchBox = false;
         StateHasChanged();
         Logger.LogInformation("Card image dialog closed.");
+    }
+
+    void ToggleRarityFilters()
+    {
+        if (_showRarities)
+        {
+            _rarityFilterText = "Show Rarities";
+            _showRarities = false;
+        }
+        else
+        {
+            _rarityFilterText = "Hide Rarities";
+            _showRarities = true;
+        }
+        StateHasChanged();
     }
 }
