@@ -10,4 +10,5 @@ public class PokemonCardDataResponse
     public string? ImageSmall { get; init; }
     public string? ImageLarge { get; init; }
     public int? CardNumber { get; init; }
+    public string? Raritity { get; init; }
 }

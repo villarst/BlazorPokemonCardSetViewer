@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Shared.Models;
 using BlazorPokemonCardSetViewer.Features.PokemonCard;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Server.Controller;
 
@@ -19,19 +20,97 @@ public class PokemonCardController : ControllerBase
         _logger = logger;
     }
     
-    [HttpGet("{searchTerm}")] // Example: https://localhost:7240/api/PokemonCard/Pikachu?pageSize=12&pageNumber=1
-    public async Task<ActionResult<PagedList<PokemonCardDataResponse>>> GetCards(
-        string searchTerm, 
-        [FromQuery] int pageNumber = 1, 
-        [FromQuery] int pageSize = 12)
+    // [HttpGet("{searchTerm}")] // Example: https://localhost:7240/api/PokemonCard/Pikachu?pageSize=12&pageNumber=1
+    // public async Task<ActionResult<PagedList<PokemonCardDataResponse>>> GetCards(
+    //     string searchTerm, 
+    //     [FromQuery] int pageNumber = 1, 
+    //     [FromQuery] int pageSize = 12)
+    // {
+    //     // TODO: Need to eventually move to a PokemonBackEnd.cs file and have a PokemonFrontEnd.cs file. 
+    //     try
+    //     {
+    //         _logger.LogInformation("Getting cards: {SearchTerm}, Page: {PageNumber}, Size: {PageSize}", 
+    //             searchTerm, pageNumber, pageSize);
+    //         
+    //         var query = _context.PokemonCards.AsQueryable();
+    //         
+    //         if (!string.IsNullOrEmpty(searchTerm))
+    //         {
+    //             searchTerm = searchTerm.ToLower();
+    //             query = query
+    //                 .Where(c => c.Name.ToLower().StartsWith(searchTerm));
+    //         }
+    //         
+    //         var totalCount = await query.CountAsync();
+    //         
+    //         _logger.LogInformation("Total matching cards: {TotalCount}", totalCount);
+    //         
+    //         if (totalCount == 0)
+    //         {
+    //             _logger.LogWarning("No card data found for search term: {SearchTerm}", searchTerm);
+    //             return Ok(new PagedList<PokemonCardDataResponse>  // Changed to DTO
+    //             {
+    //                 Data = [],
+    //                 TotalCount = 0,
+    //                 PageNumber = pageNumber,
+    //                 PageSize = pageSize
+    //             });
+    //         }
+    //         
+    //         // Get paginated results and map to the DTO in one query
+    //         var cardDto = await query
+    //             .OrderBy(c => c.Name)
+    //             .Skip((pageNumber - 1) * pageSize) // Neat trick for pagination I did not know about until I saw at work.
+    //             .Take(pageSize)
+    //             .AsQueryable()
+    //             .Select(c => new PokemonCardDataResponse  // Map to the DTO here
+    //             {
+    //                 Id = c.Id,
+    //                 Name = c.Name,
+    //                 Hp = c.Hp.ToString(),
+    //                 CardNumber = c.SetNumber,
+    //                 ImageSmall = c.ImageSmall,
+    //                 ImageLarge = c.ImageLarge
+    //             })
+    //             .ToListAsync();
+    //         
+    //         var result = new PagedList<PokemonCardDataResponse>  // Changed to DTO
+    //         {
+    //             Data = cardDto,
+    //             TotalCount = totalCount,
+    //             PageNumber = pageNumber,
+    //             PageSize = pageSize
+    //         };
+    //         
+    //         _logger.LogInformation("Returning {Count} cards out of {TotalCount} total", 
+    //             cardDto.Count, totalCount);
+    //         
+    //         return Ok(result);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "Error getting cards {SearchTerm}", searchTerm);
+    //         return StatusCode(500, $"Internal server error: {ex.Message}");
+    //     }
+    // }
+    //
+    
+    // TODO: Make GetCards be one POST request that accepts a body of PagedRequest instead of different FromQuery parameters.
+    [HttpPost ("search")] // Example: https://localhost:7240/api/PokemonCard/Pikachu?pageSize=12&pageNumber=1
+    public async Task<ActionResult<PagedList<PokemonCardDataResponse>>> GetCardsTwo(
+        [FromBody] PagedRequest request)
     {
-        // TODO: Need to eventually move to a PokemonBackEnd.cs file and have a PokemonFrontEnd.cs file. 
         try
         {
-            _logger.LogInformation("Getting cards: {SearchTerm}, Page: {PageNumber}, Size: {PageSize}", 
-                searchTerm, pageNumber, pageSize);
+            _logger.LogInformation($"Getting card with search term: {request}", request.SearchTerm) ;
             
             var query = _context.PokemonCards.AsQueryable();
+
+            var searchTerm = request.SearchTerm;
+            var pageNumber = request.PageNumber;
+            var pageSize = request.PageSize;
+            var rarities = request.Rarities;
+            
             
             if (!string.IsNullOrEmpty(searchTerm))
             {
@@ -40,13 +119,20 @@ public class PokemonCardController : ControllerBase
                     .Where(c => c.Name.ToLower().StartsWith(searchTerm));
             }
             
+            // Need to filter here because we are doing filtering before actually creating the dto and applying the take.
+            // TODO: Need to filter out for multiple types of rarities, not just one. 
+            if (rarities != null && rarities.Count > 0)
+            {
+                query = query.Where(c => rarities.Contains(c.Rarity!));
+            }
+            
             var totalCount = await query.CountAsync();
             
             _logger.LogInformation("Total matching cards: {TotalCount}", totalCount);
             
             if (totalCount == 0)
             {
-                _logger.LogWarning("No card data found for search term: {SearchTerm}", searchTerm);
+                _logger.LogWarning("No card data found for search term: {SearchTerm}", request.SearchTerm );
                 return Ok(new PagedList<PokemonCardDataResponse>  // Changed to DTO
                 {
                     Data = [],
@@ -55,6 +141,9 @@ public class PokemonCardController : ControllerBase
                     PageSize = pageSize
                 });
             }
+
+            var mathThing = (pageNumber - 1) * pageSize;
+            
             
             // Get paginated results and map to the DTO in one query
             var cardDto = await query
@@ -69,7 +158,8 @@ public class PokemonCardController : ControllerBase
                     Hp = c.Hp.ToString(),
                     CardNumber = c.SetNumber,
                     ImageSmall = c.ImageSmall,
-                    ImageLarge = c.ImageLarge
+                    ImageLarge = c.ImageLarge,
+                    Raritity = c.Rarity,
                 })
                 .ToListAsync();
             
@@ -88,19 +178,10 @@ public class PokemonCardController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting cards {SearchTerm}", searchTerm);
+            _logger.LogError(ex, "Error getting cards {SearchTerm}", request.SearchTerm);
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-    
-    
-    // TODO: Make GetCards be one POST request that accepts a body of PagedRequest instead of different FromQuery parameters.
-    // [HttpPost] // Example: https://localhost:7240/api/PokemonCard/Pikachu?pageSize=12&pageNumber=1
-    //
-    // public async Task<ActionResult<PagedList<PokemonCardDataResponse>>> GetCards(
-    //     [FromBody] PagedRequest request)
-    // {
-    // }
 
     [HttpGet("id/{cardId}")] // Example: https://localhost:7240/api/PokemonCard/id/ex14-46/?pageSize=1&pageNumber=1
     public async Task<ActionResult<PagedList<PokemonCardDataResponse>>> GetCardById(  

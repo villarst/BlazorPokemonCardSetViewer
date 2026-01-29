@@ -64,7 +64,9 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
             {
                 SearchTerm = SearchTerm,
                 PageNumber = CurrentPage,
-                PageSize = PageSize
+                PageSize = PageSize,
+                // Need to CHANGE
+                Rarities = [],
             };
             
             _logger.LogInformation("Requesting cards: {SearchTerm}, Page: {PageNumber}", 

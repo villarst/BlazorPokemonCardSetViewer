@@ -298,6 +298,10 @@
                         {
                             <h6 class="card-text">HP: @card.Hp</h6>
                         }
+                        @if (!string.IsNullOrEmpty(card.Raritity))
+                        {
+                            <h6 class="card-text">Rarity: @card.Raritity</h6>
+                        }
                     </div>
                 </div>
             }
@@ -377,7 +381,7 @@
         await GrabRarities();
         Logger.LogInformation("CardPage initialized");
     }
-    
+
     async Task SearchCards()
     {
         Logger.LogInformation("Search button clicked for: {SearchTerm}", ViewModel.SearchTerm);
@@ -425,6 +429,7 @@
             _rarityFilterText = "Hide Rarities";
             _showRarities = true;
         }
+
         StateHasChanged();
     }
 }
