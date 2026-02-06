@@ -62,14 +62,23 @@
     }
 </style>
 
-<div class="rounded-switch-container">
+<div class="rounded-switch-container" @onclick="CheckBoxChanged">
     <label class="filter-labels">@RarityName</label>
     <label class="switch">
-        <input type="checkbox" (change)="applyHit($event, 'paldeanFates')">
+        <input type="checkbox" @oninput="CheckBoxChanged" checked="@Checked">
         <span class="slider round"></span>
     </label>
 </div>
 
 @code {
-    [Parameter] public string RarityName { get; set; }
+    [Parameter] public required string RarityName { get; set; }
+    [Parameter] public bool Checked { get; set; }
+    [Parameter] public EventCallback<string> OnCheckBoxClicked { get; set; }
+    
+    private async Task CheckBoxChanged()
+    {
+        Checked = !Checked;
+        await OnCheckBoxClicked.InvokeAsync(RarityName);
+        StateHasChanged();
+    }
 }

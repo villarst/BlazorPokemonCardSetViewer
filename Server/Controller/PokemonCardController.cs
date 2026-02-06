@@ -121,7 +121,7 @@ public class PokemonCardController : ControllerBase
             
             // Need to filter here because we are doing filtering before actually creating the dto and applying the take.
             // TODO: Need to filter out for multiple types of rarities, not just one. 
-            if (rarities != null && rarities.Count > 0)
+            if (rarities is { Count: > 0 })
             {
                 query = query.Where(c => rarities.Contains(c.Rarity!));
             }

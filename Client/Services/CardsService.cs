@@ -63,36 +63,6 @@ public class CardsService : ICardsService
             var errorContent = await response.Content.ReadAsStringAsync();
             _logger.LogWarning("Error response: {ErrorContent}", errorContent);
             throw new Exception($"Error fetching cards: {response.StatusCode}, {errorContent}");
-            
-            
-            
-        //     var response = await _httpClient.GetAsync(
-        //         $"api/PokemonCard/{request.SearchTerm}?pageNumber={request.PageNumber}&pageSize={request.PageSize}");
-        //     
-        //     _logger.LogInformation("API response status: {StatusCode}", response.StatusCode);
-        //     
-        //     if (response.IsSuccessStatusCode)
-        //     {
-        //         var content = await response.Content.ReadAsStringAsync();
-        //         _logger.LogDebug("Response content: {Content}", content);
-        //         
-        //         var result = JsonSerializer.Deserialize<PagedList<PokemonCardDataResponse>>(content, 
-        //             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        //         
-        //         if (result != null)
-        //         {
-        //             _logger.LogInformation("Deserialized {Count} cards of {Total} total", 
-        //                 result.Data.Count, result.TotalCount);
-        //             return result;
-        //         }
-        //         
-        //         _logger.LogWarning("Deserialized result is null");
-        //         return new PagedList<PokemonCardDataResponse>();
-        //     }
-        //     
-        //     var errorContent = await response.Content.ReadAsStringAsync();
-        //     _logger.LogWarning("Error response: {ErrorContent}", errorContent);
-        //     throw new Exception($"Error fetching cards: {response.StatusCode}, {errorContent}");
         }
         catch (HttpRequestException ex)
         {

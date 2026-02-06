@@ -162,9 +162,9 @@ a, .btn-link {
 }
 .button-info.disabled,
 .button-info:disabled {
-    color: #acacac;
-    background-color: #1694a8;
-    border-color: #138494;
+    color: #000;
+    background-color: #107180;
+    border-color: #0f6672;
 }
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
