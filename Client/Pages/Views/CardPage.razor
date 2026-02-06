@@ -18,7 +18,7 @@
         top: 5.875rem;
         width: 320px;
         height: calc(100vh - 5.87rem);
-        padding: 0.5rem 1.25rem 0.5rem 0.75rem;
+        padding: 0.5rem 1.75rem 0.5rem 0.75rem;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
         background-color: white;
         box-sizing: border-box;
@@ -35,7 +35,7 @@
         border-bottom-style: solid; 
         border-color: #a5a5a5; 
         border-width: 2px; 
-        margin-bottom: 0.75rem; 
+        margin-bottom: 0.5rem; 
         margin-left: 0.875rem; 
         padding-bottom: 0.375rem;
     }
@@ -48,17 +48,14 @@
         align-items: center;
         line-height: 1;
         margin-bottom: 1rem;
-    }
-    .search-box-label {
-        margin-left: 1rem;
-        margin-right: 0.75rem;
-        font-size: 20px;
+        margin-top: 0.75rem;
     }
     .search-box-input {
-        margin-right: 2rem;
+        margin-right: 1rem;
         position: relative;
-        width: 158px;
-        height: 24px;
+        width: 200px;
+        height: 36px;
+        font-size: 24px;
     }
     .rarities-filter-container {
         display: flex;
@@ -92,8 +89,7 @@
     }
     .hide-rarities-button {
         font-family: "Kanit-Light", serif;
-        margin-top: 0px;
-        margin-left: 10px;
+        margin-top: 0;
         font-size: 20px;
         background-color: #ffffff;
         border: #ffffff;
@@ -230,22 +226,6 @@
 
 <div class="sidebar">
     <div>
-        <h3 class="cards-header">Cards</h3>
-    </div>
-    <div class="search-box-container">
-        <label class="search-box-label">
-            Search:
-        </label>
-        <InputText
-            class="search-box-input"
-            @bind-Value="@ViewModel.SearchTerm"
-            @onkeyup="@(async (e) =>
-                      {
-                          if (e.Key == "Enter") await SearchCards(false);
-                      })"
-            disabled="@_disableSearchBox"/>
-    </div>
-    <div>
         <div class="rarities-filter-container">
             <div class="rarities-filter-wrapper">
                 <div class="rarities-icon-container" @onclick="ToggleRarityFilters">
@@ -275,9 +255,19 @@
             }
         }
     </div>
-    
 </div>
 <div class="main-content">
+    <div class="search-box-container">
+        <InputText
+            class="search-box-input"
+            @bind-Value="@ViewModel.SearchTerm"
+            @onkeyup="@(async (e) =>
+                      {
+                          if (e.Key == "Enter") await SearchCards(false);
+                      })"
+            disabled="@_disableSearchBox"/>
+        <button class="btn button-success">Search</button>
+    </div>
     @if (ViewModel.ErrorMessage != null)
     {
         <div class="alert alert-danger">
@@ -353,7 +343,7 @@
                         </div>
                     </div>
                 </nav>
-                
+
             }
             <div class="showing-current-cards-container">
                 @if (ViewModel.PagedCards.TotalCount > 0)

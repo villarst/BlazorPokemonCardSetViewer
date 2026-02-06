@@ -84,7 +84,7 @@ a, .btn-link {
 }
 .button-success.disabled,
 .button-success:disabled {
-    color: #acacac;
+    color: #000;
     background-color: #198754;
     border-color: #137e4d;
 }
@@ -123,7 +123,7 @@ a, .btn-link {
 }
 .button-danger.disabled,
 .button-danger:disabled {
-    color: #acacac;
+    color: #000;
     background-color: #da3545;
     border-color: #b42230;
 }
