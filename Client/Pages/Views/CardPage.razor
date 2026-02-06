@@ -29,7 +29,7 @@
         margin: 0 0 1.625rem 1rem;
         padding: 0;
     }
-    .rarities-header-apply-button-container {
+    .rarities-header-container {
         display: flex; 
         justify-content: space-between; 
         border-bottom-style: solid; 
@@ -62,17 +62,20 @@
     }
     .rarities-filter-container {
         display: flex;
+        align-items: center;
+        margin-left: 1rem;
         margin-bottom: 0.75rem;
+        justify-content: space-between;
     }
-    .rarities-logo {
-        height: 22px;
-        width: 22px;
-        margin-left: 20px;
-        margin-top: 6px;
+    .rarities-filter-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     .rarities-icon-container {
-        position: relative;
         display: inline-flex;
+        align-items: center;
+        cursor: pointer;
     }
     .rarities-icon-container:hover .transparent-box {
         display: block;
@@ -244,24 +247,24 @@
     </div>
     <div>
         <div class="rarities-filter-container">
-            <div class="rarities-icon-container" @onclick="ToggleRarityFilters">
-                <img class="rarities-logo" src="icons/BulletPoint.png" alt="filters">
-                <div class="transparent-box"></div>
+            <div class="rarities-filter-wrapper">
+                <div class="rarities-icon-container" @onclick="ToggleRarityFilters">
+                    <i class="bi bi-filter" style="font-size: 32px;"></i>
+                </div>
+                <button class="hide-rarities-button" @onclick="ToggleRarityFilters">
+                    @_rarityFilterText
+                </button>
             </div>
-            <button class="hide-rarities-button" @onclick="ToggleRarityFilters">
-                @_rarityFilterText
+            <button class="btn button-info"
+                    disabled="@_disableApplyButton"
+                    @onclick="() => SearchCards(true)">
+                Apply
             </button>
         </div>
         @if (_showRarities)
         {
-            <div class="rarities-header-apply-button-container">
+            <div class="rarities-header-container">
                 <h3 class="rarities-header" style="align-items: flex-start">Rarities</h3>
-                <button class="btn button-info"
-                        disabled="@_disableApplyButton"
-                        style="align-items: flex-end"
-                        @onclick="() => SearchCards(true)">
-                    Apply
-                </button>
             </div>
             @foreach (var rarity in ViewModel.Rarities.Data)
             {
