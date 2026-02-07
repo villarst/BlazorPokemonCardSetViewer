@@ -93,7 +93,7 @@
         font-size: 20px;
         background-color: #ffffff;
         border: #ffffff;
-        text-decoration: underline; /* Adding an underline to the text */
+        text-decoration: underline;
     }
     .hide-rarities-button:hover {
         background-color: rgba(128, 128, 128, 0.5);
@@ -219,7 +219,7 @@
         width: 25px;
         margin-left: 18px;
         margin-top: 4px;
-        background-color: rgba(128, 128, 128, 0.5); /* Adjust the last value (0.5) for the transparency */
+        background-color: rgba(128, 128, 128, 0.5);
         display: none;
     }
 </style>
@@ -236,8 +236,8 @@
                 </button>
             </div>
             <button class="btn button-info"
-                    disabled="@_disableApplyButton"
-                    @onclick="() => SearchCards(true)">
+                    disabled="@_applyButtonDisabled"
+                    @onclick="ApplyButtonClicked">
                 Apply
             </button>
         </div>
@@ -258,15 +258,20 @@
 </div>
 <div class="main-content">
     <div class="search-box-container">
-        <InputText
-            class="search-box-input"
-            @bind-Value="@ViewModel.SearchTerm"
-            @onkeyup="@(async (e) =>
-                      {
-                          if (e.Key == "Enter") await SearchCards(false);
-                      })"
-            disabled="@_disableSearchBox"/>
-        <button class="btn button-success">Search</button>
+        <input type="text"
+               class="search-box-input"
+               value="@ViewModel.SearchTerm"
+               @oninput="OnSearchInput"
+               @onkeyup="@(async (e) =>
+                         {
+                             if (e.Key == "Enter") await SearchCards();
+                         })"
+               disabled="@_disableSearchBox" />
+        <button class="btn button-success"
+                disabled="@_searchButtonDisabled"
+                @onclick="SearchCards">
+            Search
+        </button>
     </div>
     @if (ViewModel.ErrorMessage != null)
     {
@@ -380,7 +385,8 @@
     CloseButtonClicked="ResetDialog"/>
 
 @code {
-    bool _disableApplyButton;
+    bool _applyButtonDisabled;
+    bool _searchButtonDisabled;
     bool _showDialog;
     bool _disableSearchBox;
     bool _showRarities;
@@ -389,7 +395,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _disableApplyButton = true;
+        _applyButtonDisabled = true;
+        _searchButtonDisabled = true;
         _showRarities = false;
         await GrabRarities();
         Logger.LogInformation("CardPage initialized");
@@ -401,19 +408,19 @@
         ViewModel.CardId = string.Empty;
     }
 
-    async Task SearchCards(bool applyButtonClicked)
+    async Task SearchCards()
     {
-        if (applyButtonClicked)
-        {
-            Logger.LogInformation($"Apply button clicked for: {ViewModel.SearchTerm}");
-        }
-        else
-        {
-            Logger.LogInformation($"Search button clicked for: {ViewModel.SearchTerm}");
-        }
-
-        ViewModel.CurrentPage = 1; // Reset to first page
+        Logger.LogInformation($"Search button clicked for: {ViewModel.SearchTerm}");
+        ViewModel.CurrentPage = 1;
         await ViewModel.LoadCardsBySearchTermAsync();
+    }
+    
+    async Task ApplyButtonClicked()
+    {
+        Logger.LogInformation($"Apply button clicked for: {ViewModel.SearchTerm}");
+        ViewModel.CurrentPage = 1;
+        await ViewModel.LoadCardsBySearchTermAsync();
+        _applyButtonDisabled = true;
     }
 
     async Task GrabRarities()
@@ -459,6 +466,12 @@
 
         StateHasChanged();
     }
+    
+    void OnSearchInput(ChangeEventArgs e)
+    {
+        ViewModel.SearchTerm = e.Value?.ToString() ?? string.Empty;
+        _searchButtonDisabled = string.IsNullOrWhiteSpace(ViewModel.SearchTerm);
+    }
 
     void UpdateDictionaryWithKey(string name)
     {
@@ -470,12 +483,12 @@
         if (ViewModel.CheckIfRaritiesSelected())
         {
             Logger.LogInformation("Apply button enabled.");
-            _disableApplyButton = false;
+            _applyButtonDisabled = !_applyButtonDisabled;
         }
         else
         {
             Logger.LogInformation("Apply button disabled.");
-            _disableApplyButton = true;
+            _applyButtonDisabled = !_applyButtonDisabled;
         }
     }
 }

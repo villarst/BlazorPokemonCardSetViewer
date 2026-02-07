@@ -56,7 +56,7 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
     public async Task LoadCardsBySearchTermAsync(int? pageNumber = null)
     {
         List<string> rarityNamesAndValuesToSend = [];
-        var rarityNamesAndValuesList = RarityNameAndValues.ToList();
+        var rarityNamesAndValuesList = RarityNameAndValues!.ToList();
         rarityNamesAndValuesToSend
             .AddRange(
                 from rarityNameAndValues in rarityNamesAndValuesList 
