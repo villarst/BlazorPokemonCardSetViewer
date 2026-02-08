@@ -251,7 +251,7 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
 
     public bool RarityNameAndValueDifferentThanTemp(Dictionary<string, bool> temp)
     {
-        foreach (KeyValuePair<string, bool> entry in RarityNameAndValues!)
+        foreach (var entry in RarityNameAndValues!)
         {
             var value = temp[entry.Key];
             if (value != entry.Value)

@@ -241,10 +241,21 @@
                 Apply
             </button>
         </div>
+        @if (_emptyCardSearchParameter)
+        {
+            <div class="alert alert-warning">
+                <i class="fas fa-search"></i> Please enter a card name first to get started.
+            </div>
+        }
         @if (_showRarities)
         {
             <div class="rarities-header-container">
                 <h3 class="rarities-header" style="align-items: flex-start">Rarities</h3>
+                <button class="btn button-danger" 
+                        @onclick="ClearAllFilters" 
+                        disabled="@_disableClearButtonOnRarities">
+                    Clear
+                </button>
             </div>
             @foreach (var rarity in ViewModel.Rarities.Data)
             {
@@ -273,12 +284,6 @@
             Search
         </button>
     </div>
-    @if (ViewModel.ErrorMessage != null)
-    {
-        <div class="alert alert-danger">
-            @ViewModel.ErrorMessage
-        </div>
-    }
     @if (ViewModel.PagedCards.Data.Any())
     {
         <div class="card-totals-container">
@@ -386,18 +391,21 @@
 
 @code {
     bool _applyButtonDisabled;
+    bool _disableClearButtonOnRarities; 
     bool _searchButtonDisabled;
     bool _showDialog;
     bool _disableSearchBox;
     bool _showRarities;
     string _selectedCardLargeImageUrl = string.Empty;
     string _rarityFilterText = "Show Rarities";
+    bool _emptyCardSearchParameter = false;
 
     Dictionary<string, bool> _tempRarities = [];
     
     protected override async Task OnInitializedAsync()
     {
         _applyButtonDisabled = true;
+        _disableClearButtonOnRarities = true;
         _searchButtonDisabled = true;
         _showRarities = false;
         await GrabRarities();
@@ -416,6 +424,7 @@
         Logger.LogInformation($"Search button clicked for: {ViewModel.SearchTerm}");
         ViewModel.CurrentPage = 1;
         await ViewModel.LoadCardsBySearchTermAsync();
+        _emptyCardSearchParameter = false;
     }
     
     async Task ApplyButtonClicked()
@@ -457,6 +466,11 @@
 
     void ToggleRarityFilters()
     {
+        if (ViewModel.PagedCards.Data.Count == 0)
+        {
+            _emptyCardSearchParameter = true;
+            return;
+        }
         if (_showRarities)
         {
             _rarityFilterText = "Show Rarities";
@@ -467,7 +481,17 @@
             _rarityFilterText = "Hide Rarities";
             _showRarities = true;
         }
+    }
 
+    void ClearAllFilters()
+    {
+        Logger.LogInformation("Clearing all selected filters.");
+        foreach (var pair in _tempRarities)
+        {
+            _tempRarities[pair.Key] = false;
+        }
+        _disableClearButtonOnRarities = true;
+        _applyButtonDisabled = false;
     }
     
     void OnSearchInput(ChangeEventArgs e)
@@ -486,10 +510,12 @@
         if (ViewModel.RarityNameAndValueDifferentThanTemp(_tempRarities)) // are different
         {
             _applyButtonDisabled = false;
+            _disableClearButtonOnRarities = false;
         }
         else // Not different
         {
             _applyButtonDisabled = true;
+            _disableClearButtonOnRarities = true;
         }
     }
 }
