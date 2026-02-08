@@ -65,7 +65,7 @@
     }
 </style>
 
-<div class="rounded-switch-container" @onclick="CheckBoxChanged">
+<div class="rounded-switch-container">
     <label class="filter-labels">@RarityName</label>
     <label class="switch">
         <input type="checkbox" @oninput="CheckBoxChanged" checked="@Checked">
@@ -82,6 +82,5 @@
     {
         Checked = !Checked;
         await OnCheckBoxClicked.InvokeAsync(RarityName);
-        StateHasChanged();
     }
 }

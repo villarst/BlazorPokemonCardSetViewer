@@ -250,7 +250,7 @@
             {
                 <RoundedSwitch
                     RarityName="@rarity.Name"
-                    Checked="ViewModel.RarityNameAndValues![rarity.Name!]"
+                    Checked="_tempRarities[rarity.Name!]"
                     OnCheckBoxClicked="@UpdateDictionaryWithKey"/>
             }
         }
@@ -393,12 +393,15 @@
     string _selectedCardLargeImageUrl = string.Empty;
     string _rarityFilterText = "Show Rarities";
 
+    Dictionary<string, bool> _tempRarities = [];
+    
     protected override async Task OnInitializedAsync()
     {
         _applyButtonDisabled = true;
         _searchButtonDisabled = true;
         _showRarities = false;
         await GrabRarities();
+        _tempRarities = new Dictionary<string, bool>(ViewModel.RarityNameAndValues!);
         Logger.LogInformation("CardPage initialized");
     }
 
@@ -419,6 +422,7 @@
     {
         Logger.LogInformation($"Apply button clicked for: {ViewModel.SearchTerm}");
         ViewModel.CurrentPage = 1;
+        ViewModel.RarityNameAndValues = new Dictionary<string, bool>(_tempRarities);
         await ViewModel.LoadCardsBySearchTermAsync();
         _applyButtonDisabled = true;
     }
@@ -464,7 +468,6 @@
             _showRarities = true;
         }
 
-        StateHasChanged();
     }
     
     void OnSearchInput(ChangeEventArgs e)
@@ -475,20 +478,18 @@
 
     void UpdateDictionaryWithKey(string name)
     {
-        var rarityValue = ViewModel.RarityNameAndValues![name];
+        var rarityValue = _tempRarities[name];
         rarityValue = !rarityValue;
-        ViewModel.RarityNameAndValues[name] = rarityValue;
+        _tempRarities[name] = rarityValue;
         Logger.LogInformation($"Rarity changed: {name} to {rarityValue} as selected.");
 
-        if (ViewModel.CheckIfRaritiesSelected())
+        if (ViewModel.RarityNameAndValueDifferentThanTemp(_tempRarities)) // are different
         {
-            Logger.LogInformation("Apply button enabled.");
-            _applyButtonDisabled = !_applyButtonDisabled;
+            _applyButtonDisabled = false;
         }
-        else
+        else // Not different
         {
-            Logger.LogInformation("Apply button disabled.");
-            _applyButtonDisabled = !_applyButtonDisabled;
+            _applyButtonDisabled = true;
         }
     }
 }
