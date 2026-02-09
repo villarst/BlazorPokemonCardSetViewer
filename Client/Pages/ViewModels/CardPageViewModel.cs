@@ -55,34 +55,32 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
     
     public async Task LoadCardsBySearchTermAsync(int? pageNumber = null)
     {
-        List<string> rarityNamesAndValuesToSend = [];
-        var rarityNamesAndValuesList = RarityNameAndValues!.ToList();
-        rarityNamesAndValuesToSend
-            .AddRange(
-                from rarityNameAndValues in rarityNamesAndValuesList 
-                where rarityNameAndValues.Value 
-                select rarityNameAndValues.Key);
-
-        if (string.IsNullOrWhiteSpace(SearchTerm))
-        {
-            ErrorMessage = "Please enter a search term";
-            return;
-        }
-        
-        IsLoading = true;
-        ErrorMessage = null;
-        
-        if (pageNumber.HasValue)
-            CurrentPage = pageNumber.Value;
-        
         try
         {
+            List<string> rarityNamesAndValuesToSend = [];
+            var rarityNamesAndValuesList = RarityNameAndValues!.ToList();
+            rarityNamesAndValuesToSend
+                .AddRange(rarityNamesAndValuesList
+                    .Where(rarityNameAndValues => rarityNameAndValues.Value)
+                    .Select(rarityNameAndValues => rarityNameAndValues.Key));
+        
+            if (string.IsNullOrWhiteSpace(SearchTerm))
+            {
+                ErrorMessage = "Please enter a search term";
+                return;
+            }
+            
+            IsLoading = true;
+            ErrorMessage = null;
+            
+            if (pageNumber.HasValue)
+                CurrentPage = pageNumber.Value;
+            
             var request = new PagedRequest
             {
                 SearchTerm = SearchTerm,
                 PageNumber = CurrentPage,
                 PageSize = PageSize,
-                // Need to CHANGE
                 Rarities = rarityNamesAndValuesToSend,
             };
             
