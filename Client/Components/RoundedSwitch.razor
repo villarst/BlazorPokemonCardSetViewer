@@ -1,0 +1,86 @@
+<style>
+    .rounded-switch-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 0.375rem;
+        margin-bottom: 0.5rem;
+        margin-left: 1.2rem;
+        border-bottom: 1px solid #b5b5b5;
+    }
+    .filter-labels {
+        margin-left: 0.5rem;
+        font-size: 16px;
+        line-height: 0;
+    }
+    .switch {
+        position: relative;
+        width: 40px;
+        height: 21px;
+    }
+    /* Hide default HTML checkbox */
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgb(220, 220, 230);
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 3px;
+        bottom: 3px;
+        background-color: #FFFFFF;
+        -webkit-transition: .2s;
+        transition: .2s;
+    }
+    input:checked + .slider {
+        background-color: rgba(0, 202, 123);
+    }
+    input:focus + .slider {
+    }
+    input:checked + .slider:before {
+        -webkit-transform: translateX(19px);
+        -ms-transform: translateX(19px);
+        transform: translateX(19px);
+    }
+    .slider.round {
+        border-radius: 34px;
+    }
+    .slider.round:before {
+        border-radius: 50%;
+    }
+</style>
+
+<div class="rounded-switch-container">
+    <label class="filter-labels">@RarityName</label>
+    <label class="switch">
+        <input type="checkbox" @oninput="CheckBoxChanged" checked="@Checked">
+        <span class="slider round"></span>
+    </label>
+</div>
+
+@code {
+    [Parameter] public required string RarityName { get; set; }
+    [Parameter] public bool Checked { get; set; }
+    [Parameter] public EventCallback<string> OnCheckBoxClicked { get; set; }
+    
+    private async Task CheckBoxChanged()
+    {
+        Checked = !Checked;
+        await OnCheckBoxClicked.InvokeAsync(RarityName);
+    }
+}

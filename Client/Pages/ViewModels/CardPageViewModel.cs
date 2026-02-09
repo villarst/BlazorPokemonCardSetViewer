@@ -8,13 +8,16 @@ namespace BlazorPokemonCardSetViewer.Pages.ViewModels;
 
 public interface ICardPageViewModel
 {
-    public PagedList<PokemonCardData> PagedCards { get; set; }
-    public string SearchTerm { get; set; }
-    public string CardId { get; set; }
-    public bool IsLoading { get; set; }
-    public string? ErrorMessage { get; set; }
-    public int CurrentPage { get; set; }
-    public int PageSize { get; set; }
+    PagedList<PokemonCardDataResponse> PagedCards { get; set; }
+    PagedList<RarityResponse> Rarities { get; set; }
+    Dictionary<string, bool> RarityNameAndValues { get; set; }
+    string SearchTerm { get; set; }
+    string CardId { get; set; }
+    bool IsLoading { get; set; }
+    string? ErrorMessage { get; set; }
+    int CurrentPage { get; set; }
+    int PageSize { get; set; }
+    bool CheckIfRaritiesSelected();
 }
 
 public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
@@ -24,7 +27,9 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
     private readonly ICardsService _cardService;
     private readonly CompositeDisposable _disposables = new();
     
-    public PagedList<PokemonCardData> PagedCards { get; set; }
+    public PagedList<PokemonCardDataResponse> PagedCards { get; set; }
+    public PagedList<RarityResponse> Rarities { get; set; }
+    public Dictionary<string, bool>? RarityNameAndValues { get; set; } = new();
     public string SearchTerm { get; set; } = string.Empty;
     public string CardId { get; set; } = string.Empty;
     public bool IsLoading { get; set; }
@@ -38,30 +43,45 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
         _js = js;
         _cardService = cardService;
         _logger.LogDebug("CardPageViewModel created.");
-        PagedCards =  new PagedList<PokemonCardData>();
+        PagedCards =  new PagedList<PokemonCardDataResponse>();
+        Rarities = new PagedList<RarityResponse>();
+    }
+    
+    public void Dispose()
+    {
+        _disposables?.Dispose();
+        _logger.LogInformation("CardPageViewModel disposed");
     }
     
     public async Task LoadCardsBySearchTermAsync(int? pageNumber = null)
     {
-        if (string.IsNullOrWhiteSpace(SearchTerm))
-        {
-            ErrorMessage = "Please enter a search term";
-            return;
-        }
-        
-        IsLoading = true;
-        ErrorMessage = null;
-        
-        if (pageNumber.HasValue)
-            CurrentPage = pageNumber.Value;
-        
         try
         {
+            List<string> rarityNamesAndValuesToSend = [];
+            var rarityNamesAndValuesList = RarityNameAndValues!.ToList();
+            rarityNamesAndValuesToSend
+                .AddRange(rarityNamesAndValuesList
+                    .Where(rarityNameAndValues => rarityNameAndValues.Value)
+                    .Select(rarityNameAndValues => rarityNameAndValues.Key));
+        
+            if (string.IsNullOrWhiteSpace(SearchTerm))
+            {
+                ErrorMessage = "Please enter a search term";
+                return;
+            }
+            
+            IsLoading = true;
+            ErrorMessage = null;
+            
+            if (pageNumber.HasValue)
+                CurrentPage = pageNumber.Value;
+            
             var request = new PagedRequest
             {
                 SearchTerm = SearchTerm,
                 PageNumber = CurrentPage,
-                PageSize = PageSize
+                PageSize = PageSize,
+                Rarities = rarityNamesAndValuesToSend,
             };
             
             _logger.LogInformation("Requesting cards: {SearchTerm}, Page: {PageNumber}", 
@@ -140,6 +160,49 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
             IsLoading = false;
         }
     }
+
+    public async Task LoadRaritiesOfCards()
+    {
+        IsLoading = true;
+        ErrorMessage = null;
+        try
+        {
+            var request = new PagedRequest
+            {
+                PageNumber = 1,
+                PageSize = 50
+            };
+            
+            _logger.LogInformation("Requesting all cards.");
+                
+            var result = await _cardService.GetRaritiesAsync(request);
+            Rarities = result;
+            
+            if (result.Data.Any())
+            {
+                _logger.LogInformation("Loaded {Count} rarities", 
+                    result.Data.Count);
+            }
+            else
+            {
+                ErrorMessage = "No rarities found.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Failed to load rarities.";
+            _logger.LogError(ex, "Failed to load rarities.");
+        }
+        finally
+        {
+            IsLoading = false;
+            foreach (var rarity in Rarities.Data)
+            {
+                if (RarityNameAndValues!.ContainsKey(rarity.Name!)) continue;
+                RarityNameAndValues.Add(rarity.Name!, false);
+            }
+        }
+    }
     
     public async Task GoToPageAsync(int pageNumber)
     {
@@ -178,10 +241,22 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
             _logger.LogError("Error: {ExMessage}", ex.Message);
         }
     }
-    
-    public void Dispose()
+
+    public bool CheckIfRaritiesSelected()
     {
-        _disposables?.Dispose();
-        _logger.LogInformation("CardPageViewModel disposed");
+        return RarityNameAndValues!.ContainsValue(true);
+    }
+
+    public bool RarityNameAndValueDifferentThanTemp(Dictionary<string, bool> temp)
+    {
+        foreach (var entry in RarityNameAndValues!)
+        {
+            var value = temp[entry.Key];
+            if (value != entry.Value)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

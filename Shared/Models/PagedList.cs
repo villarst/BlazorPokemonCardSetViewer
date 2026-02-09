@@ -15,6 +15,7 @@ public class PagedRequest
 {
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 12; // Good for 3x4 grid
-    public string SearchTerm { get; set; } = string.Empty;
+    public string? SearchTerm { get; set; } = string.Empty;
     public string? CardId { get; set; } = string.Empty;
+    public List<string>? Rarities { get; set; }
 }

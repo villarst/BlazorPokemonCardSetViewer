@@ -84,7 +84,7 @@ a, .btn-link {
 }
 .button-success.disabled,
 .button-success:disabled {
-    color: #acacac;
+    color: #000;
     background-color: #198754;
     border-color: #137e4d;
 }
@@ -123,7 +123,7 @@ a, .btn-link {
 }
 .button-danger.disabled,
 .button-danger:disabled {
-    color: #acacac;
+    color: #000;
     background-color: #da3545;
     border-color: #b42230;
 }
@@ -162,9 +162,9 @@ a, .btn-link {
 }
 .button-info.disabled,
 .button-info:disabled {
-    color: #acacac;
-    background-color: #1694a8;
-    border-color: #138494;
+    color: #000;
+    background-color: #107180;
+    border-color: #0f6672;
 }
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;

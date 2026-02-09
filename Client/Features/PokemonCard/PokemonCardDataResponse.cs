@@ -1,12 +1,8 @@
 using Shared.Models;
 
 namespace BlazorPokemonCardSetViewer.Features.PokemonCard;
-public class GetPokemonCardResponse
-{
-    public required PokemonCardData Data { get; set; }
-}
 
-public class PokemonCardData
+public class PokemonCardDataResponse
 {
     public required string Id { get; init; }
     public string? Name { get; init; }
@@ -14,4 +10,5 @@ public class PokemonCardData
     public string? ImageSmall { get; init; }
     public string? ImageLarge { get; init; }
     public int? CardNumber { get; init; }
+    public string? Raritity { get; init; }
 }
