@@ -17,7 +17,7 @@ public abstract class Program
         builder.Services.AddLogging();
         builder.Services.AddOpenApi();
 
-        // Add CORS to allow your Blazor client to make requests
+        // Added CORS to allow Blazor client to make requests
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("BlazorClientPolicy", policy =>

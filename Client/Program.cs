@@ -18,6 +18,7 @@ public abstract class Program
                 .CreateLogger();
     
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
+            builder.Logging.SetMinimumLevel(LogLevel.Error);
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
     

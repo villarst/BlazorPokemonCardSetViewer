@@ -1,331 +1,521 @@
-@page "/card"
+@page "/cards"
+@using BlazorPokemonCardSetViewer.Components
+@using BlazorPokemonCardSetViewer.Features.PokemonCard
 @using BlazorPokemonCardSetViewer.Pages.ViewModels
 @inject CardPageViewModel ViewModel
 @inject ILogger<CardPage> Logger
+@implements IDisposable
 
 <style>
-    .main-container {
-        display: grid;
-        gap: 2rem;
-        grid-template-columns: repeat(12, 1fr);
-        margin: 1rem auto 10rem;
-        align-items: start;
-    }
-    
+    /* Apply to all four sides */
+    /* top and bottom | left and right ==> 0 0 */
+    /* top | left and right | bottom ==> 0 0 0 */
+    /* top | right | bottom | left  ==> 0 0 0 0 */
     .sidebar {
-        grid-column: span 3;
-        position: sticky;
-        top: 1rem;
-    }
-    
-    .content {
-        order: 1;
-        grid-column: span 9;
+        display: block;
+        position: fixed;
+        left: 0;
+        top: 5.875rem;
+        width: 320px;
+        height: calc(100vh - 5.87rem);
+        padding: 0.5rem 1.75rem 0.5rem 0.75rem;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        background-color: white;
         box-sizing: border-box;
+        overflow-y: auto;
+        z-index: 50;
     }
-    
-    .cards-container {
+    .cards-header {
+        margin: 0 0 1.625rem 1rem;
+        padding: 0;
+    }
+    .rarities-header-container {
+        display: flex; 
+        justify-content: space-between; 
+        border-bottom-style: solid; 
+        border-color: #a5a5a5; 
+        border-width: 2px; 
+        margin-bottom: 0.5rem; 
+        margin-left: 0.875rem; 
+        padding-bottom: 0.375rem;
+    }
+    .rarities-header {
+        margin: 0;
+        padding: 0;
+    }
+    .search-box-container {
+        display: flex;
+        align-items: center;
+        line-height: 1;
+        margin-bottom: 1rem;
+        margin-top: 0.75rem;
+    }
+    .search-box-input {
+        margin-right: 1rem;
+        position: relative;
+        width: 200px;
+        height: 36px;
+        font-size: 24px;
+    }
+    .rarities-filter-container {
+        display: flex;
+        align-items: center;
+        margin-left: 1rem;
+        margin-bottom: 0.75rem;
+        justify-content: space-between;
+    }
+    .rarities-filter-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .rarities-icon-container {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    .rarities-icon-container:hover .transparent-box {
+        display: block;
+    }
+    .transparent-box {
+        position: absolute;
+        top: 0;
+        height: 26px;
+        width: 25px;
+        margin-left: 18px;
+        margin-top: 4px;
+        background-color: rgba(128, 128, 128, 0.5); /* Adjust the last value (0.5) for the transparency */
+        display: none;
+    }
+    .hide-rarities-button {
+        font-family: "Kanit-Light", serif;
+        margin-top: 0;
+        font-size: 20px;
+        background-color: #ffffff;
+        border: #ffffff;
+        text-decoration: underline;
+    }
+    .hide-rarities-button:hover {
+        background-color: rgba(128, 128, 128, 0.5);
+    }
+    .main-content {
+        margin-left: 340px; /* sidebar width + some gap */
+        padding: 6.125rem 1rem 2rem 1rem;
+        min-width: 600px;
+    }
+    .card-totals-container {
+        margin-left: 1rem;
+        margin-top: 0.5rem;
+    }
+    .cards-section {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(4, 1fr); /* is the same as 1fr 1fr 1fr 1fr */
         gap: 1.5rem;
-        margin-top: 1rem;
+        margin-top: 0.6rem;
         margin-bottom: 2rem;
     }
-    
-    .card-wrapper {
+    .card-container {
         display: flex;
-        justify-content: center;
-    }
-    
-    .card {
-        width: 100%;
-        max-width: 250px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        flex-direction: column; 
+        align-items: center;
+        justify-content: flex-start;
+        min-width: 19.5rem;
+        height: 560px;
+        border-radius: 1rem;
+        border: 1px solid #e3e3e3;
+        padding-top: 0.75rem;
+        box-sizing: border-box;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         transition: transform 0.2s, box-shadow 0.2s;
     }
-    
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    .card-container:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
-    
-    .card-img-top {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
+    .card-image-small {
+        width: 18.585rem;
     }
-
     .card-img-placeholder {
-        height: 200px;
+        height: 12.5rem;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        background-color: #f8f9fa;
+        background-color: rgba(255, 255, 255, 0);
         color: #6c757d;
     }
-
     .card-img-placeholder i {
         font-size: 2rem;
         margin-bottom: 0.5rem;
     }
-    
     .card-body {
+        width: 275px;
+        height: 125px;
+        overflow: hidden;
         padding: 1rem;
     }
-    
     .card-title {
         font-size: 1.1rem;
         font-weight: bold;
         margin-bottom: 0.5rem;
     }
-    
     .card-subtitle {
         font-size: 0.9rem;
         color: #666;
     }
-    
     .card-text {
         font-size: 0.9rem;
         margin-bottom: 0.25rem;
     }
     
     /* Pagination Styles */
-    .pagination-nav {
-        margin-top: 2rem;
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
     }
-    
+    .pagination-nav {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
     .pagination {
         margin: 0;
+        display: flex;
+        list-style: none;
+        padding: 0;
     }
-    
     .page-link {
         color: #007bff;
         border: 1px solid #dee2e6;
         padding: 0.5rem 0.75rem;
         text-decoration: none;
         background-color: #fff;
-        border-radius: 0;
     }
-    
     .page-link:hover {
         color: #0056b3;
         background-color: #e9ecef;
         border-color: #dee2e6;
     }
-    
-    .page-item.active .page-link {
-        background-color: #007bff;
-        border-color: #007bff;
-        color: #fff;
-    }
-    
     .page-item.disabled .page-link {
         color: #6c757d;
         background-color: #fff;
         border-color: #dee2e6;
         cursor: not-allowed;
     }
-    
     .page-item:first-child .page-link {
         border-top-left-radius: 0.25rem;
         border-bottom-left-radius: 0.25rem;
     }
-    
     .page-item:last-child .page-link {
         border-top-right-radius: 0.25rem;
         border-bottom-right-radius: 0.25rem;
     }
-    
-    /* Responsive design */
-    @@media (max-width: 1200px) {
-        .cards-container {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-    
-    @@media (max-width: 900px) {
-        .cards-container {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    
-    @@media (max-width: 768px) {
-        .main-container {
-            grid-template-columns: 1fr;
-        }
-        
-        .sidebar {
-            grid-column: span 1;
-            position: static;
-        }
-        
-        .content {
-            grid-column: span 1;
-        }
-        
-        .cards-container {
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        }
-        
-        .pagination {
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .page-item {
-            margin: 2px;
-        }
+    .transparent-box {
+        position: absolute;
+        top: 0;
+        height: 26px;
+        width: 25px;
+        margin-left: 18px;
+        margin-top: 4px;
+        background-color: rgba(128, 128, 128, 0.5);
+        display: none;
     }
 </style>
 
-<div class="main-container">
-    <div class="sidebar">
-        <label for="cardId" class="form-label">Card Name:</label>
-        <div class="input-group">
-            <input id="cardId" class="form-control" @bind="@ViewModel.SearchTerm" 
-                   @onkeyup="@(async (e) => { if (e.Key == "Enter") await SearchCards(); })"
-                   placeholder="Enter card name..."/>
-            <button class="btn btn-primary" @onclick="SearchCards" disabled="@ViewModel.IsLoading">
-                @if (ViewModel.IsLoading)
-                {
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    <span>Loading...</span>
-                }
-                else
-                {
-                    <span>Search Cards</span>
-                }
+<div class="sidebar">
+    <div>
+        <div class="rarities-filter-container">
+            <div class="rarities-filter-wrapper">
+                <div class="rarities-icon-container" @onclick="ToggleRarityFilters">
+                    <i class="bi bi-filter" style="font-size: 32px;"></i>
+                </div>
+                <button class="hide-rarities-button" @onclick="ToggleRarityFilters">
+                    @_rarityFilterText
+                </button>
+            </div>
+            <button class="btn btn-info"
+                    disabled="@_applyButtonDisabled"
+                    @onclick="ApplyButtonClicked">
+                Apply
             </button>
         </div>
-        <small class="form-text text-muted">Try names like "Pikachu", "Charizard", "Blastoise", etc.</small>
-        
-        @if (ViewModel.PagedCards.TotalCount > 0)
+        @if (_emptyCardSearchParameter)
         {
-            <div class="mt-3">
-                <small class="text-muted">
-                    Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) - 
-                    @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount)) 
-                    of @ViewModel.PagedCards.TotalCount cards
-                </small>
+            <div class="alert alert-warning">
+                <i class="fas fa-search"></i> Please enter a card name first to get started.
             </div>
+        }
+        @if (_showRarities)
+        {
+            <div class="rarities-header-container">
+                <h3 class="rarities-header" style="align-items: flex-start">Rarities</h3>
+                <button class="btn button-danger" 
+                        @onclick="ClearAllFilters" 
+                        disabled="@_disableClearButtonOnRarities">
+                    Clear
+                </button>
+            </div>
+            @foreach (var rarity in ViewModel.Rarities.Data)
+            {
+                <RoundedSwitch
+                    RarityName="@rarity.Name"
+                    Checked="_tempRarities[rarity.Name!]"
+                    OnCheckBoxClicked="@UpdateDictionaryWithKey"/>
+            }
         }
     </div>
-    
-    <div class="content">
-        @if (ViewModel.ErrorMessage != null)
-        {
-            <div class="alert alert-danger">
-                @ViewModel.ErrorMessage
-            </div>
-        }
-        
-        @if (ViewModel.PagedCards.Data.Any())
-        {
-            <div class="cards-container">
-                @foreach (var card in ViewModel.PagedCards.Data)
-                {
-                    <div class="card-wrapper">
-                        <div class="card">
-                            @if (!string.IsNullOrEmpty(card.ImageSmall))
-                            {
-                                <img src="@card.ImageSmall" class="card-img-top" alt="@card.Name" loading="lazy">
-                            }
-                            else
-                            {
-                                <div class="card-img-placeholder">
-                                    <i class="fas fa-image"></i>
-                                    <span>No Image</span>
-                                </div>
-                            }
-                            <div class="card-body">
-                                <h5 class="card-title">@card.Name</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
-                                @if (!string.IsNullOrEmpty(card.CardNumber))
-                                {
-                                    <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
-                                }                                
-                                @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
-                                {
-                                    <h6 class="card-text">HP: @card.Hp</h6>
-                                }
-                            </div>
+</div>
+<div class="main-content">
+    <div class="search-box-container">
+        <input type="text"
+               class="search-box-input"
+               value="@ViewModel.SearchTerm"
+               @oninput="OnSearchInput"
+               @onkeyup="@(async (e) =>
+                         {
+                             if (e.Key == "Enter") await SearchCards();
+                         })"
+               disabled="@_disableSearchBox" />
+        <button class="btn button-success"
+                disabled="@_searchButtonDisabled"
+                @onclick="SearchCards">
+            Search
+        </button>
+    </div>
+    @if (ViewModel.PagedCards.Data.Any())
+    {
+        <div class="card-totals-container">
+            <small class="text-muted">
+                @ViewModel.PagedCards.TotalCount - results
+            </small>
+        </div>
+        <div class="cards-section">
+            @foreach (var card in ViewModel.PagedCards.Data)
+            {
+                <div class="card-container">
+                    @if (!string.IsNullOrEmpty(card.ImageSmall))
+                    {
+                        <div @onclick="() => CardImageClicked(card)">
+                            <img src="@card.ImageSmall" class="card-image-small" alt="@card.Name">
                         </div>
+                    }
+                    else
+                    {
+                        <div class="card-img-placeholder">
+                            <i class="fas fa-image"></i>
+                            <span>No Image</span>
+                        </div>
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@card.Name</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">ID: @card.Id</h6>
+                        @if (!string.IsNullOrEmpty(card.CardNumber.ToString()))
+                        {
+                            <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
+                        }
+                        @if (!string.IsNullOrEmpty(card.Hp) && card.Hp != "N/A")
+                        {
+                            <h6 class="card-text">HP: @card.Hp</h6>
+                        }
+                        @if (!string.IsNullOrEmpty(card.Raritity))
+                        {
+                            <h6 class="card-text">Rarity: @card.Raritity</h6>
+                        }
                     </div>
-                }
-            </div>
-            
-            // For pagination controls
+                </div>
+            }
+        </div>
+        <div class="pagination-container">
             @if (ViewModel.PagedCards.TotalPages > 1)
             {
                 <nav aria-label="Card pagination" class="pagination-nav">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item @(ViewModel.PagedCards.HasPreviousPage ? "" : "disabled")">
-                            <button class="page-link" @onclick="ViewModel.PreviousPageAsync" 
-                                    disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
-                                Previous
-                            </button>
-                        </li>
-                        
-                        @for (var i = Math.Max(1, ViewModel.CurrentPage - 2); 
-                              i <= Math.Min(ViewModel.PagedCards.TotalPages, ViewModel.CurrentPage + 2); 
-                              i++)
-                        {
-                            var pageNumber = i; // Capture for lambda
-                            <li class="page-item @(i == ViewModel.CurrentPage ? "active" : "")">
-                                <button class="page-link" @onclick="@(() => ViewModel.GoToPageAsync(pageNumber))"
-                                        disabled="@ViewModel.IsLoading">
-                                    @i
+                    <div style="display: flex;">
+                        <ul class="pagination">
+                            <li class="page-item @(ViewModel.PagedCards.HasPreviousPage ? "" : "disabled")">
+                                <button class="page-link" @onclick="ViewModel.PreviousPageAsync"
+                                        disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
+                                    Previous
                                 </button>
                             </li>
-                        }
-                        
-                        <li class="page-item @(ViewModel.PagedCards.HasNextPage ? "" : "disabled")">
-                            <button class="page-link" @onclick="ViewModel.NextPageAsync" 
-                                    disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
-                                Next
-                            </button>
-                        </li>
-                    </ul>
-                    
-                    <div class="text-center mt-2">
-                        <small class="text-muted">
-                            Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
-                        </small>
+                            <li class="page-item @(ViewModel.PagedCards.HasNextPage ? "" : "disabled")">
+                                <button class="page-link" @onclick="ViewModel.NextPageAsync"
+                                        disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
+                                    Next
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="showing-current-page-container">
+                            <small class="text-muted">
+                                Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
+                            </small>
+                        </div>
                     </div>
                 </nav>
+
             }
+            <div class="showing-current-cards-container">
+                @if (ViewModel.PagedCards.TotalCount > 0)
+                {
+                    <small class="text-muted showing-current-cards-text">
+                        Showing @((ViewModel.CurrentPage - 1) * ViewModel.PageSize + 1) -
+                        @(Math.Min(ViewModel.CurrentPage * ViewModel.PageSize, ViewModel.PagedCards.TotalCount))
+                        of @ViewModel.PagedCards.TotalCount cards
+                    </small>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        switch (ViewModel.IsLoading)
+        {
+            case false when !string.IsNullOrEmpty(ViewModel.SearchTerm):
+                <div class="alert alert-info">
+                    <i class="fas fa-search"></i> No cards found for "@ViewModel.SearchTerm"
+                </div>
+                break;
+            case false:
+                <div class="alert alert-info">
+                    <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
+                </div>
+                break;
         }
-        else
-            switch (ViewModel.IsLoading)
-            {
-                case false when !string.IsNullOrEmpty(ViewModel.SearchTerm):
-                    <div class="alert alert-info">
-                        <i class="fas fa-search"></i> No cards found for "@ViewModel.SearchTerm"
-                    </div>
-                    break;
-                case false:
-                    <div class="alert alert-info">
-                        <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
-                    </div>
-                    break;
-            }
-    </div>
+    }
 </div>
+<ModalImageDialog 
+    Opened="@_showDialog" 
+    ImageSource="@_selectedCardLargeImageUrl" 
+    CloseButtonClicked="ResetDialog"/>
 
 @code {
-    protected override void OnInitialized()
+    bool _applyButtonDisabled;
+    bool _disableClearButtonOnRarities; 
+    bool _searchButtonDisabled;
+    bool _showDialog;
+    bool _disableSearchBox;
+    bool _showRarities;
+    string _selectedCardLargeImageUrl = string.Empty;
+    string _rarityFilterText = "Show Rarities";
+    bool _emptyCardSearchParameter = false;
+
+    Dictionary<string, bool> _tempRarities = [];
+    
+    protected override async Task OnInitializedAsync()
     {
+        _applyButtonDisabled = true;
+        _disableClearButtonOnRarities = true;
+        _searchButtonDisabled = true;
+        _showRarities = false;
+        await GrabRarities();
+        _tempRarities = new Dictionary<string, bool>(ViewModel.RarityNameAndValues!);
         Logger.LogInformation("CardPage initialized");
     }
-    
-    private async Task SearchCards()
+
+    public void Dispose()
     {
-        Logger.LogInformation("Search button clicked for: {SearchTerm}", ViewModel.SearchTerm);
-        ViewModel.CurrentPage = 1; // Reset to first page
-        await ViewModel.LoadCardsAsync();
+        ViewModel.SearchTerm = string.Empty;
+        ViewModel.CardId = string.Empty;
+    }
+
+    async Task SearchCards()
+    {
+        Logger.LogInformation($"Search button clicked for: {ViewModel.SearchTerm}");
+        ViewModel.CurrentPage = 1;
+        await ViewModel.LoadCardsBySearchTermAsync();
+        _emptyCardSearchParameter = false;
+    }
+    
+    async Task ApplyButtonClicked()
+    {
+        Logger.LogInformation($"Apply button clicked for: {ViewModel.SearchTerm}");
+        ViewModel.CurrentPage = 1;
+        ViewModel.RarityNameAndValues = new Dictionary<string, bool>(_tempRarities);
+        await ViewModel.LoadCardsBySearchTermAsync();
+        _applyButtonDisabled = true;
+    }
+
+    async Task GrabRarities()
+    {
+        Logger.LogInformation("Grabbing card rarities.");
+        await ViewModel.LoadRaritiesOfCards();
+    }
+
+    void CardImageClicked(PokemonCardDataResponse card)
+    {
+        _selectedCardLargeImageUrl = card.ImageLarge!;
+        ShowDialog();
+    }
+
+    void ShowDialog()
+    {
+        _showDialog = true;
+        _disableSearchBox = true;
+        StateHasChanged();
+        Logger.LogInformation("Card image shown in \"Large\" format.");
+    }
+
+    void ResetDialog()
+    {
+        _showDialog = false;
+        _disableSearchBox = false;
+        StateHasChanged();
+        Logger.LogInformation("Card image dialog closed.");
+    }
+
+    void ToggleRarityFilters()
+    {
+        if (ViewModel.PagedCards.Data.Count == 0)
+        {
+            _emptyCardSearchParameter = true;
+            return;
+        }
+        if (_showRarities)
+        {
+            _rarityFilterText = "Show Rarities";
+            _showRarities = false;
+        }
+        else
+        {
+            _rarityFilterText = "Hide Rarities";
+            _showRarities = true;
+        }
+    }
+
+    void ClearAllFilters()
+    {
+        Logger.LogInformation("Clearing all selected filters.");
+        foreach (var pair in _tempRarities)
+        {
+            _tempRarities[pair.Key] = false;
+        }
+        _disableClearButtonOnRarities = true;
+        _applyButtonDisabled = false;
+    }
+    
+    void OnSearchInput(ChangeEventArgs e)
+    {
+        ViewModel.SearchTerm = e.Value?.ToString() ?? string.Empty;
+        _searchButtonDisabled = string.IsNullOrWhiteSpace(ViewModel.SearchTerm);
+    }
+
+    void UpdateDictionaryWithKey(string name)
+    {
+        var rarityValue = _tempRarities[name];
+        rarityValue = !rarityValue;
+        _tempRarities[name] = rarityValue;
+        Logger.LogInformation($"Rarity changed: {name} to {rarityValue} as selected.");
+
+        if (ViewModel.RarityNameAndValueDifferentThanTemp(_tempRarities)) // are different
+        {
+            _applyButtonDisabled = false;
+            _disableClearButtonOnRarities = false;
+        }
+        else // Not different
+        {
+            _applyButtonDisabled = true;
+            _disableClearButtonOnRarities = true;
+        }
     }
 }

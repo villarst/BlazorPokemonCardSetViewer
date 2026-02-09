@@ -1,16 +1,11 @@
 ﻿@using BlazorPokemonCardSetViewer.Components
 @inherits LayoutComponentBase
-<div>
-    <div class="blank-row">
-        
-    </div>
-    <div class="page">
+
+<div class="app-container">
+    <nav class="top-navigation-bar">
         <NavigationRow/>
-    </div>
+    </nav>
     <main>
-        <article class="content" style="margin: 0">
-            @Body
-        </article>
+        @Body
     </main>
 </div>
-

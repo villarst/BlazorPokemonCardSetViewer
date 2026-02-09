@@ -1,0 +1,55 @@
+<style>
+    .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background-color: rgba(0,0, 0, 0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        z-index: 100;
+    }
+    .image-container {
+        max-width: 90vw;
+        max-height: 90vh;
+        object-fit: contain; /* Keep the Pokemon Card image aspect ratio the same */
+    }
+    .close-button {
+        position: fixed; 
+        top: 20px;
+        right: 30px;
+        font-size: 3rem;
+        color: white;
+        cursor: pointer;
+        transition: 0.2s ease;
+        line-height: 1;
+        z-index: 101;
+    }
+    .close-button:hover {
+        color: #ff6b6b;
+        transform: scale(1.1);
+    }
+</style>
+@if (Opened)
+{
+    <div class="overlay" @onclick="@CloseDialog">
+        <span class="close-button" @onclick="CloseDialog">&times;</span>
+        <img class="image-container" src="@ImageSource" alt="Pokemon Card"/>
+    </div>
+}
+
+@code {
+    [Parameter] public required string ImageSource { get; set; }
+    [Parameter] public bool Opened { get; set; }
+    [Parameter] public EventCallback CloseButtonClicked { get; set; }
+
+    void CloseDialog()
+    {
+        Opened = false;
+        CloseButtonClicked.InvokeAsync();
+    }
+}
