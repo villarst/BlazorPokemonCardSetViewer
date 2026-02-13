@@ -30,13 +30,13 @@
         padding: 0;
     }
     .rarities-header-container {
-        display: flex; 
-        justify-content: space-between; 
-        border-bottom-style: solid; 
-        border-color: #a5a5a5; 
-        border-width: 2px; 
-        margin-bottom: 0.5rem; 
-        margin-left: 0.875rem; 
+        display: flex;
+        justify-content: space-between;
+        border-bottom-style: solid;
+        border-color: #a5a5a5;
+        border-width: 2px;
+        margin-bottom: 0.5rem;
+        margin-left: 0.875rem;
         padding-bottom: 0.375rem;
     }
     .rarities-header {
@@ -51,7 +51,7 @@
         margin-top: 0.75rem;
     }
     .search-box-input {
-        margin-right: 1rem;
+        margin-right: 0.25rem;
         position: relative;
         width: 200px;
         height: 36px;
@@ -100,7 +100,7 @@
     }
     .main-content {
         margin-left: 340px; /* sidebar width + some gap */
-        padding: 6.125rem 1rem 2rem 1rem;
+        padding: 5.9375rem 1rem 2rem 1rem;
         min-width: 600px;
     }
     .card-totals-container {
@@ -116,7 +116,7 @@
     }
     .card-container {
         display: flex;
-        flex-direction: column; 
+        flex-direction: column;
         align-items: center;
         justify-content: flex-start;
         min-width: 19.5rem;
@@ -167,7 +167,7 @@
         font-size: 0.9rem;
         margin-bottom: 0.25rem;
     }
-    
+
     /* Pagination Styles */
     .pagination-container {
         display: flex;
@@ -187,30 +187,28 @@
         padding: 0;
     }
     .page-link {
-        color: #007bff;
-        border: 1px solid #dee2e6;
+        color: white;
+        border: 1px solid #000000;
         padding: 0.5rem 0.75rem;
         text-decoration: none;
-        background-color: #fff;
+        background-color: #000000;
+    }
+    .page-link-left {
+        border-radius: 4px 0 0 4px;
+    }
+    .page-link-right {
+        border-radius: 0 4px 4px 0;
     }
     .page-link:hover {
-        color: #0056b3;
-        background-color: #e9ecef;
-        border-color: #dee2e6;
+        color: black;
+        background-color: #a9a9a9;
+        border-color: black;
     }
-    .page-item.disabled .page-link {
-        color: #6c757d;
-        background-color: #fff;
-        border-color: #dee2e6;
+    .page-link:disabled {
+        color: black;
+        background-color: white;
+        border-color: black;
         cursor: not-allowed;
-    }
-    .page-item:first-child .page-link {
-        border-top-left-radius: 0.25rem;
-        border-bottom-left-radius: 0.25rem;
-    }
-    .page-item:last-child .page-link {
-        border-top-right-radius: 0.25rem;
-        border-bottom-right-radius: 0.25rem;
     }
     .transparent-box {
         position: absolute;
@@ -235,7 +233,7 @@
                     @_rarityFilterText
                 </button>
             </div>
-            <button class="btn btn-info"
+            <button class="btn button-info"
                     disabled="@_applyButtonDisabled"
                     @onclick="ApplyButtonClicked">
                 Apply
@@ -251,8 +249,8 @@
         {
             <div class="rarities-header-container">
                 <h3 class="rarities-header" style="align-items: flex-start">Rarities</h3>
-                <button class="btn button-danger" 
-                        @onclick="ClearAllFilters" 
+                <button class="btn button-danger"
+                        @onclick="ClearAllFilters"
                         disabled="@_disableClearButtonOnRarities">
                     Clear
                 </button>
@@ -330,30 +328,26 @@
         <div class="pagination-container">
             @if (ViewModel.PagedCards.TotalPages > 1)
             {
-                <nav aria-label="Card pagination" class="pagination-nav">
-                    <div style="display: flex;">
-                        <ul class="pagination">
-                            <li class="page-item @(ViewModel.PagedCards.HasPreviousPage ? "" : "disabled")">
-                                <button class="page-link" @onclick="ViewModel.PreviousPageAsync"
-                                        disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
-                                    Previous
-                                </button>
-                            </li>
-                            <li class="page-item @(ViewModel.PagedCards.HasNextPage ? "" : "disabled")">
-                                <button class="page-link" @onclick="ViewModel.NextPageAsync"
-                                        disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
-                                    Next
-                                </button>
-                            </li>
-                        </ul>
-                        <div class="showing-current-page-container">
-                            <small class="text-muted">
-                                Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
-                            </small>
-                        </div>
+                <div style="display: flex">
+                    <div style="display: flex; gap: 0.25rem;">
+                        <button class="page-link page-link-left" @onclick="ViewModel.PreviousPageAsync"
+                                disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
+                            <i class="bi bi-chevron-left"></i>
+                            Previous
+                        </button>
+                        <button class="page-link page-link-right" @onclick="ViewModel.NextPageAsync"
+                                disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
+                            Next
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
                     </div>
-                </nav>
-
+                    <div style="display: flex; margin-left: 1rem; justify-content: center; align-items: center;">
+                        <small class="text-muted">
+                            Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
+                        </small>
+                    </div>
+                </div>
+                
             }
             <div class="showing-current-cards-container">
                 @if (ViewModel.PagedCards.TotalCount > 0)
@@ -369,29 +363,22 @@
     }
     else
     {
-        switch (ViewModel.IsLoading)
+        if (!ViewModel.IsLoading)
         {
-            case false when !string.IsNullOrEmpty(ViewModel.SearchTerm):
-                <div class="alert alert-info">
-                    <i class="fas fa-search"></i> No cards found for "@ViewModel.SearchTerm"
-                </div>
-                break;
-            case false:
-                <div class="alert alert-info">
-                    <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
-                </div>
-                break;
+            <div class="alert alert-info">
+                <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
+            </div>
         }
     }
 </div>
-<ModalImageDialog 
-    Opened="@_showDialog" 
-    ImageSource="@_selectedCardLargeImageUrl" 
+<ModalImageDialog
+    Opened="@_showDialog"
+    ImageSource="@_selectedCardLargeImageUrl"
     CloseButtonClicked="ResetDialog"/>
 
 @code {
     bool _applyButtonDisabled;
-    bool _disableClearButtonOnRarities; 
+    bool _disableClearButtonOnRarities;
     bool _searchButtonDisabled;
     bool _showDialog;
     bool _disableSearchBox;
@@ -401,7 +388,7 @@
     bool _emptyCardSearchParameter = false;
 
     Dictionary<string, bool> _tempRarities = [];
-    
+
     protected override async Task OnInitializedAsync()
     {
         _applyButtonDisabled = true;
@@ -426,7 +413,7 @@
         await ViewModel.LoadCardsBySearchTermAsync();
         _emptyCardSearchParameter = false;
     }
-    
+
     async Task ApplyButtonClicked()
     {
         Logger.LogInformation($"Apply button clicked for: {ViewModel.SearchTerm}");
@@ -493,7 +480,7 @@
         _disableClearButtonOnRarities = true;
         _applyButtonDisabled = false;
     }
-    
+
     void OnSearchInput(ChangeEventArgs e)
     {
         ViewModel.SearchTerm = e.Value?.ToString() ?? string.Empty;
