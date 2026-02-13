@@ -51,7 +51,7 @@
         margin-top: 0.75rem;
     }
     .search-box-input {
-        margin-right: 1rem;
+        margin-right: 0.25rem;
         position: relative;
         width: 200px;
         height: 36px;
@@ -100,7 +100,7 @@
     }
     .main-content {
         margin-left: 340px; /* sidebar width + some gap */
-        padding: 6.125rem 1rem 2rem 1rem;
+        padding: 5.9375rem 1rem 2rem 1rem;
         min-width: 600px;
     }
     .card-totals-container {
@@ -328,23 +328,26 @@
         <div class="pagination-container">
             @if (ViewModel.PagedCards.TotalPages > 1)
             {
-                <div style="display: flex; gap: 0.25rem;">
-                    <button class="page-link page-link-left" @onclick="ViewModel.PreviousPageAsync"
-                            disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
-                        <i class="bi bi-chevron-left"></i>
-                        Previous
-                    </button>
-                    <button class="page-link page-link-right" @onclick="ViewModel.NextPageAsync"
-                            disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
-                        Next
-                        <i class="bi bi-chevron-right"></i>
-                    </button>
+                <div style="display: flex">
+                    <div style="display: flex; gap: 0.25rem;">
+                        <button class="page-link page-link-left" @onclick="ViewModel.PreviousPageAsync"
+                                disabled="@(!ViewModel.PagedCards.HasPreviousPage || ViewModel.IsLoading)">
+                            <i class="bi bi-chevron-left"></i>
+                            Previous
+                        </button>
+                        <button class="page-link page-link-right" @onclick="ViewModel.NextPageAsync"
+                                disabled="@(!ViewModel.PagedCards.HasNextPage || ViewModel.IsLoading)">
+                            Next
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div style="display: flex; margin-left: 1rem; justify-content: center; align-items: center;">
+                        <small class="text-muted">
+                            Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
+                        </small>
+                    </div>
                 </div>
-                <div class="showing-current-page-container">
-                    <small class="text-muted">
-                        Page @ViewModel.CurrentPage of @ViewModel.PagedCards.TotalPages
-                    </small>
-                </div>
+                
             }
             <div class="showing-current-cards-container">
                 @if (ViewModel.PagedCards.TotalCount > 0)
@@ -360,18 +363,11 @@
     }
     else
     {
-        switch (ViewModel.IsLoading)
+        if (!ViewModel.IsLoading)
         {
-            case false when !string.IsNullOrEmpty(ViewModel.SearchTerm):
-                <div class="alert alert-info">
-                    <i class="fas fa-search"></i> No cards found for "@ViewModel.SearchTerm"
-                </div>
-                break;
-            case false:
-                <div class="alert alert-info">
-                    <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
-                </div>
-                break;
+            <div class="alert alert-info">
+                <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
+            </div>
         }
     }
 </div>
