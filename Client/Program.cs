@@ -27,7 +27,8 @@ public abstract class Program
                 BaseAddress = new Uri("https://localhost:7240/") // Server port number
             });
     
-            builder.Services.AddScoped<ICardsService, CardsService>();
+            builder.Services.AddScoped<ICardService, CardService>();
+            builder.Services.AddScoped<ISetService, SetService>();
             builder.Services.AddScoped<CardPageViewModel>();
     
             await builder.Build().RunAsync();

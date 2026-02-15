@@ -24,7 +24,7 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
 {
     private readonly IJSRuntime _js;
     private readonly ILogger<CardPageViewModel> _logger;
-    private readonly ICardsService _cardService;
+    private readonly ICardService _cardService;
     private readonly CompositeDisposable _disposables = new();
     
     public PagedList<PokemonCardDataResponse> PagedCards { get; set; }
@@ -37,7 +37,7 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
     public int CurrentPage { get; set; } = 1;
     public int PageSize { get; set; } = 12;
     
-    public CardPageViewModel(ILogger<CardPageViewModel> logger, IJSRuntime js, ICardsService cardService) : this(js)
+    public CardPageViewModel(ILogger<CardPageViewModel> logger, IJSRuntime js, ICardService cardService) : this(js)
     {
         _logger = logger;
         _js = js;

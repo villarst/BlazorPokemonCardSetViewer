@@ -7,19 +7,19 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace BlazorPokemonCardSetViewer.Services;
 
-public interface ICardsService
+public interface ICardService
 {
     Task<PagedList<PokemonCardDataResponse>> GetCardsAsync(PagedRequest request);
     Task<PagedList<PokemonCardDataResponse>> GetCardByIdAsync(PagedRequest request);
     Task<PagedList<RarityResponse>> GetRaritiesAsync(PagedRequest request);
 }
 
-public class CardsService : ICardsService
+public class CardService : ICardService
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<CardsService> _logger;
+    private readonly ILogger<CardService> _logger;
     
-    public CardsService(HttpClient httpClient, ILogger<CardsService> logger)
+    public CardService(HttpClient httpClient, ILogger<CardService> logger)
     {
         _httpClient = httpClient;
         _logger = logger;
@@ -117,7 +117,7 @@ public class CardsService : ICardsService
     {
         try
         {
-            _logger.LogInformation("Calling API for all cards.");
+            _logger.LogInformation("Calling API rarities");
                 
             var response = await _httpClient.GetAsync(
                 $"api/PokemonCard/rarities");
@@ -150,6 +150,7 @@ public class CardsService : ICardsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception in CardService.GetRaritiesAsync");
+            // TODO: Need to have a fallback instead of throwing.
             throw;
         }
     }

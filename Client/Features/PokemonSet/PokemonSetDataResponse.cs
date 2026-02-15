@@ -1,30 +1,30 @@
-// namespace BlazorPokemonCardSetViewer.Features.PokemonSet;
-//
-// public class PokemonSetDataResponse
-// {
-//     public required string Id { get; set; }
-//     
-//     public string Name { get; set; }
-//     
-//     public string Series { get; set; }
-//
-//     public int PrintedTotal { get; set; }
-//
-//     public int Total { get; set; }
-//
-//     public string? PtcgoCode { get; set; }
-//
-//     public string ReleaseDate { get; set; }
-//
-//     public string UpdatedAt { get; set; }
-//
-//     public string ImageSymbol { get; set; }
-//
-//     public string ImageLogo { get; set; }
-//
-//     public string LegalityUnlimited { get; set; }
-//
-//     public string? LegalityStandard { get; set; }
-//     
-//     public string? LegalityExpanded { get; set; }
-// }
+namespace BlazorPokemonCardSetViewer.Features.PokemonSet;
+
+public class PokemonSetDataResponse
+{
+    public required string Id { get; init; }
+    
+    public string? Name { get; init; }
+    
+    public string? Series { get; init; }
+
+    public int? PrintedTotal { get; init; }
+
+    public int? Total { get; init; }
+
+    public string? PtcgoCode { get; init; }
+
+    public DateTime? ReleaseDate { get; init; }
+
+    public string? UpdatedAt { get; init; }
+
+    public string? ImageSymbol { get; init; }
+
+    public string? ImageLogo { get; init; }
+
+    public string? LegalityUnlimited { get; init; }
+
+    public string? LegalityStandard { get; init; }
+    
+    public string? LegalityExpanded { get; init; }
+}

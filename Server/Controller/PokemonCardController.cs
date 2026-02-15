@@ -17,7 +17,7 @@ public class PokemonCardController : ControllerBase
     {
         _context = context;
         _logger = logger;
-    }
+    }   
     
     [HttpPost ("search")] // Example: https://localhost:7240/api/PokemonCard/Pikachu?pageSize=12&pageNumber=1
     public async Task<ActionResult<PagedList<PokemonCardDataResponse>>> GetCardsTwo(
