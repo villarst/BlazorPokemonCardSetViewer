@@ -115,10 +115,6 @@ public class CardsService : ICardsService
     
     public async Task<PagedList<RarityResponse>> GetRaritiesAsync(PagedRequest request)
     {
-        // // Implementation for getting all cards without pagination if needed
-        // var result = await GetCardsAsync(request);
-        // return result.Data;
-        //
         try
         {
             _logger.LogInformation("Calling API for all cards.");
