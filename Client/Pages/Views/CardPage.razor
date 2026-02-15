@@ -313,13 +313,13 @@
                         {
                             <h6 class="card-subtitle mb-2 text-muted">Set Number: @card.CardNumber</h6>
                         }
-                        @if (!string.IsNullOrEmpty(card.Hp) && card.Hp != "N/A")
+                        @if (!string.IsNullOrEmpty(card.Hp.ToString()) && card.Hp.ToString() != "N/A")
                         {
                             <h6 class="card-text">HP: @card.Hp</h6>
                         }
-                        @if (!string.IsNullOrEmpty(card.Raritity))
+                        @if (!string.IsNullOrEmpty(card.Rarity))
                         {
-                            <h6 class="card-text">Rarity: @card.Raritity</h6>
+                            <h6 class="card-text">Rarity: @card.Rarity</h6>
                         }
                     </div>
                 </div>
