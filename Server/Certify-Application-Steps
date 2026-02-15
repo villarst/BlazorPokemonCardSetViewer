@@ -1,0 +1,19 @@
+Steps to certify WSL (Windows Sub-System for Linux) on Brave's Trusted Store
+
+    1.  Run the following commands: "dotnet dev-certs https --clean" along with "dotnet dev-certs https --trust".
+            This will clean the developer certifications and then go ahead and trust the newly created one.
+
+    2.  Run the following command to export the pem certificate file: "dotnet dev-certs https -ep ~/.aspnet/https/dev-cert.pem --format PEM --no-password"
+            If the file does not exist check with "ls -la ~/.aspnet/https/" then force export it with the --force
+            option "dotnet dev-certs https -ep ~/.aspnet/https/dev-cert.pem --format PEM --no-password --force" at the end.
+
+    3.  Next, install the libnss3 tools which will include more network security service libraries that go on top of the set of default Network Security
+            Service(NSS) libraries. Run "sudo apt install libnss3-tools"
+
+    4.  Check if the cert9.db, key4.db, and pkcs11.txt files are present in the "HOME/.pki/nssdb/" folder running "ls -la $HOME/.pki/nssdb/".
+            If they do exis, add the certificate by running "certutil -d sql:$HOME/.pki/nssdb -A -t "P,," -n "dotnet-dev-cert" -i ~/.aspnet/https/dev-cert.pem".
+
+            If no directory exists, run these two commands to create the folder, then the files "mkdir -p $HOME/.pki/nssdbc", "certutil -d sql:$HOME/.pki/nssdb -N --empty-password".
+            Run the command this command "certutil -d sql:$HOME/.pki/nssdb -A -t "P,," -n "dotnet-dev-cert" -i ~/.aspnet/https/dev-cert.pem" to add the developer certificate.
+
+    5. Close Brave, and launch application in Debug Mode to verify that the application is now trusted and teh "Your connection is not private" message is now gone.
