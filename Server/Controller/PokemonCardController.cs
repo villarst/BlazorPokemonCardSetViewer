@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Shared.Models;
 using BlazorPokemonCardSetViewer.Features.PokemonCard;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace Server.Controller;
 
