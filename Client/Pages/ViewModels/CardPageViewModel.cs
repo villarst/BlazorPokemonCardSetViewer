@@ -8,7 +8,7 @@ namespace BlazorPokemonCardSetViewer.Pages.ViewModels;
 
 public interface ICardPageViewModel
 {
-    PagedList<PokemonCardDataResponse> PagedCards { get; set; }
+    PagedList<PokemonCardDataResponse>? PagedCards { get; set; }
     PagedList<RarityResponse> Rarities { get; set; }
     Dictionary<string, bool> RarityNameAndValues { get; set; }
     string SearchTerm { get; set; }
@@ -27,7 +27,7 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
     private readonly ICardService _cardService;
     private readonly CompositeDisposable _disposables = new();
     
-    public PagedList<PokemonCardDataResponse> PagedCards { get; set; }
+    public PagedList<PokemonCardDataResponse>? PagedCards { get; set; }
     public PagedList<RarityResponse> Rarities { get; set; }
     public Dictionary<string, bool>? RarityNameAndValues { get; set; } = new();
     public string SearchTerm { get; set; } = string.Empty;
@@ -43,7 +43,8 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
         _js = js;
         _cardService = cardService;
         _logger.LogDebug("CardPageViewModel created.");
-        PagedCards =  new PagedList<PokemonCardDataResponse>();
+        PagedCards = null;
+        // PagedCards = new PagedList<PokemonCardDataResponse>();
         Rarities = new PagedList<RarityResponse>();
     }
     

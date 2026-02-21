@@ -50,6 +50,12 @@
         margin-bottom: 1rem;
         margin-top: 0.75rem;
     }
+    .search-box-buttong-group {
+        display: flex;
+        align-items: center;
+        line-height: 1;
+        gap: 0.25rem;
+    }
     .search-box-input {
         margin-right: 0.25rem;
         position: relative;
@@ -276,13 +282,20 @@
                              if (e.Key == "Enter") await SearchCards();
                          })"
                disabled="@_disableSearchBox" />
-        <button class="btn button-success"
-                disabled="@_searchButtonDisabled"
-                @onclick="SearchCards">
-            Search
-        </button>
+        <div class="search-box-buttong-group">
+            <button class="btn button-success"
+                    disabled="@_searchButtonDisabled"
+                    @onclick="SearchCards">
+                Search
+            </button>
+            <button class="btn button-danger"
+                    @onclick="ClearSearchTextBox"
+                    disabled="@_disableClearButtonOnSearch">
+                Clear
+            </button>
+        </div>
     </div>
-    @if (ViewModel.PagedCards.Data.Any())
+    @if (ViewModel.PagedCards != null)
     {
         <div class="card-totals-container">
             <small class="text-muted">
@@ -365,6 +378,7 @@
     {
         if (!ViewModel.IsLoading)
         {
+            // _searchButtonDisabled = true;
             <div class="alert alert-info">
                 <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
             </div>
@@ -379,6 +393,7 @@
 @code {
     bool _applyButtonDisabled;
     bool _disableClearButtonOnRarities;
+    bool _disableClearButtonOnSearch;
     bool _searchButtonDisabled;
     bool _showDialog;
     bool _disableSearchBox;
@@ -393,6 +408,7 @@
     {
         _applyButtonDisabled = true;
         _disableClearButtonOnRarities = true;
+        _disableClearButtonOnSearch = true;
         _searchButtonDisabled = true;
         _showRarities = false;
         await GrabRarities();
@@ -404,6 +420,7 @@
     {
         ViewModel.SearchTerm = string.Empty;
         ViewModel.CardId = string.Empty;
+        ViewModel.PagedCards = null;
     }
 
     async Task SearchCards()
@@ -414,6 +431,17 @@
         _emptyCardSearchParameter = false;
     }
 
+    async Task ClearSearchTextBox()
+    {
+        ViewModel.SearchTerm = string.Empty;
+        _disableClearButtonOnSearch = true;
+        _searchButtonDisabled = true;
+        _showRarities = false;
+        ViewModel.PagedCards = null;
+        ClearAllFilters();
+        await ApplyButtonClicked();
+    }
+    
     async Task ApplyButtonClicked()
     {
         Logger.LogInformation($"Apply button clicked for: {ViewModel.SearchTerm}");
@@ -453,7 +481,7 @@
 
     void ToggleRarityFilters()
     {
-        if (ViewModel.PagedCards.Data.Count == 0)
+        if (ViewModel.PagedCards == null)
         {
             _emptyCardSearchParameter = true;
             return;
@@ -485,6 +513,11 @@
     {
         ViewModel.SearchTerm = e.Value?.ToString() ?? string.Empty;
         _searchButtonDisabled = string.IsNullOrWhiteSpace(ViewModel.SearchTerm);
+
+        if (ViewModel.SearchTerm != string.Empty)
+        {
+            _disableClearButtonOnSearch = false;
+        }
     }
 
     void UpdateDictionaryWithKey(string name)
