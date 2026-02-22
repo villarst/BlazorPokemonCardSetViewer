@@ -1,5 +1,1 @@
-Need to address the issues concerning sending a request and getting an error. Maybe create an 'Errors.cs' file and 
-have it return a Result<Error<PagedList<PokemonCardDat>>> ? or some sort like that and handle the error appropriately 
-and the disabled and enabled states of the buttons on the page?
-
 Maybe add a loading page? loading states? Or something to let the user know that data will appear on the page?
