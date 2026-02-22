@@ -29,7 +29,7 @@ public abstract class Program
     
             builder.Services.AddScoped<ICardService, CardService>();
             builder.Services.AddScoped<ISetService, SetService>();
-            builder.Services.AddScoped<CardPageViewModel>();
+            builder.Services.AddScoped<ICardPageViewModel, CardPageViewModel>();
     
             await builder.Build().RunAsync();
         }

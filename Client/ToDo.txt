@@ -1,3 +1,12 @@
+Create sets page with information.
+
 Add new sets and cards into Database!
+
+Disable scrolling in the background when clicking a pokemon set.
+
+Need to implement "set" filter for the cards to select which set to show in the cards page.
+
+Need to somehow have it so when you go into the sets page, you click a set to "view cards" and the filtered cards for
+that set will appeared.
 
 Maybe add a loading page? loading states? Or something to let the user know that data will appear on the page?

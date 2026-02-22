@@ -2,7 +2,7 @@
 @using BlazorPokemonCardSetViewer.Components
 @using BlazorPokemonCardSetViewer.Features.PokemonCard
 @using BlazorPokemonCardSetViewer.Pages.ViewModels
-@inject CardPageViewModel ViewModel
+@inject ICardPageViewModel ViewModel
 @inject ILogger<CardPage> Logger
 @implements IDisposable
 
@@ -24,10 +24,6 @@
         box-sizing: border-box;
         overflow-y: auto;
         z-index: 50;
-    }
-    .cards-header {
-        margin: 0 0 1.625rem 1rem;
-        padding: 0;
     }
     .rarities-header-container {
         display: flex;
@@ -80,18 +76,8 @@
         align-items: center;
         cursor: pointer;
     }
-    .rarities-icon-container:hover .transparent-box {
+    .rarities-icon-container:hover{
         display: block;
-    }
-    .transparent-box {
-        position: absolute;
-        top: 0;
-        height: 26px;
-        width: 25px;
-        margin-left: 18px;
-        margin-top: 4px;
-        background-color: rgba(128, 128, 128, 0.5); /* Adjust the last value (0.5) for the transparency */
-        display: none;
     }
     .hide-rarities-button {
         font-family: "Kanit-Light", serif;
@@ -181,17 +167,6 @@
         align-items: center;
         margin-top: 0.5rem;
     }
-    .pagination-nav {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-    .pagination {
-        margin: 0;
-        display: flex;
-        list-style: none;
-        padding: 0;
-    }
     .page-link {
         color: white;
         border: 1px solid #000000;
@@ -215,16 +190,6 @@
         background-color: white;
         border-color: black;
         cursor: not-allowed;
-    }
-    .transparent-box {
-        position: absolute;
-        top: 0;
-        height: 26px;
-        width: 25px;
-        margin-left: 18px;
-        margin-top: 4px;
-        background-color: rgba(128, 128, 128, 0.5);
-        display: none;
     }
 </style>
 

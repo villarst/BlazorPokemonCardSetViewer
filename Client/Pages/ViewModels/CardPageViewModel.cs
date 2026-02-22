@@ -1,6 +1,5 @@
 using Microsoft.JSInterop;
 using Shared.Models;
-using System.Reactive.Disposables;
 using BlazorPokemonCardSetViewer.Features.PokemonCard;
 using BlazorPokemonCardSetViewer.Services;
 
@@ -9,8 +8,17 @@ namespace BlazorPokemonCardSetViewer.Pages.ViewModels;
 public interface ICardPageViewModel
 {
     PagedList<PokemonCardDataResponse>? PagedCards { get; set; }
-    PagedList<RarityResponse> Rarities { get; set; }
-    Dictionary<string, bool> RarityNameAndValues { get; set; }
+    PagedList<RarityResponse>? Rarities { get; set; }
+    Dictionary<string, bool>? RarityNameAndValues { get; set; }
+
+    Task NextPageAsync();
+    Task PreviousPageAsync();
+
+    Task LoadCardsBySearchTermAsync(int? pageNumber = null);
+    Task LoadRaritiesOfCards();
+    
+    bool RarityNameAndValueDifferentThanTemp(Dictionary<string, bool> temp);
+    
     string SearchTerm { get; set; }
     string CardId { get; set; }
     bool IsLoading { get; set; }
@@ -20,15 +28,14 @@ public interface ICardPageViewModel
     bool CheckIfRaritiesSelected();
 }
 
-public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
+public class CardPageViewModel : ICardPageViewModel, IDisposable
 {
     private readonly IJSRuntime _js;
     private readonly ILogger<CardPageViewModel> _logger;
     private readonly ICardService _cardService;
-    private readonly CompositeDisposable _disposables = new();
     
     public PagedList<PokemonCardDataResponse>? PagedCards { get; set; }
-    public PagedList<RarityResponse> Rarities { get; set; }
+    public PagedList<RarityResponse>? Rarities { get; set; }
     public Dictionary<string, bool>? RarityNameAndValues { get; set; } = new();
     public string SearchTerm { get; set; } = string.Empty;
     public string CardId { get; set; } = string.Empty;
@@ -37,7 +44,7 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
     public int CurrentPage { get; set; } = 1;
     public int PageSize { get; set; } = 12;
     
-    public CardPageViewModel(ILogger<CardPageViewModel> logger, IJSRuntime js, ICardService cardService) : this(js)
+    public CardPageViewModel(ILogger<CardPageViewModel> logger, IJSRuntime js, ICardService cardService)
     {
         _logger = logger;
         _js = js;
@@ -50,7 +57,10 @@ public class CardPageViewModel (IJSRuntime js) : ICardPageViewModel, IDisposable
     
     public void Dispose()
     {
-        _disposables?.Dispose();
+        PagedCards = null;
+        Rarities = null;
+        RarityNameAndValues = null;
+        ErrorMessage = null;
         _logger.LogInformation("CardPageViewModel disposed");
     }
     
