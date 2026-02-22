@@ -30,7 +30,7 @@ public class SetService : ISetService
         {
             _logger.LogInformation("Calling API for sets, Page; {PageNumber}", request.PageNumber);
             var response = await _httpClient.GetAsync(
-                $"api/PokemonSet/sets?pageNumber={request.PageNumber}&pageSize{request.PageSize}");
+                $"api/PokemonSet/sets?pageNumber={request.PageNumber}&pageSize={request.PageSize}&sortOrder={request.SortOrder}");
 
             _logger.LogInformation("API response status: {StatusCode}", response.StatusCode);
 

@@ -19,10 +19,11 @@ public class PokemonSetController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("sets")] // Example: https://localhost:7240/api/PokemonSet/sets?pageSize=12&pageNumber=1
-    public async Task<ActionResult<PagedList<PokemonSetDataResponse>>> GetAllSets(
+    [HttpGet("sets")] // Example: https://localhost:7240/api/PokemonSet/sets?pageNumber=1&pageSize=12&sortOrder=newest
+    public async Task<ActionResult<PagedList<PokemonSetDataResponse>>> GetSets(
         [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 12)
+        [FromQuery] int pageSize = 12,
+        [FromQuery] string? sortOrder = "newest")
     {
         try
         {
@@ -45,10 +46,16 @@ public class PokemonSetController : ControllerBase
                     LegalityStandard = s.LegalityStandard,
                     LegalityExpanded = s.LegalityExpanded,
                 })
-                .FirstOrDefaultAsync();
-            if (setDto != null) return Ok(setDto);
-            _logger.LogWarning("Sets not found");
-            return NotFound("Pokemon sets not found"); // Status Not Found Code 404
+                .ToListAsync();
+            if (sortOrder != null && sortOrder.ToLower() == "newest")
+            {
+                setDto = setDto.OrderByDescending(set => set.ReleaseDate).ToList();
+            }
+            else // "oldest"
+            {
+                setDto = setDto.OrderBy(set => set.ReleaseDate).ToList();
+            }
+            return Ok(setDto);
         }
         catch (Exception ex)
         {
