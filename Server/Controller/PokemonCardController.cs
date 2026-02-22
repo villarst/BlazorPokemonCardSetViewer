@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Shared.Models;
 using BlazorPokemonCardSetViewer.Features.PokemonCard;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace Server.Controller;
 
@@ -18,7 +17,7 @@ public class PokemonCardController : ControllerBase
     {
         _context = context;
         _logger = logger;
-    }
+    }   
     
     [HttpPost ("search")] // Example: https://localhost:7240/api/PokemonCard/Pikachu?pageSize=12&pageNumber=1
     public async Task<ActionResult<PagedList<PokemonCardDataResponse>>> GetCardsTwo(
@@ -130,10 +129,21 @@ public class PokemonCardController : ControllerBase
                 {
                     Id = c.Id,
                     Name = c.Name,
+                    SuperType = c.SuperType,
+                    Level = c.Level,
                     Hp = c.Hp,
+                    EvolvesFrom = c.EvolvesFrom,
+                    RetreatCost = c.RetreatCost,
+                    SetNumber = c.SetNumber,
+                    Artist = c.Artist,
+                    FlavorText = c.FlavorText,
                     CardNumber = c.SetNumber,
                     ImageSmall = c.ImageSmall,
-                    ImageLarge = c.ImageLarge
+                    ImageLarge = c.ImageLarge,
+                    Rarity = c.Rarity,
+                    LegalityUnlimited = c.LegalityUnlimited,
+                    LegalityStandard = c.LegalityStandard,
+                    LegalityExpanded = c.LegalityExpanded
                 })
                 .FirstOrDefaultAsync();
                 

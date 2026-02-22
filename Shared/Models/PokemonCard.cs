@@ -14,7 +14,7 @@ public class PokemonCard
     public string Name { get; set; }
     
     [Column("supertype")]
-    public string? SuperType { get; set; }
+    public string SuperType { get; set; }
     
     [Column("level")]
     public int? Level { get; set; }
@@ -41,13 +41,13 @@ public class PokemonCard
     public string? FlavorText { get; set; }
     
     [Column("image_small")]
-    public string? ImageSmall { get; set; }
+    public string ImageSmall { get; set; }
     
     [Column("image_large")]
-    public string? ImageLarge { get; set; }
+    public string ImageLarge { get; set; }
     
     [Column("legality_unlimited")]
-    public string? LegalityUnlimited { get; set; }
+    public string LegalityUnlimited { get; set; }
     
     [Column("legality_standard")]
     public string? LegalityStandard { get; set; }
