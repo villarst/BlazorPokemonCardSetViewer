@@ -7,19 +7,19 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace BlazorPokemonCardSetViewer.Services;
 
-public interface ICardService
+public interface ICardsService
 {
     Task<PagedList<PokemonCardDataResponse>> GetCardsAsync(PagedRequest request);
     Task<PagedList<PokemonCardDataResponse>> GetCardByIdAsync(PagedRequest request);
     Task<PagedList<RarityResponse>> GetRaritiesAsync(PagedRequest request);
 }
 
-public class CardService : ICardService
+public class CardsService : ICardsService
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<CardService> _logger;
+    private readonly ILogger<CardsService> _logger;
     
-    public CardService(HttpClient httpClient, ILogger<CardService> logger)
+    public CardsService(HttpClient httpClient, ILogger<CardsService> logger)
     {
         _httpClient = httpClient;
         _logger = logger;

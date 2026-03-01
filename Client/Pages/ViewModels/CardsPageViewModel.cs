@@ -5,7 +5,7 @@ using BlazorPokemonCardSetViewer.Services;
 
 namespace BlazorPokemonCardSetViewer.Pages.ViewModels;
 
-public interface ICardPageViewModel
+public interface ICardsPageViewModel
 {
     PagedList<PokemonCardDataResponse>? PagedCards { get; set; }
     PagedList<RarityResponse>? Rarities { get; set; }
@@ -25,14 +25,13 @@ public interface ICardPageViewModel
     string? ErrorMessage { get; set; }
     int CurrentPage { get; set; }
     int PageSize { get; set; }
-    bool CheckIfRaritiesSelected();
 }
 
-public class CardPageViewModel : ICardPageViewModel, IDisposable
+public class CardsPageViewModel : ICardsPageViewModel, IDisposable
 {
     private readonly IJSRuntime _js;
-    private readonly ILogger<CardPageViewModel> _logger;
-    private readonly ICardService _cardService;
+    private readonly ILogger<CardsPageViewModel> _logger;
+    private readonly ICardsService _cardsService;
     
     public PagedList<PokemonCardDataResponse>? PagedCards { get; set; }
     public PagedList<RarityResponse>? Rarities { get; set; }
@@ -44,14 +43,13 @@ public class CardPageViewModel : ICardPageViewModel, IDisposable
     public int CurrentPage { get; set; } = 1;
     public int PageSize { get; set; } = 12;
     
-    public CardPageViewModel(ILogger<CardPageViewModel> logger, IJSRuntime js, ICardService cardService)
+    public CardsPageViewModel(ILogger<CardsPageViewModel> logger, IJSRuntime js, ICardsService cardsService)
     {
         _logger = logger;
         _js = js;
-        _cardService = cardService;
+        _cardsService = cardsService;
         _logger.LogDebug("CardPageViewModel created.");
         PagedCards = null;
-        // PagedCards = new PagedList<PokemonCardDataResponse>();
         Rarities = new PagedList<RarityResponse>();
     }
     
@@ -61,7 +59,7 @@ public class CardPageViewModel : ICardPageViewModel, IDisposable
         Rarities = null;
         RarityNameAndValues = null;
         ErrorMessage = null;
-        _logger.LogInformation("CardPageViewModel disposed");
+        _logger.LogInformation("CardsPageViewModel disposed");
     }
     
     public async Task LoadCardsBySearchTermAsync(int? pageNumber = null)
@@ -98,7 +96,7 @@ public class CardPageViewModel : ICardPageViewModel, IDisposable
             _logger.LogInformation("Requesting cards: {SearchTerm}, Page: {PageNumber}", 
                 SearchTerm, CurrentPage);
                 
-            var result = await _cardService.GetCardsAsync(request);
+            var result = await _cardsService.GetCardsAsync(request);
             PagedCards = result;
             
             if (result.Data.Any())
@@ -148,7 +146,7 @@ public class CardPageViewModel : ICardPageViewModel, IDisposable
             _logger.LogInformation("Requesting card with Card ID: {CardId}, Page: {PageNumber}", 
                 CardId, CurrentPage);
                 
-            var result = await _cardService.GetCardByIdAsync(request);
+            var result = await _cardsService.GetCardByIdAsync(request);
             PagedCards = result;
             
             if (result.Data.Any())
@@ -186,7 +184,7 @@ public class CardPageViewModel : ICardPageViewModel, IDisposable
             
             _logger.LogInformation("Requesting all cards.");
                 
-            var result = await _cardService.GetRaritiesAsync(request);
+            var result = await _cardsService.GetRaritiesAsync(request);
             Rarities = result;
             
             if (result.Data.Any())
@@ -251,11 +249,6 @@ public class CardPageViewModel : ICardPageViewModel, IDisposable
         {
             _logger.LogError("Error: {ExMessage}", ex.Message);
         }
-    }
-
-    public bool CheckIfRaritiesSelected()
-    {
-        return RarityNameAndValues!.ContainsValue(true);
     }
 
     public bool RarityNameAndValueDifferentThanTemp(Dictionary<string, bool> temp)

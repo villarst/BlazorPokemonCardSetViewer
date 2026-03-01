@@ -27,10 +27,11 @@ public abstract class Program
                 BaseAddress = new Uri("https://localhost:7240/") // Server port number
             });
     
-            builder.Services.AddScoped<ICardService, CardService>();
-            builder.Services.AddScoped<ISetService, SetService>();
-            builder.Services.AddScoped<ICardPageViewModel, CardPageViewModel>();
-    
+            builder.Services.AddScoped<ICardsService, CardsService>();
+            builder.Services.AddScoped<ISetsService, SetsService>();
+            builder.Services.AddScoped<ICardsPageViewModel, CardsPageViewModel>();
+            builder.Services.AddScoped<ISetsPageViewModel, SetsPageViewModel>();
+            
             await builder.Build().RunAsync();
         }
         catch (Exception ex)

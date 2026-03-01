@@ -2,8 +2,8 @@
 @using BlazorPokemonCardSetViewer.Components
 @using BlazorPokemonCardSetViewer.Features.PokemonCard
 @using BlazorPokemonCardSetViewer.Pages.ViewModels
-@inject ICardPageViewModel ViewModel
-@inject ILogger<CardPage> Logger
+@inject ICardsPageViewModel ViewModel
+@inject ILogger<CardsPage> Logger
 @implements IDisposable
 
 <style>
@@ -92,7 +92,7 @@
     }
     .main-content {
         margin-left: 340px; /* sidebar width + some gap */
-        padding: 5.9375rem 1rem 2rem 1rem;
+        padding: 5.9375rem 1rem 1rem 1rem;
         min-width: 600px;
     }
     .card-totals-container {
@@ -114,6 +114,7 @@
         min-width: 19.5rem;
         height: 560px;
         border-radius: 1rem;
+        background-color: white;
         border: 1px solid #e3e3e3;
         padding-top: 0.75rem;
         box-sizing: border-box;
@@ -191,6 +192,9 @@
         border-color: black;
         cursor: not-allowed;
     }
+    .icon-grey {
+        filter: opacity(3.5%) grayscale(100%);    
+    }
 </style>
 
 <div class="sidebar">
@@ -226,7 +230,7 @@
                     Clear
                 </button>
             </div>
-            @foreach (var rarity in ViewModel.Rarities.Data)
+            @foreach (var rarity in ViewModel.Rarities!.Data)
             {
                 <RoundedSwitch
                     RarityName="@rarity.Name"
@@ -341,13 +345,12 @@
     }
     else
     {
-        if (!ViewModel.IsLoading)
-        {
-            // _searchButtonDisabled = true;
-            <div class="alert alert-info">
-                <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
-            </div>
-        }
+        <div class="alert alert-info">
+            <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
+        </div>
+        <div style="display: flex; margin: auto; justify-content: center; align-items: center; height: 575px; width: 575px">
+            <img class="icon-grey" style="height: 575px; width: 575px" src="icons/pokeball_logo.svg" alt="Pokeball Logo"/>
+        </div>
     }
 </div>
 <ModalImageDialog
@@ -406,7 +409,7 @@
         ClearAllFilters();
         await ApplyButtonClicked();
     }
-    
+
     async Task ApplyButtonClicked()
     {
         Logger.LogInformation($"Apply button clicked for: {ViewModel.SearchTerm}");
@@ -451,6 +454,7 @@
             _emptyCardSearchParameter = true;
             return;
         }
+
         if (_showRarities)
         {
             _rarityFilterText = "Show Rarities";
@@ -470,6 +474,7 @@
         {
             _tempRarities[pair.Key] = false;
         }
+
         _disableClearButtonOnRarities = true;
         _applyButtonDisabled = false;
     }
@@ -503,4 +508,5 @@
             _disableClearButtonOnRarities = true;
         }
     }
+
 }
