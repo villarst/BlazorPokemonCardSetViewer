@@ -29,7 +29,13 @@ public class PokemonSetController : ControllerBase
         {
             _logger.LogInformation("Retrieving all Pokemon Sets");
 
-            var setDto = await _context.PokemonSets
+            var query = _context.PokemonSets.AsQueryable();
+            var totalCount = await query.CountAsync();
+
+            
+            
+            
+            var setDto = await query
                 .Select(s => new PokemonSetDataResponse
                 {
                     Id = s.Id,
@@ -55,7 +61,19 @@ public class PokemonSetController : ControllerBase
             {
                 setDto = setDto.OrderBy(set => set.ReleaseDate).ToList();
             }
-            return Ok(setDto);
+
+            var result = new PagedList<PokemonSetDataResponse>
+            {
+                Data = setDto,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+            
+            _logger.LogInformation("Returning {Count} sets out of {TotalCount} total", 
+                setDto.Count, totalCount);
+            
+            return Ok(result);
         }
         catch (Exception ex)
         {

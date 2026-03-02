@@ -1,8 +1,76 @@
 @page "/sets"
+@using BlazorPokemonCardSetViewer.Components
+@using BlazorPokemonCardSetViewer.Features.PokemonSet
+@using BlazorPokemonCardSetViewer.Pages.ViewModels
+@inject ISetsPageViewModel ViewModel
+@inject ILogger<SetsPage> Logger
+@implements IDisposable
 
 <style>
-    .container {
-        
+    .main-content {
+        margin-left: 340px; /* sidebar width + some gap */
+        padding: 5.9375rem 1rem 1rem 1rem;
+        min-width: 600px;
+    }
+    .sets-section {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr); /* is the same as 1fr 1fr 1fr 1fr */
+        gap: 1.5rem;
+        margin-top: 0.6rem;
+        margin-bottom: 2rem;
+    }
+    .cards-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-width: 19.5rem;
+        height: 560px;
+        border-radius: 1rem;
+        background-color: white;
+        border: 1px solid #e3e3e3;
+        padding-top: 0.75rem;
+        box-sizing: border-box;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .cards-container:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    .card-image-small {
+        width: 18.585rem;
+    }
+    .card-img-placeholder {
+        height: 12.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0);
+        color: #6c757d;
+    }
+    .card-body {
+        width: 275px;
+        height: 125px;
+        overflow: hidden;
+        padding: 1rem;
+    }
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    .card-subtitle {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    .card-text {
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+    .icon-grey {
+        filter: opacity(3.5%) grayscale(100%);
     }
 </style>
 
@@ -11,7 +79,49 @@
         @* Drop down filters and set filters*@
     </div>
     <div class="sets-section">
-        
+        @if (ViewModel.PagedSets != null)
+        {
+            @foreach (var set in ViewModel.PagedSets.Data)
+            {
+                <div class="cards-container">
+                    @if (!string.IsNullOrEmpty(set.ImageLogo))
+                    {
+                        @* <div @onclick="() => CardImageClicked(set)"> *@
+                        <img src="@set.ImageLogo" class="card-image-small" alt="@set.Name">
+                        // </div>
+                    }
+                    else
+                    {
+                        <div class="card-img-placeholder">
+                            <i class="fas fa-image"></i>
+                            <span>No Image</span>
+                        </div>
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@set.Name</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">ID: @set.Id</h6>
+                        @if (!string.IsNullOrEmpty(set.Series!.ToString()))
+                        {
+                            <h6 class="card-subtitle mb-2 text-muted">Series: @set.Series</h6>
+                        }
+                        @if (!string.IsNullOrEmpty(set.ReleaseDate.ToString()))
+                        {
+                            <h6 class="card-text">Release Date: @set.ReleaseDate</h6>
+                        }
+                        @if (!string.IsNullOrEmpty(set.PrintedTotal.ToString()))
+                        {
+                            <h6 class="card-text">Total Cards: @set.PrintedTotal.ToString()</h6>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="display: flex; margin: auto; justify-content: center; align-items: center; height: 575px; width: 575px">
+                <img class="icon-grey" style="height: 575px; width: 575px" src="icons/pokeball_logo.svg" alt="Pokeball Logo"/>
+            </div>
+        }
     </div>
     <div class="pagination-container">
         
@@ -19,5 +129,16 @@
 </div>
 
 @code {
+    
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel.CurrentPage = 1;
+        await ViewModel.LoadSets();
+    }
+    
+    public void Dispose()
+    {
+        
+    }
     
 }
