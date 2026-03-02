@@ -8,13 +8,12 @@
 
 <style>
     .main-content {
-        margin-left: 340px; /* sidebar width + some gap */
-        padding: 5.9375rem 1rem 1rem 1rem;
+        margin: 7rem 10rem 2rem 10rem;
         min-width: 600px;
     }
     .sets-section {
         display: grid;
-        grid-template-columns: repeat(5, 1fr); /* is the same as 1fr 1fr 1fr 1fr */
+        grid-template-columns: repeat(4, 1fr); /* is the same as 1fr 1fr 1fr 1fr */
         gap: 1.5rem;
         margin-top: 0.6rem;
         margin-bottom: 2rem;
@@ -75,54 +74,56 @@
 </style>
 
 <div class="main-content">
-    <div>
-        @* Drop down filters and set filters*@
-    </div>
-    <div class="sets-section">
         @if (ViewModel.PagedSets != null)
         {
-            @foreach (var set in ViewModel.PagedSets.Data)
-            {
-                <div class="cards-container">
-                    @if (!string.IsNullOrEmpty(set.ImageLogo))
-                    {
-                        @* <div @onclick="() => CardImageClicked(set)"> *@
-                        <img src="@set.ImageLogo" class="card-image-small" alt="@set.Name">
-                        // </div>
-                    }
-                    else
-                    {
-                        <div class="card-img-placeholder">
-                            <i class="fas fa-image"></i>
-                            <span>No Image</span>
+            <div class="sets-section">
+                @foreach (var set in ViewModel.PagedSets.Data)
+                {
+                    <div class="cards-container">
+                        @if (!string.IsNullOrEmpty(set.ImageLogo))
+                        {
+                            <img src="@set.ImageLogo" class="card-image-small" alt="@set.Name">
+                        }
+                        else
+                        {
+                            <div class="card-img-placeholder">
+                                <i class="fas fa-image"></i>
+                                <span>No Image</span>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@set.Name</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">ID: @set.Id</h6>
+                            @if (!string.IsNullOrEmpty(set.Series!.ToString()))
+                            {
+                                <h6 class="card-subtitle mb-2 text-muted">Series: @set.Series</h6>
+                            }
+                            @if (!string.IsNullOrEmpty(set.ReleaseDate.ToString()))
+                            {
+                                <h6 class="card-text">Release Date: @set.ReleaseDate</h6>
+                            }
+                            @if (!string.IsNullOrEmpty(set.PrintedTotal.ToString()))
+                            {
+                                <h6 class="card-text">Total Cards: @set.PrintedTotal.ToString()</h6>
+                            }
                         </div>
-                    }
-                    <div class="card-body">
-                        <h5 class="card-title">@set.Name</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">ID: @set.Id</h6>
-                        @if (!string.IsNullOrEmpty(set.Series!.ToString()))
-                        {
-                            <h6 class="card-subtitle mb-2 text-muted">Series: @set.Series</h6>
-                        }
-                        @if (!string.IsNullOrEmpty(set.ReleaseDate.ToString()))
-                        {
-                            <h6 class="card-text">Release Date: @set.ReleaseDate</h6>
-                        }
-                        @if (!string.IsNullOrEmpty(set.PrintedTotal.ToString()))
-                        {
-                            <h6 class="card-text">Total Cards: @set.PrintedTotal.ToString()</h6>
-                        }
                     </div>
-                </div>
-            }
+                }
+            </div>
         }
         else
         {
-            <div style="display: flex; margin: auto; justify-content: center; align-items: center; height: 575px; width: 575px">
-                <img class="icon-grey" style="height: 575px; width: 575px" src="icons/pokeball_logo.svg" alt="Pokeball Logo"/>
+            <div style="display: flex; flex-direction: column; margin: auto;">
+                <div style="width: 100%;">
+                    <div class="alert alert-info">
+                        Loading Sets...
+                    </div>
+                </div>
+                <div style="display: flex; margin: auto; justify-content: center; align-items: center; height: 575px; width: 575px">
+                    <img class="icon-grey" style="height: 575px; width: 575px" src="icons/pokeball_logo.svg" alt="Pokeball Logo"/>
+                </div>
             </div>
         }
-    </div>
     <div class="pagination-container">
         
     </div>
