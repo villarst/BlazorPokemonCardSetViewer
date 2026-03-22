@@ -20,7 +20,23 @@ Get To - TODO
     Disable scrolling in the background when clicking a Pokémon set.
     
 Long Term - TODO
+    Need to rework cards page, layout of main gets smaller while cards stay the same size, need
+    to replicate what we have in sets page. 
+    
     Need to somehow have it so when you go into the sets page, you click a set to "view cards" and the filtered cards for
     that set will appeared.
     
     Maybe add a loading page? loading states? Or something to let the user know that data will appear on the page?
+    
+    Find way to add new sets and cards automatically?
+        Look into creating a script that could do this?
+        
+    Implement something like this below: 
+        /* Media Query for smaller screens */
+        @media (max-width: 600px) {
+            .flex-item {
+                flex: 1 1 100%;
+                /* Stacks items on top of each other */
+            }
+        }
+    for content to fit on the screen appropriately.
