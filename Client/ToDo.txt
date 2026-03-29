@@ -1,42 +1,13 @@
-Immediate - TODO
-    Fix response not being deserialized properly. Someting about it not being wrapped in
-    {
-        "data:" : [...]
-        "totalCount" : 14,
-        "pageNumber" : 1,
-        "pageSize" : 12,
-        "totalPages" : 2,
-        "hasPreviousPage" : false,
-        "hasNextPage" : true
-    }
-    It is only retrieving the actual data but not giving any of those properties. 
-    
-    Need to implement "set" filter for the cards to select which set to show in the cards page.
+IMMEDIATE
+TODO: Reorganize Sets Page with proper containers, sized images, and information relevant to the set.
+TODO: Have "Card" object be assigned or associated with the proper Pokemon set it belongs to.
+TODO: Have filter in Cards page for specific sets so that you can filter cards by the set.
 
-    
-Get To - TODO
-    Create sets page with information.
-    Add new sets and cards into Database!
-    Disable scrolling in the background when clicking a Pokémon set.
-    
-Long Term - TODO
-    Need to rework cards page, layout of main gets smaller while cards stay the same size, need
-    to replicate what we have in sets page. 
-    
-    Need to somehow have it so when you go into the sets page, you click a set to "view cards" and the filtered cards for
-    that set will appeared.
-    
-    Maybe add a loading page? loading states? Or something to let the user know that data will appear on the page?
-    
-    Find way to add new sets and cards automatically?
-        Look into creating a script that could do this?
-        
-    Implement something like this below: 
-        /* Media Query for smaller screens */
-        @media (max-width: 600px) {
-            .flex-item {
-                flex: 1 1 100%;
-                /* Stacks items on top of each other */
-            }
-        }
-    for content to fit on the screen appropriately.
+SOON
+TODO: Tie in the clicking of a set on the Sets page to then reroute to the cards page with the specific
+      cards in that set.
+TODO: Or possibly, have a modal pop up with another image of the set and more information pops up about
+      the set and then you can click a link that says "see cards..." which will do what the above says.
+
+END OF DAY
+TODO: Import new sets and cards from the github link for the API.
