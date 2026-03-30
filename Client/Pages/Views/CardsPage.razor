@@ -2,8 +2,8 @@
 @using BlazorPokemonCardSetViewer.Components
 @using BlazorPokemonCardSetViewer.Features.PokemonCard
 @using BlazorPokemonCardSetViewer.Pages.ViewModels
-@inject CardPageViewModel ViewModel
-@inject ILogger<CardPage> Logger
+@inject ICardsPageViewModel ViewModel
+@inject ILogger<CardsPage> Logger
 @implements IDisposable
 
 <style>
@@ -16,7 +16,7 @@
         position: fixed;
         left: 0;
         top: 5.875rem;
-        width: 320px;
+        width: 20rem;
         height: calc(100vh - 5.87rem);
         padding: 0.5rem 1.75rem 0.5rem 0.75rem;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
@@ -24,10 +24,6 @@
         box-sizing: border-box;
         overflow-y: auto;
         z-index: 50;
-    }
-    .cards-header {
-        margin: 0 0 1.625rem 1rem;
-        padding: 0;
     }
     .rarities-header-container {
         display: flex;
@@ -59,9 +55,9 @@
     .search-box-input {
         margin-right: 0.25rem;
         position: relative;
-        width: 200px;
-        height: 36px;
-        font-size: 24px;
+        width: 12.5rem;
+        height: 2.25rem;
+        font-size: 1.5rem;
     }
     .rarities-filter-container {
         display: flex;
@@ -80,23 +76,13 @@
         align-items: center;
         cursor: pointer;
     }
-    .rarities-icon-container:hover .transparent-box {
+    .rarities-icon-container:hover{
         display: block;
-    }
-    .transparent-box {
-        position: absolute;
-        top: 0;
-        height: 26px;
-        width: 25px;
-        margin-left: 18px;
-        margin-top: 4px;
-        background-color: rgba(128, 128, 128, 0.5); /* Adjust the last value (0.5) for the transparency */
-        display: none;
     }
     .hide-rarities-button {
         font-family: "Kanit-Light", serif;
         margin-top: 0;
-        font-size: 20px;
+        font-size: 1.25rem;
         background-color: #ffffff;
         border: #ffffff;
         text-decoration: underline;
@@ -105,9 +91,9 @@
         background-color: rgba(128, 128, 128, 0.5);
     }
     .main-content {
-        margin-left: 340px; /* sidebar width + some gap */
-        padding: 5.9375rem 1rem 2rem 1rem;
-        min-width: 600px;
+        margin-left: 21.25rem; /* sidebar width + some gap */
+        padding: 5.9375rem 1.75rem 1rem 1rem;
+        min-width: 37.5rem;
     }
     .card-totals-container {
         margin-left: 1rem;
@@ -126,8 +112,9 @@
         align-items: center;
         justify-content: flex-start;
         min-width: 19.5rem;
-        height: 560px;
+        height: 35rem;
         border-radius: 1rem;
+        background-color: white;
         border: 1px solid #e3e3e3;
         padding-top: 0.75rem;
         box-sizing: border-box;
@@ -155,8 +142,8 @@
         margin-bottom: 0.5rem;
     }
     .card-body {
-        width: 275px;
-        height: 125px;
+        width: 17.188rem;
+        height: 7.812rem;
         overflow: hidden;
         padding: 1rem;
     }
@@ -173,6 +160,9 @@
         font-size: 0.9rem;
         margin-bottom: 0.25rem;
     }
+    .filter-icon {
+        font-size: 2rem;
+    }
 
     /* Pagination Styles */
     .pagination-container {
@@ -180,17 +170,6 @@
         justify-content: space-between;
         align-items: center;
         margin-top: 0.5rem;
-    }
-    .pagination-nav {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-    .pagination {
-        margin: 0;
-        display: flex;
-        list-style: none;
-        padding: 0;
     }
     .page-link {
         color: white;
@@ -216,15 +195,18 @@
         border-color: black;
         cursor: not-allowed;
     }
-    .transparent-box {
-        position: absolute;
-        top: 0;
-        height: 26px;
-        width: 25px;
-        margin-left: 18px;
-        margin-top: 4px;
-        background-color: rgba(128, 128, 128, 0.5);
-        display: none;
+    .gray-pokeball-container {
+        height: 35.94rem; 
+        width: 35.94rem;
+        display: flex; 
+        margin: auto; 
+        justify-content: center; 
+        align-items: center;
+    }
+    .gray-pokeball{
+        height: 35.94rem;
+        width: 35.94rem;
+        filter: opacity(3.5%) grayscale(100%);
     }
 </style>
 
@@ -233,7 +215,7 @@
         <div class="rarities-filter-container">
             <div class="rarities-filter-wrapper">
                 <div class="rarities-icon-container" @onclick="ToggleRarityFilters">
-                    <i class="bi bi-filter" style="font-size: 32px;"></i>
+                    <i class="bi bi-filter filter-icon"></i>
                 </div>
                 <button class="hide-rarities-button" @onclick="ToggleRarityFilters">
                     @_rarityFilterText
@@ -261,7 +243,7 @@
                     Clear
                 </button>
             </div>
-            @foreach (var rarity in ViewModel.Rarities.Data)
+            @foreach (var rarity in ViewModel.Rarities!.Data)
             {
                 <RoundedSwitch
                     RarityName="@rarity.Name"
@@ -376,13 +358,12 @@
     }
     else
     {
-        if (!ViewModel.IsLoading)
-        {
-            // _searchButtonDisabled = true;
-            <div class="alert alert-info">
-                <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
-            </div>
-        }
+        <div class="alert alert-info">
+            <i class="fas fa-search"></i> Enter a card name to search for Pokemon cards.
+        </div>
+        <div class="gray-pokeball-container">
+            <img class="gray-pokeball" src="icons/pokeball_logo.svg" alt="Pokeball Logo"/>
+        </div>
     }
 </div>
 <ModalImageDialog
@@ -400,7 +381,7 @@
     bool _showRarities;
     string _selectedCardLargeImageUrl = string.Empty;
     string _rarityFilterText = "Show Rarities";
-    bool _emptyCardSearchParameter = false;
+    bool _emptyCardSearchParameter;
 
     Dictionary<string, bool> _tempRarities = [];
 
@@ -441,7 +422,7 @@
         ClearAllFilters();
         await ApplyButtonClicked();
     }
-    
+
     async Task ApplyButtonClicked()
     {
         Logger.LogInformation($"Apply button clicked for: {ViewModel.SearchTerm}");
@@ -486,6 +467,7 @@
             _emptyCardSearchParameter = true;
             return;
         }
+
         if (_showRarities)
         {
             _rarityFilterText = "Show Rarities";
@@ -505,6 +487,7 @@
         {
             _tempRarities[pair.Key] = false;
         }
+
         _disableClearButtonOnRarities = true;
         _applyButtonDisabled = false;
     }
@@ -538,4 +521,5 @@
             _disableClearButtonOnRarities = true;
         }
     }
+
 }

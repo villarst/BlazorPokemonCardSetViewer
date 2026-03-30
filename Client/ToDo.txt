@@ -1,5 +1,13 @@
-Need to address the issues concerning sending a request and getting an error. Maybe create an 'Errors.cs' file and 
-have it return a Result<Error<PagedList<PokemonCardDat>>> ? or some sort like that and handle the error appropriately 
-and the disabled and enabled states of the buttons on the page?
+IMMEDIATE
+TODO: Reorganize Sets Page with proper containers, sized images, and information relevant to the set.
+TODO: Have "Card" object be assigned or associated with the proper Pokemon set it belongs to.
+TODO: Have filter in Cards page for specific sets so that you can filter cards by the set.
 
-Maybe add a loading page? loading states? Or something to let the user know that data will appear on the page?
+SOON
+TODO: Tie in the clicking of a set on the Sets page to then reroute to the cards page with the specific
+      cards in that set.
+TODO: Or possibly, have a modal pop up with another image of the set and more information pops up about
+      the set and then you can click a link that says "see cards..." which will do what the above says.
+
+END OF DAY
+TODO: Import new sets and cards from the github link for the API.

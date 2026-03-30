@@ -7,17 +7,17 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace BlazorPokemonCardSetViewer.Services;
 
-public interface ISetService
+public interface ISetsService
 {
     Task<PagedList<PokemonSetDataResponse>> GetSetsAsync(PagedRequest request);
 }
 
-public class SetService : ISetService
+public class SetsService : ISetsService
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<SetService> _logger;
+    private readonly ILogger<SetsService> _logger;
 
-    public SetService(HttpClient httpClient, ILogger<SetService> logger)
+    public SetsService(HttpClient httpClient, ILogger<SetsService> logger)
     {
         _httpClient = httpClient;
         _logger = logger;
