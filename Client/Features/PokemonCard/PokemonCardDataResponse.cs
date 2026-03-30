@@ -21,4 +21,5 @@ public class PokemonCardDataResponse
     public string? LegalityUnlimited { get; set; }
     public string? LegalityStandard { get; set; }
     public string? LegalityExpanded { get; set; }
+    public string? SetName { get; set; }
 }
