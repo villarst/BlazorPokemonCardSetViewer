@@ -145,11 +145,11 @@
                 </div>
                 <div class="sort-by-dropdown">
                     <h6 class="sort-by-header">Sort By:</h6>
-                    <select class="custom-select" @onchange="DoSomething" title="Sort By Series">
-                        <option value="Select" selected disabled="disabled">Series</option>
-                        @foreach (var series in _seriesNames)
+                    <select class="custom-select" @bind="OrderByDate" title="Sort By Date">
+                        @* <option value="Select" selected disabled="disabled">Date</option> *@
+                        @foreach (var date in _dateOrderBy)
                         {
-                            <option value="@series">@series</option>
+                            <option value="@date">@date</option>
                         }
                     </select>
                 </div>
@@ -218,6 +218,22 @@
         "XY"
     ];
 
+    string[] _dateOrderBy =
+    [
+        "Newest",
+        "Oldest"
+    ];
+
+    string OrderByDate
+    {
+        get;
+        set
+        {
+            field = value;
+            SortSetsByDate();
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         ViewModel.CurrentPage = 1;
@@ -229,8 +245,9 @@
         ViewModel.PagedSets = null;
     }
 
-    void DoSomething()
+    async Task SortSetsByDate()
     {
-
+        await ViewModel.LoadSetsByDate(OrderByDate);
+        StateHasChanged();
     }
 }

@@ -31,10 +31,6 @@ public class PokemonSetController : ControllerBase
 
             var query = _context.PokemonSets.AsQueryable();
             var totalCount = await query.CountAsync();
-
-            
-            
-            
             var setDto = await query
                 .Select(s => new PokemonSetDataResponse
                 {
@@ -69,10 +65,10 @@ public class PokemonSetController : ControllerBase
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
-            
-            _logger.LogInformation("Returning {Count} sets out of {TotalCount} total", 
+
+            _logger.LogInformation("Returning {Count} sets out of {TotalCount} total",
                 setDto.Count, totalCount);
-            
+
             return Ok(result);
         }
         catch (Exception ex)

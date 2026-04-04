@@ -125,8 +125,14 @@
         transform: translateY(-6px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
+    .card-image-container {
+        height: 25.6rem;
+        width: 18.6rem;
+    }
     .card-image-small {
-        width: 18.585rem;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
     }
     .card-img-placeholder {
         height: 12.5rem;
@@ -196,11 +202,11 @@
         cursor: not-allowed;
     }
     .gray-pokeball-container {
-        height: 35.94rem; 
+        height: 35.94rem;
         width: 35.94rem;
-        display: flex; 
-        margin: auto; 
-        justify-content: center; 
+        display: flex;
+        margin: auto;
+        justify-content: center;
         align-items: center;
     }
     .gray-pokeball{
@@ -290,7 +296,7 @@
                 <div class="card-container">
                     @if (!string.IsNullOrEmpty(card.ImageSmall))
                     {
-                        <div @onclick="() => CardImageClicked(card)">
+                        <div class="card-image-container" @onclick="() => CardImageClicked(card)">
                             <img src="@card.ImageSmall" class="card-image-small" alt="@card.Name">
                         </div>
                     }
@@ -342,7 +348,7 @@
                         </small>
                     </div>
                 </div>
-                
+
             }
             <div class="showing-current-cards-container">
                 @if (ViewModel.PagedCards.TotalCount > 0)
