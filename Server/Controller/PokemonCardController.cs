@@ -29,6 +29,8 @@ public class PokemonCardController : ControllerBase
 
             var query = _context.PokemonCards.AsQueryable();
 
+            query = query.Include(c => c.Set);
+
             var searchTerm = request.SearchTerm;
             var pageNumber = request.PageNumber;
             var pageSize = request.PageSize;
@@ -87,7 +89,9 @@ public class PokemonCardController : ControllerBase
                     Rarity = c.Rarity,
                     LegalityUnlimited = c.LegalityUnlimited,
                     LegalityStandard = c.LegalityStandard,
-                    LegalityExpanded = c.LegalityExpanded
+                    LegalityExpanded = c.LegalityExpanded,
+                    SetId = c.Set.Id,
+                    SetName = c.Set.Name,
                 })
                 .ToListAsync();
 
@@ -120,6 +124,8 @@ public class PokemonCardController : ControllerBase
             _logger.LogInformation("Getting cards by set.");
             var query = _context.PokemonCards.AsQueryable();
 
+            query = query.Include(c => c.Set);
+
             var set = request.Set;
             var pageNumber = request.PageNumber;
             var pageSize = request.PageSize;
@@ -144,7 +150,9 @@ public class PokemonCardController : ControllerBase
                     Rarity = c.Rarity,
                     LegalityUnlimited = c.LegalityUnlimited,
                     LegalityStandard = c.LegalityStandard,
-                    LegalityExpanded = c.LegalityExpanded
+                    LegalityExpanded = c.LegalityExpanded,
+                    SetId = c.Set.Id,
+                    SetName = c.Set.Name,
                 })
                 .ToListAsync();
 
@@ -200,7 +208,9 @@ public class PokemonCardController : ControllerBase
                     Rarity = c.Rarity,
                     LegalityUnlimited = c.LegalityUnlimited,
                     LegalityStandard = c.LegalityStandard,
-                    LegalityExpanded = c.LegalityExpanded
+                    LegalityExpanded = c.LegalityExpanded,
+                    SetId = c.Set.Id,
+                    SetName = c.Set.Name,
                 })
                 .FirstOrDefaultAsync();
 

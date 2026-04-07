@@ -322,6 +322,10 @@
                         {
                             <h6 class="card-text">Rarity: @card.Rarity</h6>
                         }
+                        @if (!string.IsNullOrEmpty(card.SetName))
+                        {
+                            <h6 class="card-text">Name: @card.SetName</h6>
+                        }
                     </div>
                 </div>
             }
