@@ -12,7 +12,12 @@ public class PokemonDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<PokemonCard>().ToTable("cards");
+        // modelBuilder.Entity<PokemonCard>().ToTable("cards");
+        modelBuilder.Entity<PokemonCard>()
+            .HasOne(pc => pc.Set)
+            .WithOne()
+            .HasForeignKey<PokemonCard>(pc => pc.SetId)
+            .OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<PokemonSet>().ToTable("sets");
     }
 }
